@@ -30,21 +30,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Orbital7.Extensions">
-      <HintPath>..\..\orbital7.extensions\Orbital7.Extensions\bin\Debug\Orbital7.Extensions.dll</HintPath>
+    <Reference Include="itextsharp, Version=5.5.8.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.8\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Orbital7.Extensions.Windows">
-      <HintPath>..\..\orbital7.extensions\Orbital7.Extensions.Windows\bin\Debug\Orbital7.Extensions.Windows.dll</HintPath>
+    <Reference Include="Orbital7.Extensions, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Orbital7.Extensions.1.0.1\lib\portable45-net45+win8\Orbital7.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Orbital7.Extensions.Windows, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Orbital7.Extensions.Windows.1.0.1\lib\net45\Orbital7.Extensions.Windows.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\office\Charge-Platform\production\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -75,6 +77,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\cheat.dat.txt" />
   </ItemGroup>
   <ItemGroup>

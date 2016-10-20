@@ -34,14 +34,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Orbital7.Extensions">
-      <HintPath>..\..\..\orbital7.extensions\Orbital7.Extensions\bin\Debug\Orbital7.Extensions.dll</HintPath>
+    <Reference Include="itextsharp, Version=5.5.8.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\iTextSharp.5.5.8\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Orbital7.Extensions.Windows">
-      <HintPath>..\..\..\orbital7.extensions\Orbital7.Extensions.Windows\bin\Debug\Orbital7.Extensions.Windows.dll</HintPath>
+    <Reference Include="Orbital7.Extensions, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Orbital7.Extensions.1.0.1\lib\portable45-net45+win8\Orbital7.Extensions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Orbital7.Extensions.Windows.Desktop">
-      <HintPath>..\..\..\orbital7.extensions\Orbital7.Extensions.Windows.Desktop\bin\Debug\Orbital7.Extensions.Windows.Desktop.dll</HintPath>
+    <Reference Include="Orbital7.Extensions.Windows, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Orbital7.Extensions.Windows.1.0.1\lib\net45\Orbital7.Extensions.Windows.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Orbital7.Extensions.Windows.Desktop, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Orbital7.Extensions.Windows.Desktop.1.0.1\lib\net45\Orbital7.Extensions.Windows.Desktop.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -132,6 +139,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -146,6 +154,9 @@
       <Project>{db5071f6-09db-41fd-abd0-7b21a0d9eee5}</Project>
       <Name>Orbital7.MyGames</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Lib\Microsoft.Win32.TaskScheduler.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
