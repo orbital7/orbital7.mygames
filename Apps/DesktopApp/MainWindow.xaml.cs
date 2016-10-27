@@ -24,8 +24,7 @@ namespace DesktopApp
         public MainWindow()
         {
             InitializeComponent();
-
-            this.FontFamily = new FontFamily("Open Sans");
+            App.SetWindowFont(this);
 
             var config = LoadConfig();
             if (config != null)

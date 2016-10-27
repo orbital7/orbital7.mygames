@@ -60,8 +60,8 @@ namespace Orbital7.MyGames
             gameList.SyncWithFileSystem();
             gameList.Save();
 
-            // Load the images.
-            gameList.LoadImages();
+            // Initialize.
+            gameList.Initialize();
                         
             return gameList;
         }
@@ -82,6 +82,28 @@ namespace Orbital7.MyGames
                 this.InnerList.Add(game);
 
             return game;
+        }
+
+        public void SaveGame(Game game, string folderPath = null)
+        {
+            // Look for rename.
+            string filename = Path.GetFileName(game.GamePath);
+            if (filename.ToLower() != Path.GetFileName(game.GameFilePath).ToLower())
+            {
+                // Record old values.
+                string gameFilePath = game.GameFilePath;
+                string imageFilePath = game.ImageFilePath;
+
+                // Update values.
+                game.UpdateFilename(filename);
+
+                // Rename files.
+                File.Move(gameFilePath, game.GameFilePath);
+                File.Move(imageFilePath, game.ImageFilePath);
+            }
+
+            // Save.
+            this.Save(folderPath);
         }
 
         public bool Contains(string filename)
@@ -171,11 +193,11 @@ namespace Orbital7.MyGames
                 var game = this[i];
                 game.Platform = this.Platform;
 
-                string filePath = Path.Combine(this.PlatformFolderPath, ToNTFSPath(game.GamePath));
+                string filePath = Path.Combine(this.PlatformFolderPath, FileSystemHelper.ToWindowsPath(game.GamePath));
                 if (!File.Exists(filePath))
                 {
                     this.InnerList.Remove(game);
-                    string imagePath = Path.Combine(this.PlatformFolderPath, ToNTFSPath(game.ImagePath));
+                    string imagePath = Path.Combine(this.PlatformFolderPath, FileSystemHelper.ToWindowsPath(game.ImagePath));
                     if (File.Exists(imagePath))
                         File.Delete(imagePath);
                 }
@@ -190,21 +212,15 @@ namespace Orbital7.MyGames
             }
         }
 
-        public void LoadImages()
+        internal void Initialize()
         {
             foreach (Game game in this.InnerList)
             {
-                if (!String.IsNullOrEmpty(game.ImagePath))
-                {
-                    string imagePath = Path.Combine(this.PlatformFolderPath, ToNTFSPath(game.ImagePath));
-                    game.Image = DrawingHelper.LoadBitmap(imagePath);
-                }
+                game.Parent = this;
+                game.SetFilePaths();
+                if (!String.IsNullOrEmpty(game.ImageFilePath))
+                    game.Image = DrawingHelper.LoadBitmap(game.ImageFilePath);
             }
-        }
-
-        private static string ToNTFSPath(string path)
-        {
-            return path.Replace("./", "").Replace("/", "\\");
         }
     }
 }

@@ -39,7 +39,7 @@ namespace DesktopApp
                 foreach (Game game in (from x in games orderby x.Name, x.GamePath select x).ToList())
                 {
                     var item = new GamesListviewItem(game);
-                    item.Margin = new Thickness(0, 0, 0, 15);
+                    item.Margin = new Thickness(0, 10, 0, 5);
                     stackPanel.Children.Add(item);
                 }
             }

@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace DesktopApp
 {
@@ -13,5 +14,9 @@ namespace DesktopApp
     /// </summary>
     public partial class App : Application
     {
+        public static void SetWindowFont(Window window)
+        {
+            window.FontFamily = new FontFamily("Open Sans");
+        }
     }
 }

@@ -4,9 +4,55 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DesktopApp"
-        mc:Ignorable="d"
-        Title="EditGameDialog" Height="300" Width="300">
-    <Grid>
-        
-    </Grid>
+        mc:Ignorable="d" ShowInTaskbar="False" 
+        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize"
+        BorderThickness="2px" BorderBrush="Orange" Background="Black" Foreground="White"
+        Title="Edit Game" Height="328px" Width="820px">
+    <Window.Resources>
+        <Style TargetType="{ x:Type DatePickerTextBox}">
+            <Setter Property="Background" Value="#CDCDCD" />
+        </Style>
+    </Window.Resources>
+    <DockPanel Margin="5">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
+            <Button x:Name="buttonSave" Click="buttonSave_Click" Width="65" Height="22" Margin="0,0,5,0" IsDefault="True">Save</Button>
+            <Button x:Name="buttonCancel" Click="buttonCancel_Click" Width="65" Height="22" IsCancel="True">Cancel</Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Image x:Name="image" Height="240px" Width="344px" />
+            <Grid Margin="22,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24px" />
+                    <RowDefinition Height="24px" />
+                    <RowDefinition Height="24px" />
+                    <RowDefinition Height="24px" />
+                    <RowDefinition Height="24px" />
+                    <RowDefinition Height="24px" />
+                    <RowDefinition Height="24px" />
+                    <RowDefinition Height="85px" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="75px" />
+                    <ColumnDefinition Width="350px" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0">Filename:</TextBlock>
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="textFilename" BorderThickness="0px" Background="#CDCDCD" Margin="0,0,0,4" Text="{ Binding Path=GamePath }" />
+                <TextBlock Grid.Row="1" Grid.Column="0">Name:</TextBlock>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="textName" BorderThickness="0px" Background="#CDCDCD" Margin="0,0,0,4" Text="{ Binding Path=Name }" />
+                <TextBlock Grid.Row="2" Grid.Column="0">Publisher:</TextBlock>
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="textPublisher" BorderThickness="0px" Background="#CDCDCD" Margin="0,0,0,4" Text="{ Binding Path=Publisher }" />
+                <TextBlock Grid.Row="3" Grid.Column="0">Developer:</TextBlock>
+                <TextBox Grid.Row="3" Grid.Column="1" x:Name="textDeveloper" BorderThickness="0px" Background="#CDCDCD" Margin="0,0,0,4" Text="{ Binding Path=Developer }" />
+                <TextBlock Grid.Row="4" Grid.Column="0">Released:</TextBlock>
+                <DatePicker Grid.Row="4" Grid.Column="1" x:Name="textReleaseDate" BorderThickness="0px" Background="#CDCDCD" Margin="0,0,0,4" Text="{ Binding Path=ReleaseDate }" />
+                <TextBlock Grid.Row="5" Grid.Column="0">Genre:</TextBlock>
+                <TextBox Grid.Row="5" Grid.Column="1" x:Name="textGenre" BorderThickness="0px" Background="#CDCDCD" Margin="0,0,0,4" Text="{ Binding Path=Genre }" />
+                <TextBlock Grid.Row="6" Grid.Column="0">Rating:</TextBlock>
+                <TextBox Grid.Row="6" Grid.Column="1" x:Name="textRating" BorderThickness="0px" Background="#CDCDCD" Margin="0,0,0,4" Text="{ Binding Path=Rating }" />
+                <TextBlock Grid.Row="7" Grid.Column="0">Description:</TextBlock>
+                <TextBox Grid.Row="7" Grid.Column="1" x:Name="textDescription" BorderThickness="0px" Background="#CDCDCD" TextWrapping="Wrap" 
+                         AcceptsReturn="True" VerticalScrollBarVisibility="Visible" Text="{ Binding Path=Description }" />
+            </Grid>
+        </StackPanel>
+    </DockPanel>
 </Window>

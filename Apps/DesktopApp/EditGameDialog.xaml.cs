@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Orbital7.Extensions.Windows.Desktop.WPF;
+using Orbital7.MyGames;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,9 +22,36 @@ namespace DesktopApp
     /// </summary>
     public partial class EditGameDialog : Window
     {
-        public EditGameDialog()
+        private Game Game { get; set; }
+
+        public EditGameDialog(Game game)
         {
             InitializeComponent();
+            App.SetWindowFont(this);
+
+            this.Game = game;
+            this.DataContext = game;
+            image.Source = game.Image.ToImageSource();
+        }
+
+        private void buttonSave_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                this.Game.Parent.SaveGame(this.Game);
+                this.DialogResult = true;
+            }
+            catch(Exception ex)
+            {
+                MessageBoxHelper.ShowError(this, ex);
+            }
+
+            this.Close();
+        }
+
+        private void buttonCancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

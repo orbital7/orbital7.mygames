@@ -21,9 +21,9 @@
             </HierarchicalDataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
-    <TreeView x:Name="treeview" BorderThickness="1"
+    <TreeView x:Name="treeview" BorderThickness="0"
       ItemContainerStyle="{StaticResource TreeViewItemStyle}"
       ItemTemplate="{StaticResource TreeViewItemTemplate}" 
-      Background="White">
+      Background="#CDCDCD">
     </TreeView>
 </UserControl>

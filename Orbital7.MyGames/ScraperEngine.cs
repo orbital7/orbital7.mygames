@@ -13,34 +13,34 @@ namespace Orbital7.MyGames
     {
         private delegate object PerformScraperSearch(Platform platform, string gameName);
 
-        public Game SearchExact(IScraper scraper, Platform platform, string filename)
+        public Game SearchExact(Scraper scraper, Platform platform, string query, string filename)
         {
-            var game = (Game)ExecuteSearch(platform, filename, scraper.SearchExact);
+            var game = (Game)ExecuteSearch(platform, query, scraper.SearchExact);
             UpdateGameResult(game, scraper, platform, filename);
             return game;
         }
 
-        public List<Game> Search(IScraper scraper, Platform platform, string filename)
+        public List<Game> Search(Scraper scraper, Platform platform, string query, string filename)
         {
-            var games = (List<Game>)ExecuteSearch(platform, filename, scraper.Search);
+            var games = (List<Game>)ExecuteSearch(platform, query, scraper.Search);
             foreach (var game in games)
                 UpdateGameResult(game, scraper, platform, filename);
             return games;
         }
 
-        private static void UpdateGameResult(Game game, IScraper scraper, Platform platform, string filename)
+        private static void UpdateGameResult(Game game, Scraper scraper, Platform platform, string filename)
         {
             game.Platform = platform;
             game.Source = scraper.SourceName;
             game.UpdateFilename(filename);
         }
 
-        private object ExecuteSearch(Platform platform, string filename, PerformScraperSearch PerformScraperSearch)
+        private object ExecuteSearch(Platform platform, string query, PerformScraperSearch PerformScraperSearch)
         {
             object result = null;
 
             // Search.
-            string gameName = GetGameName(platform, filename);
+            string gameName = GetGameName(platform, query);
             result = PerformScraperSearch(platform, gameName);
 
             // If not found, try converting " - " to ": ".
@@ -75,16 +75,17 @@ namespace Orbital7.MyGames
             // If we still didn't find anything, try the filename.
             if (result == null)
             {
-                gameName = Path.GetFileNameWithoutExtension(filename);
+                gameName = Path.GetFileNameWithoutExtension(query);
                 result = PerformScraperSearch(platform, gameName);
             }
 
-            return null;
+            return result;
         }
 
-        private string GetGameName(Platform platform, string filename)
+        private string GetGameName(Platform platform, string query)
         {
-            string initialGameName = Path.GetFileNameWithoutExtension(filename).ToLower();
+            // In most cases, we're given a filename as the input query.
+            string initialGameName = Path.GetFileNameWithoutExtension(query).ToLower();
             string gameName = initialGameName;
 
             // For arcade games, we need to perform a filename to game name conversion.

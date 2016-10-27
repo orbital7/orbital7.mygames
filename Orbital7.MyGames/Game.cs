@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Orbital7.Extensions.Windows;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -58,9 +59,24 @@ namespace Orbital7.MyGames
         public Bitmap Image { get; set; }
 
         [XmlIgnore]
+        public GameList Parent { get; internal set; }
+
+        [XmlIgnore]
+        public string GameFilePath { get; internal set; }
+
+        [XmlIgnore]
+        public string ImageFilePath { get; internal set; }
+
+        [XmlIgnore]
         public bool HasImage
         {
             get { return this.Image != null && !String.IsNullOrEmpty(this.ImagePath); }
+        }
+
+        [XmlIgnore]
+        public string GameFilename
+        {
+            get { return Path.GetFileName(this.GamePath); }
         }
 
         [XmlIgnore]
@@ -101,11 +117,24 @@ namespace Orbital7.MyGames
                 return this.GamePath;
         }
 
-        public void UpdateFilename(string updatedFilename)
+        internal void SetFilePaths()
+        {
+            if (this.Parent != null)
+            {
+                this.GameFilePath = Path.Combine(this.Parent.PlatformFolderPath, FileSystemHelper.ToWindowsPath(this.GamePath));
+
+                if (!String.IsNullOrEmpty(this.ImagePath))
+                    this.ImageFilePath = Path.Combine(this.Parent.PlatformFolderPath, FileSystemHelper.ToWindowsPath(this.ImagePath));
+            }
+        }
+
+        internal void UpdateFilename(string updatedFilename)
         {
             this.GamePath = "./" + updatedFilename;
             if (this.HasImage)
                 this.ImagePath = "./images/" + Path.GetFileNameWithoutExtension(updatedFilename) + "-image" + Path.GetExtension(this.ImagePath);
+
+            SetFilePaths();
         }
     }
 }

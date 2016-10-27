@@ -4,21 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DesktopApp"
-        mc:Ignorable="d"
-        Title="MyGames" Height="650" Width="950" WindowStartupLocation="CenterScreen">
+        mc:Ignorable="d" Background="Black" Foreground="White"
+        Title="MyGames" Height="650" Width="970" WindowStartupLocation="CenterScreen">
     
-    <DockPanel Margin="5">
+    <DockPanel Margin="10">
         <DockPanel DockPanel.Dock="Left" Width="125px">
-            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,3">
-                <ToolBarTray>
-                    <ToolBar>
-                    
-                    </ToolBar>
-                </ToolBarTray>
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5">
+                <ToolBar Background="Black" Foreground="White">
+                    <Button x:Name="buttonMatchMissing" Foreground="White">Match Missing</Button>
+                </ToolBar>
             </DockPanel>
             <local:NavigationTreeview x:Name="navigationTreeview" 
                                       NavigationTreeviewItemSelected="navigationTreeview_NavigationTreeviewItemSelected" />
         </DockPanel>
-        <local:GamesListview x:Name="gamesListview" Margin="5,5,0,0" />
+        <local:GamesListview x:Name="gamesListview" Margin="10,0,0,0" />
     </DockPanel>
 </Window>

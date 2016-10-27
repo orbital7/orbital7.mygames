@@ -1,5 +1,4 @@
-﻿using Orbital7.Extensions.Windows;
-using Orbital7.Extensions.Windows.Desktop.WPF;
+﻿using Orbital7.Extensions.Windows.Desktop.WPF;
 using Orbital7.MyGames;
 using System;
 using System.Collections.Generic;
@@ -24,6 +23,8 @@ namespace DesktopApp
     /// </summary>
     public partial class GamesListviewItem : UserControl
     {
+        private Game Game { get; set; }
+
         public bool Selected
         {
             set
@@ -45,17 +46,46 @@ namespace DesktopApp
         {
             InitializeComponent();
 
-            textName.Text = String.IsNullOrEmpty(game.Name) ? "[UNKNOWN]" : game.Name;
-            textFilename.Text = game.GamePath;
-            textGenre.Text = game.Genre;
-            textPublisher.Text = game.Publisher;
-            textDeveloper.Text = game.Developer;
-            textRating.Text = game.Rating > 0 ? game.Rating.ToString("0.0") : "n/a";
-            textReleaseDate.Text = game.ReleaseDate.ToShortDateString("n/a");
-            //textEmulator.Text = game.Emulator;
-            textPlatform.Text = game.Platform.ToDisplayString();
-            textDescription.Text = game.Description;
-            image.Source = game.Image.ToImageSource();
+            this.Game = game;
+            UpdateView();
+        }
+
+        private void UpdateView()
+        {
+            textName.Text = String.IsNullOrEmpty(this.Game.Name) ? "[UNKNOWN]" : this.Game.Name;
+            textFilename.Text = this.Game.GamePath;
+            textGenre.Text = this.Game.Genre;
+            textPublisher.Text = this.Game.Publisher;
+            textDeveloper.Text = this.Game.Developer;
+            textRating.Text = this.Game.Rating > 0 ? this.Game.Rating.ToString("0.0") : "n/a";
+            textReleaseDate.Text = this.Game.ReleaseDate.ToShortDateString("n/a");
+            //textEmulator.Text = this.Game.Emulator;
+            textPlatform.Text = this.Game.Platform.ToDisplayString();
+            textDescription.Text = this.Game.Description;
+            image.Source = this.Game.Image.ToImageSource();
+        }
+
+        private void ShowGameDialog(Window dialog)
+        {
+            dialog.Owner = Window.GetWindow(this);
+            var result = dialog.ShowDialog();
+            if (result.HasValue && result.Value)
+                UpdateView();
+        }
+
+        private void linkEdit_Click(object sender, RoutedEventArgs e)
+        {
+            ShowGameDialog(new EditGameDialog(this.Game));            
+        }
+
+        private void linkMatch_Click(object sender, RoutedEventArgs e)
+        {
+            ShowGameDialog(new MatchGameDialog(this.Game));
+        }
+
+        private void linkDelete_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO.
         }
     }
 }

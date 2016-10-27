@@ -11,14 +11,14 @@ using System.Xml;
 
 namespace Orbital7.MyGames.Scrapers
 {
-    public class TheGamesDBScraper : IScraper
+    public class TheGamesDBScraper : Scraper
     {
-        public string SourceName
+        public override string SourceName
         {
             get { return "theGamesDB.net"; }
         }
 
-        public Game SearchExact(Platform platform, string gameName)
+        public override Game SearchExact(Platform platform, string gameName)
         {
             Game game = null;
 
@@ -30,11 +30,11 @@ namespace Orbital7.MyGames.Scrapers
             return game;
         }
 
-        public List<Game> Search(Platform platform, string gameName)
+        public override List<Game> Search(Platform platform, string gameName)
         {
             List<Game> games = new List<Game>();
 
-            var doc = PerformSearch(platform, gameName, true);
+            var doc = PerformSearch(platform, gameName, false);
             foreach (XmlNode gameNode in doc.DocumentElement.SelectNodes("Game"))
                 games.Add(ParseGame(doc, gameNode));
 
