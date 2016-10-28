@@ -29,16 +29,14 @@ namespace DesktopApp
             InitializeComponent();
             App.SetWindowFont(this);
 
-            this.Game = game;
-            this.DataContext = game;
-            image.Source = game.Image.ToImageSource();
+            editGameView.Load(game);
         }
 
         private void buttonSave_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                this.Game.Parent.SaveGame(this.Game);
+                this.Game.GameList.Update(this.Game);
                 this.DialogResult = true;
             }
             catch(Exception ex)

@@ -44,10 +44,10 @@ namespace Orbital7.MyGames.Scrapers
         private XmlDocument PerformSearch(Platform platform, string gameName, bool exact)
         {
             // Search.
-            string url = "http://thegamesdb.net/api/GetGame.php?" + 
+            string url = "http://thegamesdb.net/api/GetGame.php?" +
                          (exact ? "exactname=" : "name=") +
-                         HttpUtility.UrlEncode(gameName) + "&platform=" + 
-                         HttpUtility.UrlEncode(platform.ToDisplayString());     // TODO: The Platform Display attributes should not be tied to TheGamesDB platform constants.
+                         HttpUtility.UrlEncode(gameName) + "&platform=" +
+                         HttpUtility.UrlEncode(GetPlatformKey(platform));
             string xml = WebHelper.DownloadSource(url);
 
             // Parse.
@@ -114,6 +114,133 @@ namespace Orbital7.MyGames.Scrapers
             }
 
             return game;
+        }
+
+        public static string GetPlatformKey(Platform platform)
+        {
+            switch (platform)
+            {
+
+                case Platform.The3DOCompany_3DO:
+                    return "3DO";
+
+                case Platform.Arcade:
+                    return "Arcade";
+
+                case Platform.Atari_2600:
+                    return "Atari 2600";
+
+                case Platform.Atari_5200:
+                    return "Atari 5200";
+
+                case Platform.Atari_7800:
+                    return "Atari 7800";
+
+                case Platform.Atari_Jaguar:
+                    return "Atari Jaguar";
+
+                case Platform.Atari_Jaguar_CD:
+                    return "Atari Jaguar CD";
+
+                case Platform.Atari_XE:
+                    return "Atari XE";
+
+                case Platform.Colecovision:
+                    return "Colecovision";
+
+                case Platform.Commodore_64:
+                    return "Commodore 64";
+
+                case Platform.Intellivision:
+                    return "Intellivision";
+
+                case Platform.Apple_Mac_OS:
+                    return "Mac OS";
+
+                case Platform.Microsoft_Xbox:
+                    return "Microsoft Xbox";
+
+                case Platform.Microsoft_Xbox360:
+                    return "Microsoft Xbox 360";
+
+                case Platform.NeoGeo:
+                    return "NeoGeo";
+
+                case Platform.Nintendo_64:
+                    return "Nintendo 64";
+
+                case Platform.Nintendo_DS:
+                    return "Nintendo DS";
+
+                case Platform.Nintendo_NES:
+                    return "Nintendo Entertainment System (NES)";
+
+                case Platform.Nintendo_SNES:
+                    return "Super Nintendo (SNES)";
+
+                case Platform.Nintendo_Gameboy:
+                    return "Nintendo Gameboy";
+
+                case Platform.Nintendo_Gameboy_Advance:
+                    return "Nintendo Gameboy Advance";
+
+                case Platform.Nintendo_GameCube:
+                    return "Nintendo GameCube";
+
+                case Platform.Nintendo_Wii:
+                    return "Nintendo Wii";
+
+                case Platform.Nintendo_Wii_U:
+                    return "Nintendo Wii U";
+
+                case Platform.PC:
+                    return "PC";
+
+                case Platform.Sega_32X:
+                    return "Sega 32X";
+
+                case Platform.Sega_CD:
+                    return "Sega CD";
+
+                case Platform.Sega_Dreamcast:
+                    return "Sega Dreamcast";
+
+                case Platform.Sega_Game_Gear:
+                    return "Sega Game Gear";
+
+                case Platform.Sega_Genesis:
+                    return "Sega Genesis";
+
+                case Platform.Sega_Master_System:
+                    return "Sega Master System";
+
+                case Platform.Sega_Mega_Drive:
+                    return "Sega Mega Drive";
+
+                case Platform.Sega_Saturn:
+                    return "Sega Saturn";
+
+                case Platform.Sony_Playstation:
+                    return "Sony Playstation";
+
+                case Platform.Sony_Playstation_2:
+                    return "Sony Playstation 2";
+
+                case Platform.Sony_Playstation_3:
+                    return "Sony Playstation 3";
+
+                case Platform.Sony_Playstation_Vita:
+                    return "Sony Playstation Vita";
+
+                case Platform.Sony_PSP:
+                    return "Sony PSP";
+
+                case Platform.NEC_TurboGrafx_16:
+                    return "TurboGrafx 16";
+
+                default:
+                    throw new Exception("Platform " + platform.ToDisplayString() + " not supported");
+            }
         }
     }
 }

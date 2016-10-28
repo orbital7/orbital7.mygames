@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Orbital7.Extensions.Windows;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -7,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Orbital7.MyGames
 {
+    [TypeConverter(typeof(EnumDisplayTypeConverter))]
     public enum Platform
     {
         [Display(Name = "3DO")]
@@ -53,13 +56,13 @@ namespace Orbital7.MyGames
         [Display(Name = "Nintendo 64")]
         Nintendo_64,
 
-            [Display(Name = "Nintendo DS")]
+        [Display(Name = "Nintendo DS")]
         Nintendo_DS,
 
-        [Display(Name = "Nintendo Entertainment System (NES)")]
+        [Display(Name = "Nintendo NES")]
         Nintendo_NES,
 
-        [Display(Name = "Super Nintendo (SNES)")]
+        [Display(Name = "Nintendo SNES")]
         Nintendo_SNES,
 
         [Display(Name = "Nintendo Gameboy")]

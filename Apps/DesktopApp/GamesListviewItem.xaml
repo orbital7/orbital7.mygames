@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DesktopApp"
              mc:Ignorable="d" Background="Gray" Foreground="Black"
+             MouseLeftButtonDown="UserControl_MouseLeftButtonDown"
              d:DesignHeight="300" d:DesignWidth="300">
     <Border Margin="0,0,0,0" Name="border" BorderThickness="1" Background="Gray" BorderBrush="Gray" CornerRadius="3,3,3,3">
         <StackPanel Orientation="Horizontal">
@@ -27,7 +28,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="3" Margin="0,-1,0,0">
                     <TextBlock x:Name="textName" FontWeight="Bold">-</TextBlock>
-                    <TextBlock Margin="20,0,0,0" FontWeight="Bold">
+                    <TextBlock x:Name="editPanel" Margin="20,0,0,0" FontWeight="Bold">
                         <Hyperlink x:Name="linkEdit" Click="linkEdit_Click">Edit</Hyperlink>
                         |
                         <Hyperlink x:Name="linkMatch" Click="linkMatch_Click">Match</Hyperlink>

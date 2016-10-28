@@ -16,14 +16,25 @@ using System.Windows.Shapes;
 
 namespace DesktopApp
 {
+    public delegate void GamesListviewSelectionChangedHandler();
+
     /// <summary>
     /// Interaction logic for GamesListview.xaml
     /// </summary>
     public partial class GamesListview : UserControl
     {
-        private Game _selected = null;
+        public event GamesListviewSelectionChangedHandler SelectionChanged;
 
-        public Game SelectedGame { get; }
+        public bool AllowSelection { get; set; }
+
+        public bool AllowEditing { get; set; }
+
+        public GamesListviewItem SelectedItem { get; private set; }
+
+        public Game SelectedGame
+        {
+            get { return this.SelectedItem?.Game; }
+        }
 
         public GamesListview()
         {
@@ -38,16 +49,28 @@ namespace DesktopApp
             {
                 foreach (Game game in (from x in games orderby x.Name, x.GamePath select x).ToList())
                 {
-                    var item = new GamesListviewItem(game);
+                    var item = new GamesListviewItem(this, game, this.AllowSelection, this.AllowEditing);
                     item.Margin = new Thickness(0, 10, 0, 5);
                     stackPanel.Children.Add(item);
                 }
             }
         }
-
+        
         public void Clear()
         {
             stackPanel.Children.Clear();     
+        }
+
+        public void Select(GamesListviewItem item)
+        {
+            if (this.AllowSelection)
+            {
+                foreach (GamesListviewItem child in stackPanel.Children)
+                    child.IsSelected = false;
+                item.IsSelected = true;
+                this.SelectedItem = item;
+                this.SelectionChanged?.Invoke();
+            }
         }
     }
 }

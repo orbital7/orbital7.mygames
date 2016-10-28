@@ -66,12 +66,9 @@ namespace Orbital7.MyGames
             return gameList;
         }
 
-        public void Save(string folderPath = null)
+        public void Save()
         {
-            if (String.IsNullOrEmpty(folderPath))
-                folderPath = this.PlatformFolderPath;
-
-            string filePath = GetFilePath(folderPath);
+            string filePath = GetFilePath(this.PlatformFolderPath);
             File.WriteAllText(filePath, XMLSerializationHelper.SerializeToXML(this).Replace(
                 "<Game ", "<game ").Replace("</Game>", "</game>"));   // TODO: Fix.
         }
@@ -84,26 +81,52 @@ namespace Orbital7.MyGames
             return game;
         }
 
-        public void SaveGame(Game game, string folderPath = null)
+        internal void Remove(Game game)
+        {
+            this.InnerList.Remove(game);
+            this.Save();
+        }
+
+        public void Update(Game game)
         {
             // Look for rename.
-            string filename = Path.GetFileName(game.GamePath);
-            if (filename.ToLower() != Path.GetFileName(game.GameFilePath).ToLower())
+            if (game.GameFilename.ToLower() != Path.GetFileName(game.GameFilePath).ToLower())
             {
                 // Record old values.
                 string gameFilePath = game.GameFilePath;
                 string imageFilePath = game.ImageFilePath;
 
                 // Update values.
-                game.UpdateFilename(filename);
+                game.UpdateFilename(game.GameFilename);
 
                 // Rename files.
                 File.Move(gameFilePath, game.GameFilePath);
-                File.Move(imageFilePath, game.ImageFilePath);
+                if (!String.IsNullOrEmpty(imageFilePath))
+                    File.Move(imageFilePath, game.ImageFilePath);
             }
 
             // Save.
-            this.Save(folderPath);
+            this.Save();
+        }
+
+        public void Match(Game game, Game gameMatched)
+        {
+            // Copy over the properties.
+            game.GameFilename = gameMatched.GameFilename;
+            game.Name = gameMatched.Name;
+            game.Publisher = gameMatched.Publisher;
+            game.Developer = gameMatched.Developer;
+            game.Rating = gameMatched.Rating;
+            game.ReleaseDate = gameMatched.ReleaseDate;
+            game.Genre = gameMatched.Genre;
+            game.Description = gameMatched.Description;
+
+            // Save the image.
+            if (gameMatched.HasImage)
+                gameMatched.Image.Save(gameMatched.ImageFilePath);
+
+            // Update.
+            Update(game);
         }
 
         public bool Contains(string filename)
@@ -216,7 +239,7 @@ namespace Orbital7.MyGames
         {
             foreach (Game game in this.InnerList)
             {
-                game.Parent = this;
+                game.GameList = this;
                 game.SetFilePaths();
                 if (!String.IsNullOrEmpty(game.ImageFilePath))
                     game.Image = DrawingHelper.LoadBitmap(game.ImageFilePath);

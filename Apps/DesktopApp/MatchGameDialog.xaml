@@ -3,25 +3,32 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mygames="clr-namespace:Orbital7.MyGames;assembly=Orbital7.MyGames"
+             xmlns:extns="clr-namespace:Orbital7.Extensions.Windows.Desktop.WPF;assembly=Orbital7.Extensions.Windows.Desktop"
              xmlns:local="clr-namespace:DesktopApp"
              mc:Ignorable="d" ShowInTaskbar="False" 
              WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize"
              BorderThickness="2px" BorderBrush="Orange" Background="Black" Foreground="White"
-             Width="825px" Height="600px">
+             Width="819px" Height="800px" Title="Match Game">
     <DockPanel Margin="5">
         <DockPanel DockPanel.Dock="Top">
             <Label Foreground="White" DockPanel.Dock="Left">Search:</Label>
             <ComboBox x:Name="comboScraper" DockPanel.Dock="Left" Width="175px" Margin="5,0,5,0" 
-                      Height="22px" SelectionChanged="comboScraper_SelectionChanged" />
+                      Height="22px" BorderThickness="0" SelectionChanged="comboScraper_SelectionChanged" />
             <Label Foreground="White" DockPanel.Dock="Left">For:</Label>
             <Button x:Name="buttonSearch" Click="buttonSearch_Click" IsEnabled="False" 
                     DockPanel.Dock="Right" FontWeight="Bold" Height="22px" Width="100px" IsDefault="True">Search Now</Button>
-            <TextBox x:Name="textQuery" Height="22px" Margin="5,0,8,0" />
+            <ComboBox x:Name="comboPlatform" DockPanel.Dock="Right" Width="175px" Margin="5,0,8,0"
+                      Height="22px" BorderThickness="0" ItemsSource="{Binding Source={extns:EnumBindingSource {x:Type mygames:Platform}}}"/>
+            <Label Foreground="White" DockPanel.Dock="Right">On:</Label>
+            <TextBox x:Name="textQuery" Height="22px" Margin="5,0,5,0" Padding="0,3,0,0" BorderThickness="0" />
         </DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
             <Button x:Name="buttonMatch" Click="buttonMatch_Click" Width="65" Height="22" Margin="0,0,5,0" IsEnabled="False">Match</Button>
             <Button x:Name="buttonCancel" Click="buttonCancel_Click" Width="65" Height="22" IsCancel="True">Cancel</Button>
         </StackPanel>
-        <local:GamesListview x:Name="resultsView" Margin="0,5,0,0" />
+        <local:EditGameView x:Name="editGameView" DockPanel.Dock="Bottom" Margin="0,10,0,0" />
+        <local:GamesListview x:Name="resultsView" Margin="0,5,0,0" AllowSelection="True" AllowEditing="False"
+                             SelectionChanged="resultsView_SelectionChanged"/>
     </DockPanel>
 </Window>

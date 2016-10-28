@@ -59,7 +59,7 @@ namespace Orbital7.MyGames
         public Bitmap Image { get; set; }
 
         [XmlIgnore]
-        public GameList Parent { get; internal set; }
+        public GameList GameList { get; internal set; }
 
         [XmlIgnore]
         public string GameFilePath { get; internal set; }
@@ -77,6 +77,7 @@ namespace Orbital7.MyGames
         public string GameFilename
         {
             get { return Path.GetFileName(this.GamePath); }
+            set { this.GamePath = "./" + value; }
         }
 
         [XmlIgnore]
@@ -119,22 +120,41 @@ namespace Orbital7.MyGames
 
         internal void SetFilePaths()
         {
-            if (this.Parent != null)
+            if (this.GameList != null)
             {
-                this.GameFilePath = Path.Combine(this.Parent.PlatformFolderPath, FileSystemHelper.ToWindowsPath(this.GamePath));
+                this.GameFilePath = Path.Combine(this.GameList.PlatformFolderPath, FileSystemHelper.ToWindowsPath(this.GamePath));
 
                 if (!String.IsNullOrEmpty(this.ImagePath))
-                    this.ImageFilePath = Path.Combine(this.Parent.PlatformFolderPath, FileSystemHelper.ToWindowsPath(this.ImagePath));
+                    this.ImageFilePath = Path.Combine(this.GameList.PlatformFolderPath, FileSystemHelper.ToWindowsPath(this.ImagePath));
             }
         }
 
         internal void UpdateFilename(string updatedFilename)
         {
-            this.GamePath = "./" + updatedFilename;
+            this.GameFilename = updatedFilename;
             if (this.HasImage)
                 this.ImagePath = "./images/" + Path.GetFileNameWithoutExtension(updatedFilename) + "-image" + Path.GetExtension(this.ImagePath);
 
             SetFilePaths();
+        }
+
+        public void Delete()
+        {
+            if (File.Exists(this.GameFilePath))
+            {
+                // It's possible that a game is comprised of multiple files with the same name
+                // but different extensions (such as CD games, etc.).
+                string query = Path.Combine(Path.GetDirectoryName(this.GameFilePath), 
+                    Path.GetFileNameWithoutExtension(this.GameFilePath) + ".*");
+                var filePaths = Directory.GetFiles(query);
+                foreach (var filePath in filePaths)
+                    File.Delete(filePath);
+            }
+
+            if (File.Exists(this.ImageFilePath))
+                File.Delete(this.ImageFilePath);
+
+            this.GameList.Remove(this);
         }
     }
 }

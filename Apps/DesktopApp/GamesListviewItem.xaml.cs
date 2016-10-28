@@ -23,9 +23,13 @@ namespace DesktopApp
     /// </summary>
     public partial class GamesListviewItem : UserControl
     {
-        private Game Game { get; set; }
+        public Game Game { get; private set; }
 
-        public bool Selected
+        private GamesListview GamesListview { get; set; }
+
+        private bool AllowSelection { get; set; }
+
+        public bool IsSelected
         {
             set
             {
@@ -42,11 +46,14 @@ namespace DesktopApp
             }
         }
 
-        public GamesListviewItem(Game game)
+        public GamesListviewItem(GamesListview parent, Game game, bool allowSelection, bool allowEditing)
         {
             InitializeComponent();
 
+            this.GamesListview = parent;
             this.Game = game;
+            this.AllowSelection = allowSelection;
+            WPFHelper.SetVisible(editPanel, allowEditing);
             UpdateView();
         }
 
@@ -85,7 +92,23 @@ namespace DesktopApp
 
         private void linkDelete_Click(object sender, RoutedEventArgs e)
         {
-            // TODO.
+            try
+            {
+                if (MessageBoxHelper.AskQuestion(this, "Are you sure you want to delete the " +
+                    this.Game.Platform.ToDisplayString() + " game " + this.Game.ToString() + "?"))
+                {
+                    this.Game.Delete();
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBoxHelper.ShowError(this, ex);
+            }
+        }
+
+        private void UserControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.GamesListview.Select(this);
         }
     }
 }

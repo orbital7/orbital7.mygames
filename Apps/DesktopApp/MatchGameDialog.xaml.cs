@@ -23,7 +23,9 @@ namespace DesktopApp
     /// </summary>
     public partial class MatchGameDialog : Window
     {
-        private Game Game { get; set; }
+        private Game GameToMatch { get; set; }
+
+        public Game MatchedGame { get; private set; }
 
         public MatchGameDialog(Game game)
         {
@@ -31,8 +33,9 @@ namespace DesktopApp
             App.SetWindowFont(this);
 
             // Record.
-            this.Game = game;
+            this.GameToMatch = game;
             textQuery.Text = game.GameFilename;
+            comboPlatform.SelectedItem = game.Platform;
 
             // Load the scrapers dynamically through reflection.
             var scrapers = ReflectionHelper.GetTypeInstances<Scraper>(typeof(Scraper), 
@@ -53,8 +56,8 @@ namespace DesktopApp
                 resultsView.Clear();
 
                 var engine = new ScraperEngine();
-                var results = engine.Search(comboScraper.SelectedItem as Scraper, this.Game.Platform, 
-                    textQuery.Text.Trim(), this.Game.GameFilename);
+                var results = engine.Search((Scraper)comboScraper.SelectedItem, (Platform)comboPlatform.SelectedItem, 
+                    textQuery.Text.Trim(), this.GameToMatch.GameFilename);
                 if (results.Count > 0)
                     resultsView.Load(results);
                 else
@@ -72,8 +75,15 @@ namespace DesktopApp
 
         private void buttonMatch_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Finish.
-            this.Close();
+            if (this.MatchedGame != null)
+            {
+                this.GameToMatch.GameList.Match(this.GameToMatch, this.MatchedGame);
+                this.Close();
+            }
+            else
+            {
+                MessageBoxHelper.ShowError(this, "No game has been selected for Match");
+            }
         }
 
         private void buttonCancel_Click(object sender, RoutedEventArgs e)
@@ -84,6 +94,13 @@ namespace DesktopApp
         private void comboScraper_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             buttonSearch.IsEnabled = true;
+        }
+
+        private void resultsView_SelectionChanged()
+        {
+            this.MatchedGame = resultsView.SelectedGame;
+            editGameView.Load(this.MatchedGame);
+            buttonMatch.IsEnabled = this.MatchedGame != null;
         }
     }
 }

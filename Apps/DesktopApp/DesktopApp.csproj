@@ -42,12 +42,12 @@
       <HintPath>..\..\packages\Orbital7.Extensions.1.0.1\lib\portable45-net45+win8\Orbital7.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Orbital7.Extensions.Windows, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Orbital7.Extensions.Windows.1.0.2\lib\net45\Orbital7.Extensions.Windows.dll</HintPath>
+    <Reference Include="Orbital7.Extensions.Windows, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Orbital7.Extensions.Windows.1.0.6\lib\net45\Orbital7.Extensions.Windows.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Orbital7.Extensions.Windows.Desktop, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Orbital7.Extensions.Windows.Desktop.1.0.1\lib\net45\Orbital7.Extensions.Windows.Desktop.dll</HintPath>
+    <Reference Include="Orbital7.Extensions.Windows.Desktop, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Orbital7.Extensions.Windows.Desktop.1.0.3\lib\net45\Orbital7.Extensions.Windows.Desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -74,6 +74,9 @@
     <Compile Include="EditGameDialog.xaml.cs">
       <DependentUpon>EditGameDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EditGameView.xaml.cs">
+      <DependentUpon>EditGameView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MatchGameDialog.xaml.cs">
       <DependentUpon>MatchGameDialog.xaml</DependentUpon>
     </Compile>
@@ -83,6 +86,10 @@
     <Compile Include="NavigationTreeviewModel.cs" />
     <Compile Include="NavigationTreeviewModelItem.cs" />
     <Page Include="EditGameDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditGameView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
