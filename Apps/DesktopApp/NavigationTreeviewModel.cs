@@ -29,19 +29,27 @@ namespace DesktopApp
             var platformItem = new NavigationTreeviewModelItem()
             {
                 Text = "Platforms",
+                Type = NavigationTreeviewModelItemType.Platforms,
                 FontWeight = FontWeights.Bold,
             };
+            this.Items.Add(platformItem);
 
             foreach (var gameList in catalog.GameLists)
             {
                 platformItem.Children.Add(new NavigationTreeviewModelItem()
                 {
                     Text = Path.GetFileName(gameList.PlatformFolderPath),
+                    Type = NavigationTreeviewModelItemType.Platform,
                     GameList = gameList,
                 });
             }
 
-            this.Items.Add(platformItem);
+            this.Items.Add(new NavigationTreeviewModelItem()
+            {
+                Text = "All Incomplete",
+                Type = NavigationTreeviewModelItemType.IncompleteGames,
+                FontWeight = FontWeights.Bold,
+            });
         }
 
         void NotifiyPropertyChanged(string property)

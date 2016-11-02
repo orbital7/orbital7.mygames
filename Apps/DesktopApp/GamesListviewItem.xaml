@@ -49,7 +49,7 @@
                 <TextBlock Grid.Row="6" Grid.Column="0">Rating:</TextBlock>
                 <TextBlock Grid.Row="6" Grid.Column="1" x:Name="textRating" TextTrimming="CharacterEllipsis">-</TextBlock>
                 <TextBlock Grid.Row="7" Grid.Column="0" x:Name="textPlatform" Grid.ColumnSpan="2" Margin="0,8,0,0" TextTrimming="CharacterEllipsis">-</TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="2" Grid.RowSpan="7" Margin="10,0,0,0" HorizontalAlignment="Stretch"
+                <TextBlock Grid.Row="2" Grid.Column="2" Grid.RowSpan="7" Margin="10,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                            TextWrapping="WrapWithOverflow" TextTrimming="WordEllipsis" x:Name="textDescription">-</TextBlock>
             </Grid>
         </StackPanel>

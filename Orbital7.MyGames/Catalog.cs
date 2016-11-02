@@ -20,5 +20,21 @@ namespace Orbital7.MyGames
                     this.GameLists.Add(GameList.Load(platformFolderPath));
             }
         }
+
+        public List<Game> GatherIncompleteGames()
+        {
+            return (from x in this.GameLists
+                    from Game y in x
+                    where !y.HasImage
+                    select y).ToList();
+        }
+
+        public static List<Game> IdentifyIncompleteGames(List<Game> games)
+        {
+            return (from x in games
+                    where !x.HasImage
+                    orderby x.Name
+                    select x).ToList();
+        }
     }
 }

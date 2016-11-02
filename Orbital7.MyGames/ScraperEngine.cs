@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Web;
 using System.Xml;
@@ -12,6 +13,13 @@ namespace Orbital7.MyGames
     public class ScraperEngine
     {
         private delegate object PerformScraperSearch(Platform platform, string gameName);
+
+        public static List<Scraper> GatherScrapers()
+        {
+            List<Scraper> scrapers = ReflectionHelper.GetTypeInstances<Scraper>(typeof(Scraper),
+                FileSystemHelper.GetExecutingAssemblyFolder());
+            return (from x in scrapers orderby x.Priority descending select x).ToList();
+        }
 
         public Game SearchExact(Scraper scraper, Platform platform, string query, string filename)
         {
@@ -30,9 +38,12 @@ namespace Orbital7.MyGames
 
         private static void UpdateGameResult(Game game, Scraper scraper, Platform platform, string filename)
         {
-            game.Platform = platform;
-            game.Source = scraper.SourceName;
-            game.UpdateFilename(filename);
+            if (game != null)
+            {
+                game.Platform = platform;
+                game.Source = scraper.SourceName;
+                game.UpdateFilename(filename);
+            }
         }
 
         private object ExecuteSearch(Platform platform, string query, PerformScraperSearch PerformScraperSearch)

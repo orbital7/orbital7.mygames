@@ -37,9 +37,8 @@ namespace DesktopApp
             textQuery.Text = game.GameFilename;
             comboPlatform.SelectedItem = game.Platform;
 
-            // Load the scrapers dynamically through reflection.
-            var scrapers = ReflectionHelper.GetTypeInstances<Scraper>(typeof(Scraper), 
-                FileSystemHelper.GetExecutingAssemblyFolder());
+            // Load the scrapers.
+            var scrapers = ScraperEngine.GatherScrapers();
             if (scrapers.Count > 0)
             {
                 foreach (var scraper in scrapers)
@@ -75,14 +74,27 @@ namespace DesktopApp
 
         private void buttonMatch_Click(object sender, RoutedEventArgs e)
         {
-            if (this.MatchedGame != null)
+            try
             {
-                this.GameToMatch.GameList.Match(this.GameToMatch, this.MatchedGame);
-                this.Close();
+                Mouse.OverrideCursor = Cursors.Wait;
+                if (this.MatchedGame != null)
+                {
+                    this.GameToMatch.Match(this.MatchedGame);
+                    this.DialogResult = true;
+                    this.Close();
+                }
+                else
+                {
+                    MessageBoxHelper.ShowError(this, "No game has been selected for Match");
+                }
             }
-            else
+            catch(Exception ex)
             {
-                MessageBoxHelper.ShowError(this, "No game has been selected for Match");
+                MessageBoxHelper.ShowError(this, ex);
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
             }
         }
 

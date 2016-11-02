@@ -68,6 +68,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ScraperEngine.cs" />
+    <Compile Include="Scrapers\GiantBombScraper.cs" />
     <Compile Include="Scrapers\TheGamesDBScraper.cs" />
   </ItemGroup>
   <ItemGroup>

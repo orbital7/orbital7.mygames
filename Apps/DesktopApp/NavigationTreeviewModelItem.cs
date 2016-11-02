@@ -8,9 +8,20 @@ using System.Windows;
 
 namespace DesktopApp
 {
+    public enum NavigationTreeviewModelItemType
+    {
+        Platforms,
+
+        Platform,
+
+        IncompleteGames,
+    }
+
     public class NavigationTreeviewModelItem
     {
         public string Text { get; set; }
+
+        public NavigationTreeviewModelItemType Type { get; set; }
 
         public FontWeight FontWeight { get; set; } = FontWeights.Normal;
 

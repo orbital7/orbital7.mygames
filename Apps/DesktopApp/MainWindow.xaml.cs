@@ -21,6 +21,8 @@ namespace DesktopApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Catalog Catalog { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -29,8 +31,8 @@ namespace DesktopApp
             var config = LoadConfig();
             if (config != null)
             {
-                var catalog = new Catalog(config.GamesFolderPath);
-                navigationTreeview.Load(catalog);
+                this.Catalog = new Catalog(config.GamesFolderPath);
+                navigationTreeview.Load(this.Catalog);
             }
             else
             {
@@ -59,12 +61,25 @@ namespace DesktopApp
         {
             Mouse.OverrideCursor = Cursors.Wait;
 
-            if (item != null && item.GameList != null)
-                gamesListview.Load((from Game x in item.GameList select x).ToList());
-            else
-                gamesListview.Clear();
+            gamesListview.Clear();
+
+            if (item != null)
+            {
+                if (item.Type == NavigationTreeviewModelItemType.Platform && item.GameList != null)
+                    gamesListview.Load((from Game x in item.GameList select x).ToList());
+                else if (item.Type == NavigationTreeviewModelItemType.IncompleteGames)
+                    gamesListview.Load(this.Catalog.GatherIncompleteGames());
+            }    
 
             Mouse.OverrideCursor = null;
+        }
+
+        private void buttonMatchIncomplete_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new MatchGamesDialog(this.Catalog.GatherIncompleteGames());
+            dialog.Owner = this;
+            dialog.ShowDialog();
+            gamesListview.Update();
         }
     }
 }

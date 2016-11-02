@@ -29,6 +29,8 @@ namespace DesktopApp
 
         public bool AllowEditing { get; set; }
 
+        private List<Game> Games { get; set; }
+
         public GamesListviewItem SelectedItem { get; private set; }
 
         public Game SelectedGame
@@ -43,11 +45,21 @@ namespace DesktopApp
 
         public void Load(List<Game> games)
         {
+            if (games != null)
+                this.Games = (from x in games orderby x.Name, x.GamePath select x).ToList();
+            else
+                this.Games = null;
+
+            Update();
+        }
+
+        public void Update()
+        {
             Clear();
 
-            if (games != null)
+            if (this.Games != null)
             {
-                foreach (Game game in (from x in games orderby x.Name, x.GamePath select x).ToList())
+                foreach (Game game in this.Games)
                 {
                     var item = new GamesListviewItem(this, game, this.AllowSelection, this.AllowEditing);
                     item.Margin = new Thickness(0, 10, 0, 5);

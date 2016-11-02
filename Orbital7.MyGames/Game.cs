@@ -104,10 +104,11 @@ namespace Orbital7.MyGames
 
         }
 
-        public Game(string filename)
+        public Game(Platform platform, string filename)
             : this()
         {
-            this.GamePath = "./" + filename;
+            this.Platform = platform;
+            this.GameFilename = filename;
         }
 
         public override string ToString()
@@ -138,6 +139,51 @@ namespace Orbital7.MyGames
             SetFilePaths();
         }
 
+        public void SyncWithFileSystem()
+        {
+            // Look for rename.
+            if (this.GameFilename.ToLower() != Path.GetFileName(this.GameFilePath).ToLower())
+            {
+                // Record old values.
+                string gameFilePath = this.GameFilePath;
+                string imageFilePath = this.ImageFilePath;
+
+                // Update values.
+                this.UpdateFilename(this.GameFilename);
+
+                // Rename files.
+                File.Move(gameFilePath, this.GameFilePath);
+                if (!String.IsNullOrEmpty(imageFilePath))
+                    File.Move(imageFilePath, this.ImageFilePath);
+            }
+
+            // Save.
+            this.GameList.Save();
+        }
+
+        public void Match(Game matchedGame)
+        {
+            // Copy over the properties.
+            this.GameFilename = matchedGame.GameFilename;
+            this.Name = matchedGame.Name;
+            this.Publisher = matchedGame.Publisher;
+            this.Developer = matchedGame.Developer;
+            this.Rating = matchedGame.Rating;
+            this.ReleaseDate = matchedGame.ReleaseDate;
+            this.Genre = matchedGame.Genre;
+            this.Description = matchedGame.Description;
+            this.ImagePath = matchedGame.ImagePath;
+            this.Image = matchedGame.Image;
+            this.UpdateFilename(this.GameFilename);
+
+            // Save the image.
+            if (this.HasImage)
+                this.Image.Save(this.ImageFilePath);
+
+            // Update.
+            this.SyncWithFileSystem();
+        }
+
         public void Delete()
         {
             if (File.Exists(this.GameFilePath))
@@ -155,6 +201,8 @@ namespace Orbital7.MyGames
                 File.Delete(this.ImageFilePath);
 
             this.GameList.Remove(this);
+
+            this.GameList.Save();
         }
     }
 }

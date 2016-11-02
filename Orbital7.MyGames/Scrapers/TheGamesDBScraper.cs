@@ -18,6 +18,11 @@ namespace Orbital7.MyGames.Scrapers
             get { return "theGamesDB.net"; }
         }
 
+        public override int Priority
+        {
+            get { return 100; }
+        }
+
         public override Game SearchExact(Platform platform, string gameName)
         {
             Game game = null;
@@ -54,6 +59,10 @@ namespace Orbital7.MyGames.Scrapers
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(xml);
 
+            // Validate.
+            if (doc.DocumentElement.Name == "Error")
+                throw new Exception(XMLHelper.GetNodeValue(doc.DocumentElement, "."));
+
             return doc;
         }
 
@@ -68,6 +77,7 @@ namespace Orbital7.MyGames.Scrapers
             game.Description = XMLHelper.GetNodeValue(gameNode, "Overview");
             game.Developer = XMLHelper.GetNodeValue(gameNode, "Developer");
             game.Publisher = XMLHelper.GetNodeValue(gameNode, "Publisher");
+            base.SetGameReleaseDate(game, XMLHelper.GetNodeValue(gameNode, "ReleaseDate"));
 
             // Parse the rating.
             string rating = XMLHelper.GetNodeValue(gameNode, "Rating");
@@ -80,38 +90,14 @@ namespace Orbital7.MyGames.Scrapers
                 name = name.Substring(0, name.IndexOf(" ("));
             game.Name = name;
 
-            // Parse release date.
-            string releaseDate = XMLHelper.GetNodeValue(gameNode, "ReleaseDate");
-            if (!String.IsNullOrEmpty(releaseDate))
-            {
-                try
-                {
-                    game.ReleaseDate = DateTime.Parse(releaseDate);
-                }
-                catch { }
-            }
-
             // Download front boxart image.
             string imagePartialURL = XMLHelper.GetNodeValue(gameNode, "Images/boxart[@side='front']");
+            string imageThumbURL = XMLHelper.GetAttributeValue(gameNode, "Images/boxart[@side='front']", "thumb");
             if (!String.IsNullOrEmpty(imagePartialURL))
-            {
-                string imageURL = imageBaseURL + imagePartialURL;
-                byte[] contents = WebHelper.DownloadFileContents(imageURL);
-                if (contents != null && contents.Length > 0)
-                {
-                    using (Bitmap bitmap = DrawingHelper.LoadBitmap(contents))
-                    {
-                        game.Image = bitmap.EnsureMaximumSize(600, 600, true);
-                        game.ImagePath = imagePartialURL;
-                    }
-                }
-            }
+                base.SetGameImage(game, imageBaseURL + imagePartialURL);
             // Else download front boxart thumbnail.
-            else
-            {
-                string imageThumbURL = XMLHelper.GetAttributeValue(gameNode, "Images/boxart[@side='front']", "thumb");
-                // TODO: Determine whether this is actually necessary and/or usable given thumbnail size.
-            }
+            else if(!String.IsNullOrEmpty(imageThumbURL))
+                base.SetGameImage(game, imageBaseURL + imageThumbURL);
 
             return game;
         }
@@ -164,7 +150,7 @@ namespace Orbital7.MyGames.Scrapers
                     return "Microsoft Xbox 360";
 
                 case Platform.NeoGeo:
-                    return "NeoGeo";
+                    return "Neo Geo";
 
                 case Platform.Nintendo_64:
                     return "Nintendo 64";

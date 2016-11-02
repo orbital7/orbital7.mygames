@@ -7,16 +7,14 @@
         mc:Ignorable="d" Background="Black" Foreground="White"
         Title="MyGames" Height="650" Width="970" WindowStartupLocation="CenterScreen">
     
-    <DockPanel Margin="10">
-        <DockPanel DockPanel.Dock="Left" Width="125px">
-            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5">
-                <ToolBar Background="Black" Foreground="White">
-                    <Button x:Name="buttonMatchMissing" Foreground="White">Match Missing</Button>
-                </ToolBar>
-            </DockPanel>
-            <local:NavigationTreeview x:Name="navigationTreeview" 
+    <DockPanel>
+        <ToolBarTray DockPanel.Dock="Top" Background="Black">
+            <ToolBar Background="Black" Foreground="White">
+                <Button x:Name="buttonMatchIncomplete" Click="buttonMatchIncomplete_Click" Foreground="White">Bulk Exact-Match Incomplete Games</Button>
+            </ToolBar>
+        </ToolBarTray>
+        <local:NavigationTreeview x:Name="navigationTreeview" DockPanel.Dock="Left" Width="125px" Margin="10,5,0,10"
                                       NavigationTreeviewItemSelected="navigationTreeview_NavigationTreeviewItemSelected" />
-        </DockPanel>
-        <local:GamesListview x:Name="gamesListview" Margin="10,0,0,0" AllowSelection="False" AllowEditing="True" />
+        <local:GamesListview x:Name="gamesListview" Margin="10,5,10,10" AllowSelection="False" AllowEditing="True" />
     </DockPanel>
 </Window>

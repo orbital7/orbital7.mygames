@@ -53,6 +53,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -79,6 +80,9 @@
     </Compile>
     <Compile Include="MatchGameDialog.xaml.cs">
       <DependentUpon>MatchGameDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MatchGamesDialog.xaml.cs">
+      <DependentUpon>MatchGamesDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="NavigationTreeview.xaml.cs">
       <DependentUpon>NavigationTreeview.xaml</DependentUpon>
@@ -120,6 +124,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="MatchGameDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MatchGamesDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

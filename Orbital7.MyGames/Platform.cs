@@ -51,6 +51,7 @@ namespace Orbital7.MyGames
         [Display(Name = "Microsoft Xbox 360")]
         Microsoft_Xbox360,
 
+        [Display(Name = "Neo Geo")]
         NeoGeo,
 
         [Display(Name = "Nintendo 64")]

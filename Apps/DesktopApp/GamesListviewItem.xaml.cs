@@ -29,6 +29,8 @@ namespace DesktopApp
 
         private bool AllowSelection { get; set; }
 
+        private System.Windows.Media.Brush BackgroundColor { get; set; }
+
         public bool IsSelected
         {
             set
@@ -40,8 +42,8 @@ namespace DesktopApp
                 }
                 else
                 {
-                    border.Background = System.Windows.Media.Brushes.White;
-                    border.BorderBrush = System.Windows.Media.Brushes.White;
+                    border.Background = this.BackgroundColor;
+                    border.BorderBrush = this.BackgroundColor;
                 }
             }
         }
@@ -50,6 +52,7 @@ namespace DesktopApp
         {
             InitializeComponent();
 
+            this.BackgroundColor = this.Background;
             this.GamesListview = parent;
             this.Game = game;
             this.AllowSelection = allowSelection;

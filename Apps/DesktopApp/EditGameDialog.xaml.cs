@@ -36,7 +36,7 @@ namespace DesktopApp
         {
             try
             {
-                this.Game.GameList.Update(this.Game);
+                this.Game.SyncWithFileSystem();
                 this.DialogResult = true;
             }
             catch(Exception ex)
