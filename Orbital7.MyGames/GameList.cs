@@ -50,7 +50,7 @@ namespace Orbital7.MyGames
             string filePath = GetFilePath(folderPath);
             if (File.Exists(filePath))
                 gameList = XMLSerializationHelper.LoadFromXML<GameList>(File.ReadAllText(filePath).Replace(
-                    "<game ", "<Game ").Replace("</game>", "</Game>"));   // TODO: Fix.
+                    "<game ", "<Game ").Replace("</game>", "</Game>").Replace("<game>", "<Game>"));   // TODO: Fix.
             else
                 gameList = new GameList();
 
@@ -73,7 +73,7 @@ namespace Orbital7.MyGames
         {
             string filePath = GetFilePath(this.PlatformFolderPath);
             File.WriteAllText(filePath, XMLSerializationHelper.SerializeToXML(this).Replace(
-                "<Game ", "<game ").Replace("</Game>", "</game>"));   // TODO: Fix.
+                "<Game ", "<game ").Replace("</Game>", "</game>").Replace("<Game>", "<game>"));   // TODO: Fix.
         }
 
         public Game Add(Game game)

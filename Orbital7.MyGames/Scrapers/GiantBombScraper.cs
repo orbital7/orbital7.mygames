@@ -23,7 +23,7 @@ namespace Orbital7.MyGames.Scrapers
             Game game = null;
 
             var doc = PerformSearch(platform, gameName);
-            var gameNode = doc.DocumentElement.SelectSingleNode("results/game/name/text()='" + gameName + "'");
+            var gameNode = doc.DocumentElement.SelectSingleNode("results/game[name/text()='" + gameName.Replace("'", "&quot") + "']");
             if (gameNode != null)
                 game = ParseGame(doc, gameNode);
 
