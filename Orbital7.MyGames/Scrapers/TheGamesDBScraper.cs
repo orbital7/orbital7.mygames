@@ -40,7 +40,8 @@ namespace Orbital7.MyGames.Scrapers
             List<Game> games = new List<Game>();
 
             var doc = PerformSearch(platform, gameName, false);
-            foreach (XmlNode gameNode in doc.DocumentElement.SelectNodes("Game"))
+            var gameNodes = doc.DocumentElement.SelectNodes("Game");
+            foreach (XmlNode gameNode in gameNodes)
                 games.Add(ParseGame(doc, gameNode));
 
             return games;
@@ -223,6 +224,9 @@ namespace Orbital7.MyGames.Scrapers
 
                 case Platform.NEC_TurboGrafx_16:
                     return "TurboGrafx 16";
+
+                case Platform.NEC_TurboGrafx_CD:
+                    return "TurboGrafx CD";
 
                 default:
                     throw new Exception("Platform " + platform.ToDisplayString() + " not supported");

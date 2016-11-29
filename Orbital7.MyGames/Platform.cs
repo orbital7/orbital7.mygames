@@ -124,5 +124,8 @@ namespace Orbital7.MyGames
 
         [Display(Name = "TurboGrafx 16")]
         NEC_TurboGrafx_16,
+
+        [Display(Name = "TurboGrafx CD")]
+        NEC_TurboGrafx_CD,
     }
 }

@@ -208,7 +208,10 @@ namespace Orbital7.MyGames.Scrapers
                     return "18";
 
                 case Platform.NEC_TurboGrafx_16:
-                    return "55|53";
+                    return "53";
+
+                case Platform.NEC_TurboGrafx_CD:
+                    return "55";
 
                 default:
                     throw new Exception("Platform " + platform.ToDisplayString() + " not supported");

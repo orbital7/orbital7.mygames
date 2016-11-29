@@ -51,52 +51,50 @@ namespace Orbital7.MyGames
             object result = null;
 
             // Search.
-            string gameName = GetGameName(platform, query);
-            result = PerformScraperSearch(platform, gameName);
+            result = PerformScraperSearch(platform, query);
 
             // If not found, try converting " - " to ": ".
-            if (result == null && gameName.Contains(" - "))
+            if (result == null && query.Contains(" - "))
             {
-                int index = gameName.IndexOf(" - ");
-                gameName = gameName.Substring(0, index) + ": " + gameName.Substring(index + 3, gameName.Length - index - 3);
-                result = PerformScraperSearch(platform, gameName);
+                int index = query.IndexOf(" - ");
+                query = query.Substring(0, index) + ": " + query.Substring(index + 3, query.Length - index - 3);
+                result = PerformScraperSearch(platform, query);
             }
 
             // If still not found, but we contain ": ", parse everything behind that out.
-            if (result == null && gameName.Contains(": "))
+            if (result == null && query.Contains(": "))
             {
-                gameName = gameName.Substring(0, gameName.IndexOf(": "));
-                result = PerformScraperSearch(platform, gameName);
+                query = query.Substring(0, query.IndexOf(": "));
+                result = PerformScraperSearch(platform, query);
             }
 
             // If still not found but contains "\\0", parse out everything behind it.
-            if (result == null && gameName.Contains("\\0"))
+            if (result == null && query.Contains("\\0"))
             {
-                gameName = gameName.Substring(0, gameName.IndexOf("\\0"));
-                result = PerformScraperSearch(platform, gameName);
+                query = query.Substring(0, query.IndexOf("\\0"));
+                result = PerformScraperSearch(platform, query);
             }
 
             // If still not found and contains " vs ", try changing that to " vs. ".
-            if (result == null && gameName.Contains(" vs "))
+            if (result == null && query.Contains(" vs "))
             {
-                gameName = gameName.Replace(" vs ", " vs. ");
-                result = PerformScraperSearch(platform, gameName);
-            }
-
-            // If we still didn't find anything, try the filename.
-            if (result == null)
-            {
-                gameName = Path.GetFileNameWithoutExtension(query);
-                result = PerformScraperSearch(platform, gameName);
+                query = query.Replace(" vs ", " vs. ");
+                result = PerformScraperSearch(platform, query);
             }
 
             return result;
         }
 
-        private string GetGameName(Platform platform, string query)
+        public static string GetGameName(Platform platform, string query)
         {
-            // In most cases, we're given a filename as the input query.
-            string initialGameName = Path.GetFileNameWithoutExtension(query).ToLower();
+            // In most cases, we're given a filename as the input query, so we need to trim off the file
+            // extension; one problem here is that the Path.GetFileNameWithoutExtension() function will
+            // trim off anything to the right of the last period, which is an issue for game names with 
+            // containing periods when not specifying a file extension.
+            string initialGameName = query.ToLower(); //Path.GetFileNameWithoutExtension(query).ToLower();
+            var extensions = GameList.GetPlatformFileExtensions(platform);
+            foreach (var extension in extensions)
+                initialGameName = initialGameName.PruneEnd(extension.ToLower());
             string gameName = initialGameName;
 
             // For arcade games, we need to perform a filename to game name conversion.
@@ -111,35 +109,41 @@ namespace Orbital7.MyGames
                 // Else try mamedb.com.
                 else
                 {
+                    bool found = false;
+
                     try
                     {
                         string html = WebHelper.DownloadSource("http://www.mamedb.com/game/" + initialGameName);
                         if (!String.IsNullOrEmpty(html))
+                        {
                             gameName = html.FindFirstBetween("<h1>", "</h1>");
+                            found = true;
+                        }
                     }
                     catch { }
+
+                    // If not found, try the Mame4All list.
+                    if (!found)
+                    {
+                        int endIndex = Properties.Resources.cheat_dat.IndexOf(" ]\n" + initialGameName + ":");
+                        if (endIndex > 0)
+                        {
+                            int startIndex = Properties.Resources.cheat_dat.LastIndexOf("\n; [", endIndex);
+                            if (startIndex > 0)
+                                gameName = Properties.Resources.cheat_dat.Substring(startIndex + 4, endIndex - startIndex - 4);
+                        }
+                        else
+                        {
+                            int startIndex = Properties.Resources.cheat_dat.IndexOf("]\n; " + initialGameName + " ");
+                            if (startIndex > 0)
+                            {
+                                endIndex = Properties.Resources.cheat_dat.IndexOf("\n", startIndex + 5);
+                                string noCheatLine = Properties.Resources.cheat_dat.Substring(startIndex, endIndex - startIndex);
+                                gameName = noCheatLine.FindFirstBetween("[", "]");
+                            }
+                        }
+                    }
                 }
-                //// If not found, try the Mame4All list.
-                //else
-                //{
-                //    int endIndex = Properties.Resources.cheat_dat.IndexOf(" ]\n" + initialGameName + ":");
-                //    if (endIndex > 0)
-                //    {
-                //        int startIndex = Properties.Resources.cheat_dat.LastIndexOf("\n; [", endIndex);
-                //        if (startIndex > 0)
-                //            gameName = Properties.Resources.cheat_dat.Substring(startIndex + 4, endIndex - startIndex - 4);
-                //    }
-                //    else
-                //    {
-                //        int startIndex = Properties.Resources.cheat_dat.IndexOf("]\n; " + initialGameName + " ");
-                //        if (startIndex > 0)
-                //        {
-                //            endIndex = Properties.Resources.cheat_dat.IndexOf("\n", startIndex + 5);
-                //            string noCheatLine = Properties.Resources.cheat_dat.Substring(startIndex, endIndex - startIndex);
-                //            gameName = noCheatLine.FindFirstBetween("[", "]");
-                //        }
-                //    }
-                //}
 
                 // Clean.
                 if (gameName.Contains(" / "))

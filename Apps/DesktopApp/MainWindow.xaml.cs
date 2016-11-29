@@ -1,4 +1,5 @@
-﻿using Orbital7.MyGames;
+﻿using Orbital7.Extensions.Windows.Desktop.WPF;
+using Orbital7.MyGames;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,6 +81,22 @@ namespace DesktopApp
             dialog.Owner = this;
             dialog.ShowDialog();
             gamesListview.Update();
+        }
+
+        private void buttonSyncWithDevice_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var config = Config.Load();
+                if (config.Devices.Count > 0)
+                    this.Catalog.SyncWithDevice(config.Devices[0].Address);
+                else
+                    throw new Exception("Configuration does not specify any devices");
+            }
+            catch(Exception ex)
+            {
+                MessageBoxHelper.ShowError(this, ex);
+            }
         }
     }
 }

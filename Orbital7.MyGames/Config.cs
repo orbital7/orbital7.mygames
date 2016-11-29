@@ -15,6 +15,8 @@ namespace Orbital7.MyGames
 
         public string GamesFolderPath { get; set; }
 
+        public List<Device> Devices { get; set; } = new List<Device>();
+
         public Config()
         {
 
@@ -48,6 +50,13 @@ namespace Orbital7.MyGames
                 filePath = GetFilePath(FileSystemHelper.GetExecutingAssemblyFolder());
 
             File.WriteAllText(filePath, XMLSerializationHelper.SerializeToXML(this));
+        }
+
+        public Device FindDevice(string address)
+        {
+            return (from x in this.Devices
+                    where x.Address.ToLower() == address.ToLower()
+                    select x).FirstOrDefault();
         }
     }
 }

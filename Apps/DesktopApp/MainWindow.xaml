@@ -11,6 +11,8 @@
         <ToolBarTray DockPanel.Dock="Top" Background="Black">
             <ToolBar Background="Black" Foreground="White">
                 <Button x:Name="buttonMatchIncomplete" Click="buttonMatchIncomplete_Click" Foreground="White">Bulk Exact-Match Incomplete Games</Button>
+                <!--<Separator/>
+                <Button x:Name="buttonSyncWithDevice" Click="buttonSyncWithDevice_Click" Foreground="White">Sync with First Device</Button>-->
             </ToolBar>
         </ToolBarTray>
         <local:NavigationTreeview x:Name="navigationTreeview" DockPanel.Dock="Left" Width="125px" Margin="10,5,0,10"

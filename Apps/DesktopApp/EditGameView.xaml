@@ -35,7 +35,7 @@
                 <ColumnDefinition Width="350px" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0">Filename:</TextBlock>
-            <TextBox Grid.Row="0" Grid.Column="1" x:Name="textFilename" BorderThickness="0px" Background="#CDCDCD" Margin="0,0,0,4" Text="{ Binding Path=GameFilename }" />
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="textFilename" BorderThickness="0px" Background="#CDCDCD" Margin="0,0,0,4" IsEnabled="{ Binding Path=IsFilenameEditable }" Text="{ Binding Path=GameFilename }" />
             <TextBlock Grid.Row="1" Grid.Column="0">Name:</TextBlock>
             <TextBox Grid.Row="1" Grid.Column="1" x:Name="textName" BorderThickness="0px" Background="#CDCDCD" Margin="0,0,0,4" Text="{ Binding Path=Name }" />
             <TextBlock Grid.Row="2" Grid.Column="0">Publisher:</TextBlock>

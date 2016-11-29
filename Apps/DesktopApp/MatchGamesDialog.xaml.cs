@@ -60,15 +60,23 @@ namespace DesktopApp
                     index++;
                     textOutput.Text += "Matching " + index + "/" + gamesToMatch.Count + ": " + game.GameFilename + "...";
                     textOutput.ScrollToEnd();
-                    var matchedGame = engine.SearchExact(scraper, game.Platform, game.GameFilename, game.GameFilename);
-                    if (matchedGame != null)
+                    try
                     {
-                        game.Match(matchedGame);
-                        textOutput.Text += "MATCHED\n";
+                        var query = ScraperEngine.GetGameName(game.Platform, game.GameFilename);
+                        var matchedGame = engine.SearchExact(scraper, game.Platform, query, game.GameFilename);
+                        if (matchedGame != null)
+                        {
+                            game.Match(matchedGame);
+                            textOutput.Text += "MATCHED\n";
+                        }
+                        else
+                        {
+                            textOutput.Text += "Not Matched\n";
+                        }
                     }
-                    else
+                    catch(Exception ex)
                     {
-                        textOutput.Text += "Not Matched\n";
+                        textOutput.Text += "ERROR: " + ex.Message;
                     }
                     progress.Value++;
 

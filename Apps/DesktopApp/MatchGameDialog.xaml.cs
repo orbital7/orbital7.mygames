@@ -34,7 +34,7 @@ namespace DesktopApp
 
             // Record.
             this.GameToMatch = game;
-            textQuery.Text = game.GameFilename;
+            textQuery.Text = ScraperEngine.GetGameName(game.Platform, game.GameFilename);
             comboPlatform.SelectedItem = game.Platform;
 
             // Load the scrapers.

@@ -73,6 +73,16 @@ namespace Orbital7.MyGames
             get { return this.Image != null && !String.IsNullOrEmpty(this.ImagePath); }
         }
 
+        public string ImageFilename
+        {
+            get { return Path.GetFileName(this.ImagePath); }
+        }
+
+        public bool IsFilenameEditable
+        {
+            get { return this.Platform != Platform.Arcade && this.Platform != Platform.NeoGeo; }
+        }
+
         [XmlIgnore]
         public string GameFilename
         {
@@ -134,9 +144,14 @@ namespace Orbital7.MyGames
         {
             this.GameFilename = updatedFilename;
             if (this.HasImage)
-                this.ImagePath = "./images/" + Path.GetFileNameWithoutExtension(updatedFilename) + "-image" + Path.GetExtension(this.ImagePath);
+                this.ImagePath = "./images/" + GetImageFilenameWithoutExtension(updatedFilename) + Path.GetExtension(this.ImagePath);
 
             SetFilePaths();
+        }
+
+        internal static string GetImageFilenameWithoutExtension(string gameFilename)
+        {
+            return Path.GetFileNameWithoutExtension(gameFilename) + "-image";
         }
 
         public void SyncWithFileSystem()
@@ -153,8 +168,12 @@ namespace Orbital7.MyGames
 
                 // Rename files.
                 File.Move(gameFilePath, this.GameFilePath);
-                if (!String.IsNullOrEmpty(imageFilePath))
+                if (!String.IsNullOrEmpty(imageFilePath) && File.Exists(imageFilePath))
                     File.Move(imageFilePath, this.ImageFilePath);
+            }
+            else
+            {
+                SetFilePaths();
             }
 
             // Save.
@@ -164,7 +183,8 @@ namespace Orbital7.MyGames
         public void Match(Game matchedGame)
         {
             // Copy over the properties.
-            this.GameFilename = matchedGame.GameFilename;
+            if (this.IsFilenameEditable)
+                this.GameFilename = matchedGame.GameFilename;
             this.Name = matchedGame.Name;
             this.Publisher = matchedGame.Publisher;
             this.Developer = matchedGame.Developer;
@@ -174,14 +194,13 @@ namespace Orbital7.MyGames
             this.Description = matchedGame.Description;
             this.ImagePath = matchedGame.ImagePath;
             this.Image = matchedGame.Image;
-            this.UpdateFilename(this.GameFilename);
-
-            // Save the image.
-            if (this.HasImage)
-                this.Image.Save(this.ImageFilePath);
 
             // Update.
             this.SyncWithFileSystem();
+
+            // Update the image.
+            if (this.HasImage)
+                this.Image.Save(this.ImageFilePath);
         }
 
         public void Delete()

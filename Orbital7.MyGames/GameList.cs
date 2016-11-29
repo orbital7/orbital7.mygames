@@ -14,6 +14,8 @@ namespace Orbital7.MyGames
     [XmlRoot("gameList")]
     public class GameList : CollectionBase
     {
+        public const string ImagesFolderName = "images";
+
         [XmlIgnore]
         public string PlatformFolderPath { get; set; }
 
@@ -55,7 +57,7 @@ namespace Orbital7.MyGames
                 gameList = new GameList();
 
             // Ensure the images folder exists.
-            FileSystemHelper.EnsureFolderExists(folderPath, "images");
+            FileSystemHelper.EnsureFolderExists(folderPath, GameList.ImagesFolderName);
 
             // Update.
             gameList.PlatformFolderPath = folderPath;
@@ -69,9 +71,12 @@ namespace Orbital7.MyGames
             return gameList;
         }
 
-        public void Save()
+        public void Save(string folderPath = null)
         {
-            string filePath = GetFilePath(this.PlatformFolderPath);
+            if (folderPath == null)
+                folderPath = this.PlatformFolderPath;
+
+            string filePath = GetFilePath(folderPath);
             File.WriteAllText(filePath, XMLSerializationHelper.SerializeToXML(this).Replace(
                 "<Game ", "<game ").Replace("</Game>", "</game>").Replace("<Game>", "<game>"));   // TODO: Fix.
         }
@@ -99,7 +104,7 @@ namespace Orbital7.MyGames
         public bool Contains(string filename)
         {
             return (from Game x in this.InnerList
-                    where x.GamePath == "./" + filename
+                    where x.GamePath.ToLower() == "./" + filename.ToLower()
                     select x.ID).Count() > 0;
         }
 
@@ -121,8 +126,10 @@ namespace Orbital7.MyGames
                     return Platform.Arcade;
 
                 case "megadrive":
-                case "genesis":
                     return Platform.Sega_Mega_Drive;
+
+                case "genesis":
+                    return Platform.Sega_Genesis;
 
                 case "segacd":
                     return Platform.Sega_CD;
@@ -132,6 +139,9 @@ namespace Orbital7.MyGames
 
                 case "pcengine":
                     return Platform.NEC_TurboGrafx_16;
+
+                case "pcecd":
+                    return Platform.NEC_TurboGrafx_CD;
 
                 default:
                     return null;
@@ -158,7 +168,10 @@ namespace Orbital7.MyGames
                     return new List<string>() { ".nes", ".zip" };
 
                 case Platform.NEC_TurboGrafx_16:
-                    return new List<string>() { ".pce", ".cue", ".zip" };
+                    return new List<string>() { ".pce", ".zip" };
+
+                case Platform.NEC_TurboGrafx_CD:
+                    return new List<string>() { ".cue" };
 
                 case Platform.Sega_32X:
                     return new List<string>() { ".32x", ".smd", ".bin", ".md", ".zip" };
@@ -187,9 +200,12 @@ namespace Orbital7.MyGames
                 if (!File.Exists(filePath))
                 {
                     this.InnerList.Remove(game);
-                    string imagePath = Path.Combine(this.PlatformFolderPath, FileSystemHelper.ToWindowsPath(game.ImagePath));
-                    if (File.Exists(imagePath))
-                        File.Delete(imagePath);
+                    if (!String.IsNullOrEmpty(game.ImagePath))
+                    {
+                        string imagePath = Path.Combine(this.PlatformFolderPath, FileSystemHelper.ToWindowsPath(game.ImagePath));
+                        if (File.Exists(imagePath))
+                            File.Delete(imagePath);
+                    }
                 }
             }
 
