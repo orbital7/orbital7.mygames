@@ -209,9 +209,8 @@ namespace Orbital7.MyGames
             {
                 // It's possible that a game is comprised of multiple files with the same name
                 // but different extensions (such as CD games, etc.).
-                string query = Path.Combine(Path.GetDirectoryName(this.GameFilePath), 
+                var filePaths = Directory.GetFiles(Path.GetDirectoryName(this.GameFilePath),
                     Path.GetFileNameWithoutExtension(this.GameFilePath) + ".*");
-                var filePaths = Directory.GetFiles(query);
                 foreach (var filePath in filePaths)
                     File.Delete(filePath);
             }
@@ -220,7 +219,6 @@ namespace Orbital7.MyGames
                 File.Delete(this.ImageFilePath);
 
             this.GameList.Remove(this);
-
             this.GameList.Save();
         }
     }

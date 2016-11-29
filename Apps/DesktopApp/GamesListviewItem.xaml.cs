@@ -101,6 +101,7 @@ namespace DesktopApp
                     this.Game.Platform.ToDisplayString() + " game " + this.Game.ToString() + "?"))
                 {
                     this.Game.Delete();
+                    this.GamesListview.Update();
                 }
             }
             catch(Exception ex)
