@@ -29,6 +29,7 @@ namespace DesktopApp
             InitializeComponent();
             App.SetWindowFont(this);
 
+            this.Game = game;
             editGameView.Load(game);
         }
 

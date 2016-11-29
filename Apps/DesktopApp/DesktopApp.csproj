@@ -42,12 +42,12 @@
       <HintPath>..\..\packages\Orbital7.Extensions.1.0.1\lib\portable45-net45+win8\Orbital7.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Orbital7.Extensions.Windows, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Orbital7.Extensions.Windows.1.0.6\lib\net45\Orbital7.Extensions.Windows.dll</HintPath>
+    <Reference Include="Orbital7.Extensions.Windows, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Orbital7.Extensions.Windows.1.0.7\lib\net45\Orbital7.Extensions.Windows.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Orbital7.Extensions.Windows.Desktop, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Orbital7.Extensions.Windows.Desktop.1.0.3\lib\net45\Orbital7.Extensions.Windows.Desktop.dll</HintPath>
+    <Reference Include="Orbital7.Extensions.Windows.Desktop, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Orbital7.Extensions.Windows.Desktop.1.0.4\lib\net45\Orbital7.Extensions.Windows.Desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -171,10 +171,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Lib\Microsoft.Win32.TaskScheduler.dll" />
+    <Folder Include="Images\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Images\" />
+    <Content Include="Lib\Microsoft.Win32.TaskScheduler.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

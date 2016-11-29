@@ -18,7 +18,17 @@
         </Style>
     </UserControl.Resources>
     <StackPanel x:Name="panel" Orientation="Horizontal" IsEnabled="False">
-        <Image x:Name="image" Height="240px" Width="344px" />
+        <TextBlock x:Name="blockPaste" VerticalAlignment="Center" Margin="105,0,0,0" Visibility="Collapsed">
+            <Hyperlink x:Name="buttonPaste" Click="menuItemPaste_Click">Paste</Hyperlink>
+        </TextBlock>
+        <Image x:Name="image" Height="240px" Width="344px">
+            <Image.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="menuItemCopy" Header="Copy" Click="menuItemCopy_Click"/>
+                    <MenuItem x:Name="menuItemPaste" Header="Paste" Click="menuItemPaste_Click"/>
+                </ContextMenu>
+            </Image.ContextMenu>
+        </Image>
         <Grid Margin="22,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="24px" />

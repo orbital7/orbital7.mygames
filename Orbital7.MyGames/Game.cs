@@ -149,6 +149,16 @@ namespace Orbital7.MyGames
             SetFilePaths();
         }
 
+        public void UpdateImage(Bitmap image)
+        {
+            if (image != null)
+            {
+                this.Image = image.ToBitmap(System.Drawing.Imaging.ImageFormat.Png);
+                this.ImagePath = "Temp.png";
+                UpdateFilename(this.GameFilename);
+            }
+        }
+        
         internal static string GetImageFilenameWithoutExtension(string gameFilename)
         {
             return Path.GetFileNameWithoutExtension(gameFilename) + "-image";
@@ -176,6 +186,10 @@ namespace Orbital7.MyGames
                 SetFilePaths();
             }
 
+            // Ensure image is saved.
+            if (this.HasImage)
+                this.Image.Save(this.ImageFilePath);
+
             // Save.
             this.GameList.Save();
         }
@@ -197,10 +211,6 @@ namespace Orbital7.MyGames
 
             // Update.
             this.SyncWithFileSystem();
-
-            // Update the image.
-            if (this.HasImage)
-                this.Image.Save(this.ImageFilePath);
         }
 
         public void Delete()

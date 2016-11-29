@@ -36,7 +36,7 @@ namespace DesktopApp
                 panel.IsEnabled = true;
                 this.Game = game;
                 this.DataContext = game;
-                image.Source = game.Image.ToImageSource();
+                UpdateImage(game.Image.ToImageSource());
                 this.Foreground = System.Windows.Media.Brushes.White;
             }
             else
@@ -51,7 +51,30 @@ namespace DesktopApp
             this.Game = null;
             this.DataContext = null;
             image.Source = null;
+            blockPaste.Visibility = Visibility.Collapsed;
             this.Foreground = System.Windows.Media.Brushes.DarkGray;
+        }
+
+        private void UpdateImage(ImageSource imageSource)
+        {
+            image.Source = imageSource;
+            blockPaste.Visibility = image.Source == null ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void menuItemCopy_Click(object sender, RoutedEventArgs e)
+        {
+            if (image.Source != null)
+                System.Windows.Forms.Clipboard.SetImage(((BitmapSource)image.Source).ToBitmap());
+        }
+
+        private void menuItemPaste_Click(object sender, RoutedEventArgs e)
+        {
+            var bitmap = System.Windows.Forms.Clipboard.GetImage() as Bitmap;
+            if (bitmap != null)
+            {
+                this.Game.UpdateImage(bitmap);
+                UpdateImage(this.Game.Image.ToImageSource());
+            }
         }
     }
 }
