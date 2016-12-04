@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace Orbital7.MyGames
 
         public string GamesPath
         {
-            get { return "\\\\" + this.Address + "\\roms\\"; }
+            get { return Path.Combine("\\\\" + this.Address, "roms"); }
         }
 
         public override string ToString()

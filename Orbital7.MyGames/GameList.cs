@@ -228,5 +228,10 @@ namespace Orbital7.MyGames
                     game.Image = DrawingHelper.LoadBitmap(game.ImageFilePath);
             }
         }
+
+        public override string ToString()
+        {
+            return this.Platform.ToDisplayString();
+        }
     }
 }

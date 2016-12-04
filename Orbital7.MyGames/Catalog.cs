@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Orbital7.Extensions.Windows;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -55,13 +57,14 @@ namespace Orbital7.MyGames
             foreach (var gameList in this.GameLists)
             {
                 index++;
-                Console.WriteLine("Syncing GameList " + index + "/" + this.GameLists.Count + ": " + 
+                Debug.WriteLine("Syncing GameList " + index + "/" + this.GameLists.Count + ": " + 
                     gameList.Platform.ToDisplayString());
 
-                string devicePlatformPath = device.GamesPath + Path.GetFileName(gameList.PlatformFolderPath) + "\\";
-                string temp = Path.Combine(@"\\temp", @"x1\x2");
-                DeleteNonReferencedGames(devicePlatformPath, gameList);
-                CopyReferencedGames(devicePlatformPath, gameList);
+                string devicePlatformPath = Path.Combine(device.GamesPath, Path.GetFileName(gameList.PlatformFolderPath));
+                string deviceImageFolderPath = FileSystemHelper.EnsureFolderExists(devicePlatformPath, GameList.ImagesFolderName);
+                DeleteNonReferencedGames(devicePlatformPath, deviceImageFolderPath, gameList);
+                CopyReferencedGames(devicePlatformPath, deviceImageFolderPath, gameList);
+                gameList.Save(devicePlatformPath);
             }
 
             // Update the device.
@@ -69,7 +72,7 @@ namespace Orbital7.MyGames
             config.Save();
         }
 
-        private void DeleteNonReferencedGames(string devicePlatformPath, GameList gameList)
+        private void DeleteNonReferencedGames(string devicePlatformPath, string deviceImageFolderPath, GameList gameList)
         {
             var fileExtensions = GameList.GetPlatformFileExtensions(gameList.Platform);
 
@@ -78,7 +81,7 @@ namespace Orbital7.MyGames
                 string filename = Path.GetFileName(filePath);
                 if (fileExtensions.Contains(Path.GetExtension(filename).ToLower()))
                 {
-                    if (!gameList.Contains(filename))
+                    if (!gameList.Contains(filename) && (gameList.Platform != Platform.NeoGeo && filename != "neogeo.zip"))
                     {
                         // Delete game files (could be more than one).
                         var gameFilePaths = Directory.GetFiles(devicePlatformPath,
@@ -87,7 +90,7 @@ namespace Orbital7.MyGames
                             File.Delete(gameFilePath);
 
                         // Delete game image file (should only be one).
-                        var imageFilePaths = Directory.GetFiles(devicePlatformPath + GameList.ImagesFolderName,
+                        var imageFilePaths = Directory.GetFiles(deviceImageFolderPath,
                             Game.GetImageFilenameWithoutExtension(filename) + ".*");
                         foreach (var imageFilePath in imageFilePaths)
                             File.Delete(imageFilePath);
@@ -96,7 +99,7 @@ namespace Orbital7.MyGames
             }
         }
 
-        private void CopyReferencedGames(string devicePlatformPath, GameList gameList)
+        private void CopyReferencedGames(string devicePlatformPath, string deviceImageFolderPath, GameList gameList)
         {
             foreach (Game game in gameList)
             {
@@ -108,7 +111,7 @@ namespace Orbital7.MyGames
                     string deviceFilePath = Path.Combine(devicePlatformPath, Path.GetFileName(gameFilePath));
                     if (IsCopyRequired(gameFilePath, deviceFilePath))
                     {
-                        Console.WriteLine(" - Copying " + Path.GetFileName(gameFilePath));
+                        Debug.WriteLine(" - Copying " + Path.GetFileName(gameFilePath));
                         File.Copy(gameFilePath, deviceFilePath, true);
                     }
                 }
@@ -116,8 +119,7 @@ namespace Orbital7.MyGames
                 // Copy image files.
                 if (game.HasImage)
                 {
-                    var deviceImageFilePath = Path.Combine(devicePlatformPath, GameList.ImagesFolderName,
-                        game.ImageFilename);
+                    var deviceImageFilePath = Path.Combine(deviceImageFolderPath, game.ImageFilename);
                     if (IsCopyRequired(game.ImageFilePath, deviceImageFilePath))
                         File.Copy(game.ImageFilePath, deviceImageFilePath, true);
                 }
