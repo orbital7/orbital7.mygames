@@ -9,6 +9,8 @@ namespace Orbital7.MyGames
 {
     public class Device
     {
+        public string DirectoryKey { get; set; }
+        
         public string Name { get; set; }
 
         public string Address { get; set; }

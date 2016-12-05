@@ -13,13 +13,13 @@ namespace Orbital7.MyGames
     {
         public List<GameList> GameLists { get; set; } = new List<GameList>();
 
-        public Catalog(string folderPath)
+        public Catalog(Config config)
         {
-            foreach (var platformFolderPath in Directory.GetDirectories(folderPath))
+            foreach (var platformFolderPath in Directory.GetDirectories(config.GamesFolderPath))
             {
                 var platform = GameList.GetPlatform(Path.GetFileName(platformFolderPath));
                 if (platform.HasValue)
-                    this.GameLists.Add(GameList.Load(platformFolderPath));
+                    this.GameLists.Add(GameList.Load(platformFolderPath, config));
             }
         }
 
@@ -39,13 +39,13 @@ namespace Orbital7.MyGames
                     select x).ToList();
         }
 
-        public void SyncWithDevice(string deviceAddress)
+        public void SyncWithDevice(string deviceDirectoryKey)
         {
             // Load the device from the configuration.
             var config = Config.Load();
-            var device = config.FindDevice(deviceAddress);
+            var device = config.FindDevice(deviceDirectoryKey);
             if (device == null)
-                throw new Exception("Device with address " + deviceAddress + " could not be found");
+                throw new Exception("Device " + deviceDirectoryKey + " could not be found");
 
             // Test connection.
             bool exists = Directory.Exists(device.GamesPath);
@@ -62,8 +62,8 @@ namespace Orbital7.MyGames
 
                 string devicePlatformPath = Path.Combine(device.GamesPath, Path.GetFileName(gameList.PlatformFolderPath));
                 string deviceImageFolderPath = FileSystemHelper.EnsureFolderExists(devicePlatformPath, GameList.ImagesFolderName);
-                DeleteNonReferencedGames(devicePlatformPath, deviceImageFolderPath, gameList);
-                CopyReferencedGames(devicePlatformPath, deviceImageFolderPath, gameList);
+                ProcessDeviceFiles(devicePlatformPath, deviceImageFolderPath, gameList);
+                PushGameFilesToDevice(device, devicePlatformPath, deviceImageFolderPath, gameList);
                 gameList.Save(devicePlatformPath);
             }
 
@@ -72,14 +72,16 @@ namespace Orbital7.MyGames
             config.Save();
         }
 
-        private void DeleteNonReferencedGames(string devicePlatformPath, string deviceImageFolderPath, GameList gameList)
+        private void ProcessDeviceFiles(string devicePlatformPath, string deviceImageFolderPath, GameList gameList)
         {
-            var fileExtensions = GameList.GetPlatformFileExtensions(gameList.Platform);
+            var gameFileExtensions = GameList.GetPlatformFileExtensions(gameList.Platform);
+            var saveStateFileExtensions = GetSaveStateFileExtensions();
 
-            foreach (string filePath in Directory.GetFiles(devicePlatformPath))
+            foreach (string deviceFilePath in Directory.GetFiles(devicePlatformPath))
             {
-                string filename = Path.GetFileName(filePath);
-                if (fileExtensions.Contains(Path.GetExtension(filename).ToLower()))
+                string filename = Path.GetFileName(deviceFilePath);
+                string fileExtension = Path.GetExtension(filename).ToLower();
+                if (gameFileExtensions.Contains(fileExtension))
                 {
                     if (!gameList.Contains(filename) && (gameList.Platform != Platform.NeoGeo && filename != "neogeo.zip"))
                     {
@@ -89,17 +91,28 @@ namespace Orbital7.MyGames
                         foreach (var gameFilePath in gameFilePaths)
                             File.Delete(gameFilePath);
 
-                        // Delete game image file (should only be one).
+                        // Delete game config files (should only be one, or not exist at all).
+                        var configFilePath = Path.Combine(devicePlatformPath, filename + ".cfg");
+                        if (File.Exists(configFilePath))
+                            File.Delete(configFilePath);
+
+                        // Delete game image file (should only be one, but we don't know the extension).
                         var imageFilePaths = Directory.GetFiles(deviceImageFolderPath,
                             Game.GetImageFilenameWithoutExtension(filename) + ".*");
                         foreach (var imageFilePath in imageFilePaths)
                             File.Delete(imageFilePath);
                     }
                 }
+                else if (saveStateFileExtensions.Contains(fileExtension))
+                {
+                    string localPath = Path.Combine(gameList.PlatformFolderPath, GameList.SaveStatesFolderName, filename);
+                    if (!File.Exists(localPath) || IsNewerCopyRequired(deviceFilePath, localPath))
+                        File.Copy(deviceFilePath, localPath, true);
+                }
             }
         }
 
-        private void CopyReferencedGames(string devicePlatformPath, string deviceImageFolderPath, GameList gameList)
+        private void PushGameFilesToDevice(Device device, string devicePlatformPath, string deviceImageFolderPath, GameList gameList)
         {
             foreach (Game game in gameList)
             {
@@ -109,29 +122,55 @@ namespace Orbital7.MyGames
                 foreach (var gameFilePath in gameFilePaths)
                 {
                     string deviceFilePath = Path.Combine(devicePlatformPath, Path.GetFileName(gameFilePath));
-                    if (IsCopyRequired(gameFilePath, deviceFilePath))
+                    if (IsDifferentCopyRequired(gameFilePath, deviceFilePath))
                     {
                         Debug.WriteLine(" - Copying " + Path.GetFileName(gameFilePath));
                         File.Copy(gameFilePath, deviceFilePath, true);
                     }
                 }
 
-                // Copy image files.
+                // Copy save states.
+                var saveStateFilePaths = Directory.GetFiles(Path.Combine(gameList.PlatformFolderPath, GameList.SaveStatesFolderName),
+                    Path.GetFileNameWithoutExtension(game.GameFilename) + ".*");
+                foreach (var saveStateFilePath in saveStateFilePaths)
+                {
+                    string deviceFilePath = Path.Combine(devicePlatformPath, Path.GetFileName(saveStateFilePath));
+                    if (IsDifferentCopyRequired(saveStateFilePath, deviceFilePath))
+                    {
+                        Debug.WriteLine(" - Copying " + Path.GetFileName(saveStateFilePath));
+                        File.Copy(saveStateFilePath, deviceFilePath, true);
+                    }
+                }
+
+                // Write gameconfig file.
+                string deviceButtonMappingFilePath = Path.Combine(devicePlatformPath, game.GameFilename + ".cfg");
+                if (game.GameConfig != Game.DEFAULT_GAME_CONFIG)
+                {
+                    string localContents = game.GetLocalGameConfigContents(device);
+                    if (!File.Exists(deviceButtonMappingFilePath) || File.ReadAllText(deviceButtonMappingFilePath) != localContents)
+                        File.WriteAllText(deviceButtonMappingFilePath, localContents);
+                }
+                else if (File.Exists(deviceButtonMappingFilePath))
+                {
+                    File.Delete(deviceButtonMappingFilePath);
+                }
+
+                // Copy image file.
                 if (game.HasImage)
                 {
                     var deviceImageFilePath = Path.Combine(deviceImageFolderPath, game.ImageFilename);
-                    if (IsCopyRequired(game.ImageFilePath, deviceImageFilePath))
+                    if (IsDifferentCopyRequired(game.ImageFilePath, deviceImageFilePath))
                         File.Copy(game.ImageFilePath, deviceImageFilePath, true);
                 }
             }
         }
 
-        private bool IsCopyRequired(string gameFilePath, string deviceFilePath)
+        private bool IsDifferentCopyRequired(string sourcePath, string destinationPath)
         {
-            if (File.Exists(deviceFilePath))
+            if (File.Exists(destinationPath))
             {
-                var sourceProperties = new FileInfo(gameFilePath);
-                var destProperties = new FileInfo(deviceFilePath);
+                var sourceProperties = new FileInfo(sourcePath);
+                var destProperties = new FileInfo(destinationPath);
                 return sourceProperties.LastWriteTimeUtc != destProperties.LastWriteTimeUtc ||
                        sourceProperties.Length != destProperties.Length;
             }
@@ -139,6 +178,37 @@ namespace Orbital7.MyGames
             {
                 return true;
             }
+        }
+
+        private bool IsNewerCopyRequired(string sourcePath, string destinationPath)
+        {
+            if (File.Exists(destinationPath))
+            {
+                var sourceProperties = new FileInfo(sourcePath);
+                var destProperties = new FileInfo(destinationPath);
+                return sourceProperties.LastWriteTimeUtc > destProperties.LastWriteTimeUtc;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public static List<string> GetSaveStateFileExtensions()
+        {
+            return new List<string>()
+            {
+                ".state",
+                ".state1",
+                ".state2",
+                ".state3",
+                ".state4",
+                ".state5",
+                ".state6",
+                ".state7",
+                ".state8",
+                ".state9",
+            };
         }
     }
 }

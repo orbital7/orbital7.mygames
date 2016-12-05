@@ -32,7 +32,7 @@ namespace DesktopApp
             var config = LoadConfig();
             if (config != null)
             {
-                this.Catalog = new Catalog(config.GamesFolderPath);
+                this.Catalog = new Catalog(config);
                 navigationTreeview.Load(this.Catalog);
             }
             else
@@ -89,9 +89,15 @@ namespace DesktopApp
             {
                 var config = Config.Load();
                 if (config.Devices.Count > 0)
-                    this.Catalog.SyncWithDevice(config.Devices[0].Address);
+                {
+                    var device = config.Devices[0];
+                    this.Catalog.SyncWithDevice(device.DirectoryKey);
+                    MessageBoxHelper.ShowMessage(this, device.Name + " synced successfully");
+                }
                 else
+                {
                     throw new Exception("Configuration does not specify any devices");
+                }
             }
             catch(Exception ex)
             {

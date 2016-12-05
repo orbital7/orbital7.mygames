@@ -15,6 +15,8 @@ namespace Orbital7.MyGames
 
         public string GamesFolderPath { get; set; }
 
+        public List<PlatformConfig> PlatformConfigs { get; set; } = new List<PlatformConfig>();
+
         public List<Device> Devices { get; set; } = new List<Device>();
 
         public Config()
@@ -52,10 +54,17 @@ namespace Orbital7.MyGames
             File.WriteAllText(filePath, XMLSerializationHelper.SerializeToXML(this));
         }
 
-        public Device FindDevice(string address)
+        public Device FindDevice(string directoryKey)
         {
             return (from x in this.Devices
-                    where x.Address.ToLower() == address.ToLower()
+                    where x.DirectoryKey.ToLower() == directoryKey.ToLower()
+                    select x).FirstOrDefault();
+        }
+
+        public PlatformConfig FindPlatformConfig(Platform platform)
+        {
+            return (from x in this.PlatformConfigs
+                    where x.Platform == platform
                     select x).FirstOrDefault();
         }
     }

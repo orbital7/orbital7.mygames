@@ -63,7 +63,7 @@ namespace DesktopApp
         private void UpdateView()
         {
             textName.Text = String.IsNullOrEmpty(this.Game.Name) ? "[UNKNOWN]" : this.Game.Name;
-            textFilename.Text = this.Game.GamePath;
+            textFilename.Text = this.Game.FileSummary;
             textGenre.Text = this.Game.Genre;
             textPublisher.Text = this.Game.Publisher;
             textDeveloper.Text = this.Game.Developer;

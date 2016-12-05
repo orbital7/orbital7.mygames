@@ -15,6 +15,8 @@ namespace Orbital7.MyGames
     public class GameList : CollectionBase
     {
         public const string ImagesFolderName = "images";
+        public const string GameConfigsFolderName = "gameconfigs";
+        public const string SaveStatesFolderName = "savestates";
 
         [XmlIgnore]
         public string PlatformFolderPath { get; set; }
@@ -39,7 +41,7 @@ namespace Orbital7.MyGames
             return Path.Combine(folderPath, "gamelist.xml");
         }
 
-        public static GameList Load(string folderPath)
+        public static GameList Load(string folderPath, Config config)
         {
             GameList gameList = null;
 
@@ -56,8 +58,12 @@ namespace Orbital7.MyGames
             else
                 gameList = new GameList();
 
-            // Ensure the images folder exists.
+            // Ensure the necessary folders exist.
             FileSystemHelper.EnsureFolderExists(folderPath, GameList.ImagesFolderName);
+            FileSystemHelper.EnsureFolderExists(folderPath, GameList.SaveStatesFolderName);
+            FileSystemHelper.EnsureFolderExists(folderPath, GameList.GameConfigsFolderName);
+            foreach (var device in config.Devices)
+                FileSystemHelper.EnsureFolderExists(folderPath, GameList.GameConfigsFolderName, device.DirectoryKey);
 
             // Update.
             gameList.PlatformFolderPath = folderPath;
@@ -66,7 +72,7 @@ namespace Orbital7.MyGames
             gameList.Save();
 
             // Initialize.
-            gameList.Initialize();
+            gameList.Initialize(config);
                         
             return gameList;
         }
@@ -218,15 +224,10 @@ namespace Orbital7.MyGames
             }
         }
 
-        internal void Initialize()
+        internal void Initialize(Config config)
         {
             foreach (Game game in this.InnerList)
-            {
-                game.GameList = this;
-                game.SetFilePaths();
-                if (!String.IsNullOrEmpty(game.ImageFilePath))
-                    game.Image = DrawingHelper.LoadBitmap(game.ImageFilePath);
-            }
+                game.Initialize(this, config);
         }
 
         public override string ToString()

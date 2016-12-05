@@ -7,7 +7,7 @@
         mc:Ignorable="d" ShowInTaskbar="False" 
         WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize"
         BorderThickness="2px" BorderBrush="Orange" Background="Black" Foreground="White"
-        Title="Edit Game" Height="328px" Width="820px">
+        Title="Edit Game" Height="376px" Width="890px">
     <DockPanel Margin="5">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
             <Button x:Name="buttonSave" Click="buttonSave_Click" Width="65" Height="22" Margin="0,0,5,0" IsDefault="True">Save</Button>

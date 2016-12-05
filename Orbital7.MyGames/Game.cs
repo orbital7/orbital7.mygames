@@ -13,6 +13,10 @@ namespace Orbital7.MyGames
     [XmlRoot("game")]
     public class Game
     {
+        public const string DEFAULT_EMULATOR = "Default";
+        public const string DEFAULT_GAME_CONFIG = "Default";
+        public const string CUSTOM_GAME_CONFIG = "Custom";
+
         [XmlAttribute(AttributeName = "source")]
         public string Source { get; set; }
 
@@ -50,7 +54,10 @@ namespace Orbital7.MyGames
         public string Players { get; set; }
 
         [XmlElement("emulator")]
-        public string Emulator { get; set; } = "Default";
+        public string Emulator { get; set; } = DEFAULT_EMULATOR;
+
+        [XmlElement("gameconfig")]
+        public string GameConfig { get; set; } = DEFAULT_GAME_CONFIG;
 
         [XmlElement("platform")]
         public Platform Platform { get; set; }
@@ -81,6 +88,32 @@ namespace Orbital7.MyGames
         public bool IsFilenameEditable
         {
             get { return this.Platform != Platform.Arcade && this.Platform != Platform.NeoGeo; }
+        }
+
+        public string FileSummary
+        {
+            get
+            {
+                if (this.GameList != null)
+                {
+                    string value = this.GamePath;
+                    if (this.Emulator != DEFAULT_EMULATOR || this.GameConfig != DEFAULT_GAME_CONFIG)
+                    {
+                        value += "  [";
+                        if (this.Emulator != DEFAULT_EMULATOR)
+                            value += this.Emulator + " ";
+                        if (this.GameConfig != DEFAULT_GAME_CONFIG)
+                            value += "using " + this.GameConfig;
+                        value = value.Trim() + "]";
+                    }
+
+                    return value;
+                }
+                else
+                {
+                    return this.Source;
+                }
+            }
         }
 
         [XmlIgnore]
@@ -127,6 +160,30 @@ namespace Orbital7.MyGames
                 return this.Name;
             else
                 return this.GamePath;
+        }
+
+        internal void Initialize(GameList gameList, Config config)
+        {
+            this.GameList = gameList;
+
+            SetFilePaths();
+            UpdateLocalCustomButtonMappingFile(config);
+            if (!String.IsNullOrEmpty(this.ImageFilePath))
+                this.Image = DrawingHelper.LoadBitmap(this.ImageFilePath);
+
+            
+        }
+
+        private void UpdateLocalCustomButtonMappingFile(Config config)
+        {
+            foreach (var device in config.Devices)
+            {
+                string filePath = GetLocalCustomGameConfigFilePath(device);
+                if (this.GameConfig == CUSTOM_GAME_CONFIG && !File.Exists(filePath))
+                    File.WriteAllText(filePath, "#TODO");
+                else if (this.GameConfig != CUSTOM_GAME_CONFIG && File.Exists(filePath))
+                    File.Delete(filePath);                
+            }
         }
 
         internal void SetFilePaths()
@@ -186,6 +243,9 @@ namespace Orbital7.MyGames
                 SetFilePaths();
             }
 
+            // Update the button mapping.
+            UpdateLocalCustomButtonMappingFile(Config.Load());
+
             // Ensure image is saved.
             if (this.HasImage)
                 this.Image.Save(this.ImageFilePath);
@@ -230,6 +290,50 @@ namespace Orbital7.MyGames
 
             this.GameList.Remove(this);
             this.GameList.Save();
+        }
+
+        public List<string> GetAvailableEmulators(string configFilePath = null)
+        {
+            var list = new List<string>() { DEFAULT_EMULATOR };
+
+            var platformConfig = Config.Load(configFilePath).FindPlatformConfig(this.Platform);
+            if (platformConfig != null)
+                list.AddRange(platformConfig.Emulators);
+
+            return list;
+        }
+
+        public List<string> GetAvailableGameConfigs(string configFilePath = null)
+        {
+            var list = new List<string>() { DEFAULT_GAME_CONFIG, CUSTOM_GAME_CONFIG };
+
+            var platformConfig = Config.Load(configFilePath).FindPlatformConfig(this.Platform);
+            if (platformConfig != null)
+                list.AddRange(platformConfig.GameConfigs);
+
+            return list;
+        }
+
+
+        public string GetLocalCustomGameConfigFilePath(Device device)
+        {
+            return Path.Combine(this.GameList.PlatformFolderPath, GameList.GameConfigsFolderName, 
+                device.DirectoryKey, this.GameFilename + ".cfg");
+        }
+
+        public string GetLocalGameConfigContents(Device device)
+        {
+            string filePath = String.Empty;
+            if (this.GameConfig == CUSTOM_GAME_CONFIG)
+                filePath = GetLocalCustomGameConfigFilePath(device);
+            else if (this.GameConfig != DEFAULT_GAME_CONFIG)
+                filePath = Path.Combine(this.GameList.PlatformFolderPath, GameList.GameConfigsFolderName,
+                    device.DirectoryKey, this.GameConfig);
+
+            if (File.Exists(filePath))
+                return File.ReadAllText(filePath);
+            else
+                return null;
         }
     }
 }

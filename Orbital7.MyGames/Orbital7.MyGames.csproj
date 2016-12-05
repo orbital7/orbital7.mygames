@@ -60,6 +60,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameList.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="PlatformConfig.cs" />
     <Compile Include="Scraper.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

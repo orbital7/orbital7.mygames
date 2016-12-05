@@ -1,4 +1,5 @@
-﻿using Orbital7.MyGames;
+﻿using Orbital7.Extensions.Windows.Desktop.WPF;
+using Orbital7.MyGames;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -33,6 +34,10 @@ namespace DesktopApp
         {
             if (game != null)
             {
+
+                WPFHelper.FillComboBox(comboEmulator, game.GetAvailableEmulators(), game.Emulator);
+                WPFHelper.FillComboBox(comboButtonMapping, game.GetAvailableGameConfigs(), game.GameConfig);
+
                 panel.IsEnabled = true;
                 this.Game = game;
                 this.DataContext = game;

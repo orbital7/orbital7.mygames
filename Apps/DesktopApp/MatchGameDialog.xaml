@@ -9,7 +9,7 @@
              mc:Ignorable="d" ShowInTaskbar="False" 
              WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize"
              BorderThickness="2px" BorderBrush="Orange" Background="Black" Foreground="White"
-             Width="819px" Height="800px" Title="Match Game">
+             Width="888px" Height="850px" Title="Match Game">
     <DockPanel Margin="5">
         <DockPanel DockPanel.Dock="Top">
             <Label Foreground="White" DockPanel.Dock="Left">Search:</Label>
