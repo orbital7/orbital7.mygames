@@ -13,7 +13,7 @@ namespace Orbital7.MyGames
     {
         public const string FILENAME = "MyGames.config";
 
-        public string GamesFolderPath { get; set; }
+        public string RomsFolderPath { get; set; }
 
         public List<PlatformConfig> PlatformConfigs { get; set; } = new List<PlatformConfig>();
 
@@ -24,10 +24,10 @@ namespace Orbital7.MyGames
 
         }
 
-        public Config(string gamesFolderPath)
+        public Config(string romsFolderPath)
             : this()
         {
-            this.GamesFolderPath = gamesFolderPath;
+            this.RomsFolderPath = romsFolderPath;
         }
 
         public static string GetFilePath(string folderPath)

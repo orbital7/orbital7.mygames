@@ -15,7 +15,7 @@ namespace Orbital7.MyGames
 
         public Catalog(Config config)
         {
-            foreach (var platformFolderPath in Directory.GetDirectories(config.GamesFolderPath))
+            foreach (var platformFolderPath in Directory.GetDirectories(config.RomsFolderPath))
             {
                 var platform = GameList.GetPlatform(Path.GetFileName(platformFolderPath));
                 if (platform.HasValue)
@@ -48,9 +48,9 @@ namespace Orbital7.MyGames
                 throw new Exception("Device " + deviceDirectoryKey + " could not be found");
 
             // Test connection.
-            bool exists = Directory.Exists(device.GamesPath);
+            bool exists = Directory.Exists(device.RomsPath);
             if (!exists)
-                throw new Exception(device.Name + " game path is not accessible: " + device.GamesPath);
+                throw new Exception(device.Name + " game path is not accessible: " + device.RomsPath);
 
             // Loop.
             int index = 0;
@@ -60,11 +60,19 @@ namespace Orbital7.MyGames
                 Debug.WriteLine("Syncing GameList " + index + "/" + this.GameLists.Count + ": " + 
                     gameList.Platform.ToDisplayString());
 
-                string devicePlatformPath = Path.Combine(device.GamesPath, Path.GetFileName(gameList.PlatformFolderPath));
-                string deviceImageFolderPath = FileSystemHelper.EnsureFolderExists(devicePlatformPath, GameList.ImagesFolderName);
-                ProcessDeviceFiles(devicePlatformPath, deviceImageFolderPath, gameList);
-                PushGameFilesToDevice(device, devicePlatformPath, deviceImageFolderPath, gameList);
-                gameList.Save(devicePlatformPath);
+                string devicePlatformPath = Path.Combine(device.RomsPath, Path.GetFileName(gameList.PlatformFolderPath));
+                if (device.SyncPlatform(gameList.Platform))
+                {
+                    FileSystemHelper.EnsureFolderExists(devicePlatformPath);
+                    string deviceImageFolderPath = FileSystemHelper.EnsureFolderExists(devicePlatformPath, GameList.ImagesFolderName);
+                    ProcessDeviceFiles(devicePlatformPath, deviceImageFolderPath, gameList);
+                    PushGameFilesToDevice(device, devicePlatformPath, deviceImageFolderPath, gameList);
+                    gameList.Save(devicePlatformPath);
+                }
+                else if (Directory.Exists(devicePlatformPath))
+                {
+                    FileSystemHelper.DeleteFolderContents(devicePlatformPath);
+                }
             }
 
             // Update the device.

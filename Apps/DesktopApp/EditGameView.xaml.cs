@@ -36,7 +36,7 @@ namespace DesktopApp
             {
 
                 WPFHelper.FillComboBox(comboEmulator, game.GetAvailableEmulators(), game.Emulator);
-                WPFHelper.FillComboBox(comboButtonMapping, game.GetAvailableGameConfigs(), game.GameConfig);
+                WPFHelper.FillComboBox(comboGameConfig, game.GetAvailableGameConfigs(), game.GameConfig);
 
                 panel.IsEnabled = true;
                 this.Game = game;

@@ -13,7 +13,10 @@ namespace Orbital7.MyGames
     public enum Platform
     {
         [Display(Name = "3DO")]
-        The3DOCompany_3DO, 
+        The3DOCompany_3DO,
+
+        [Display(Name = "Amstrad CPC")]
+        Amstrad_CPC,
 
         Arcade,
 
@@ -32,6 +35,9 @@ namespace Orbital7.MyGames
         [Display(Name = "Atari Jaguar CD")]
         Atari_Jaguar_CD,
 
+        [Display(Name = "Atari Lynx")]
+        Atari_Lynx,
+
         [Display(Name = "Atari XE")]
         Atari_XE,
 
@@ -39,6 +45,9 @@ namespace Orbital7.MyGames
 
         [Display(Name = "Commodore 64")]
         Commodore_64,
+
+        [Display(Name = "Famicom Disk System")]
+        Famicom_Disk_System,
 
         Intellivision,
 
@@ -51,8 +60,16 @@ namespace Orbital7.MyGames
         [Display(Name = "Microsoft Xbox 360")]
         Microsoft_Xbox360,
 
+        MSX,
+
         [Display(Name = "Neo Geo")]
         NeoGeo,
+
+        [Display(Name = "Neo Geo Pocket")]
+        NeoGeo_Pocket,
+
+        [Display(Name = "Neo Geo Pocket Color")]
+        NeoGeo_Pocket_Color,
 
         [Display(Name = "Nintendo 64")]
         Nintendo_64,
@@ -72,8 +89,14 @@ namespace Orbital7.MyGames
         [Display(Name = "Nintendo Gameboy Advance")]
         Nintendo_Gameboy_Advance,
 
+        [Display(Name = "Nintendo Gameboy Color")]
+        Nintendo_Gameboy_Color,
+
         [Display(Name = "Nintendo GameCube")]
         Nintendo_GameCube,
+
+        [Display(Name = "Nintendo Virtual Boy")]
+        Nintendo_Virtual_Boy,
 
         [Display(Name = "Nintendo Wii")]
         Nintendo_Wii,
@@ -107,6 +130,9 @@ namespace Orbital7.MyGames
         [Display(Name = "Sega Saturn")]
         Sega_Saturn,
 
+        [Display(Name = "Sega SG 1000")]
+        Sega_SG_1000,
+
         [Display(Name = "Sony Playstation")]
         Sony_Playstation,
 
@@ -127,5 +153,10 @@ namespace Orbital7.MyGames
 
         [Display(Name = "TurboGrafx CD")]
         NEC_TurboGrafx_CD,
+
+        Vectrex,
+
+        [Display(Name = "ZX Spectrum")]
+        ZX_Spectrum,
     }
 }

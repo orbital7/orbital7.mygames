@@ -94,7 +94,6 @@ namespace Orbital7.MyGames.Scrapers
         {
             switch (platform)
             {
-
                 case Platform.The3DOCompany_3DO:
                     throw new NotImplementedException();
 

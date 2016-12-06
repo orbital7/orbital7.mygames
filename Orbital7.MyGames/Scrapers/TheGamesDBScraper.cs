@@ -107,7 +107,6 @@ namespace Orbital7.MyGames.Scrapers
         {
             switch (platform)
             {
-
                 case Platform.The3DOCompany_3DO:
                     return "3DO";
 
@@ -122,6 +121,9 @@ namespace Orbital7.MyGames.Scrapers
 
                 case Platform.Atari_7800:
                     return "Atari 7800";
+
+                case Platform.Atari_Lynx:
+                    return "Atari Lynx";
 
                 case Platform.Atari_Jaguar:
                     return "Atari Jaguar";
@@ -153,6 +155,12 @@ namespace Orbital7.MyGames.Scrapers
                 case Platform.NeoGeo:
                     return "Neo Geo";
 
+                case Platform.NeoGeo_Pocket:
+                    return "Neo Geo Pocket";
+
+                case Platform.NeoGeo_Pocket_Color:
+                    return "Neo Geo Pocket Color";
+
                 case Platform.Nintendo_64:
                     return "Nintendo 64";
 
@@ -166,13 +174,19 @@ namespace Orbital7.MyGames.Scrapers
                     return "Super Nintendo (SNES)";
 
                 case Platform.Nintendo_Gameboy:
-                    return "Nintendo Gameboy";
+                    return "Nintendo Game Boy";
 
                 case Platform.Nintendo_Gameboy_Advance:
-                    return "Nintendo Gameboy Advance";
+                    return "Nintendo Game Boy Advance";
+
+                case Platform.Nintendo_Gameboy_Color:
+                    return "Nintendo Gameboy Color";
 
                 case Platform.Nintendo_GameCube:
                     return "Nintendo GameCube";
+
+                case Platform.Nintendo_Virtual_Boy:
+                    return "Nintendo Virtual Boy";
 
                 case Platform.Nintendo_Wii:
                     return "Nintendo Wii";
