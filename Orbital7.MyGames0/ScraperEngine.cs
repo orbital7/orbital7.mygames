@@ -1,33 +1,36 @@
-﻿using Orbital7.Extensions;
+﻿using Orbital7.Extensions.Windows;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Xml;
 
 namespace Orbital7.MyGames
 {
     public class ScraperEngine
     {
-        private delegate Task<object> PerformScraperSearchAsync(Platform platform, string gameName);
+        private delegate object PerformScraperSearch(Platform platform, string gameName);
 
-        public static List<Scraper> GatherScrapers(string configFolderPath)
+        public static List<Scraper> GatherScrapers()
         {
-            return new List<Scraper>()
-            {
-                new Scrapers.TheGamesDBScraper(configFolderPath),
-                new Scrapers.GiantBombScraper(configFolderPath),
-            };
+            List<Scraper> scrapers = ReflectionHelper.GetTypeInstances<Scraper>(typeof(Scraper),
+                FileSystemHelper.GetExecutingAssemblyFolder());
+            return (from x in scrapers orderby x.Priority descending select x).ToList();
         }
 
-        public async Task<Game> SearchExactAsync(Scraper scraper, Platform platform, string query, string filename)
+        public Game SearchExact(Scraper scraper, Platform platform, string query, string filename)
         {
-            var game = (Game)(await ExecuteSearchAsync(platform, query, scraper.SearchExactAsync));
+            var game = (Game)ExecuteSearch(platform, query, scraper.SearchExact);
             UpdateGameResult(game, scraper, platform, filename);
             return game;
         }
 
-        public async Task<List<Game>> SearchAsync(Scraper scraper, Platform platform, string query, string filename)
+        public List<Game> Search(Scraper scraper, Platform platform, string query, string filename)
         {
-            var games = (List<Game>)(await ExecuteSearchAsync(platform, query, scraper.SearchAsync));
+            var games = (List<Game>)ExecuteSearch(platform, query, scraper.Search);
             foreach (var game in games)
                 UpdateGameResult(game, scraper, platform, filename);
             return games;
@@ -43,47 +46,46 @@ namespace Orbital7.MyGames
             }
         }
 
-        private async Task<object> ExecuteSearchAsync(Platform platform, string query, 
-            PerformScraperSearchAsync PerformScraperSearchAsync)
+        private object ExecuteSearch(Platform platform, string query, PerformScraperSearch PerformScraperSearch)
         {
             object result = null;
 
             // Search.
-            result = await PerformScraperSearchAsync(platform, query);
+            result = PerformScraperSearch(platform, query);
 
             // If not found, try converting " - " to ": ".
             if (result == null && query.Contains(" - "))
             {
                 int index = query.IndexOf(" - ");
                 query = query.Substring(0, index) + ": " + query.Substring(index + 3, query.Length - index - 3);
-                result = await PerformScraperSearchAsync(platform, query);
+                result = PerformScraperSearch(platform, query);
             }
 
             // If still not found, but we contain ": ", parse everything behind that out.
             if (result == null && query.Contains(": "))
             {
                 query = query.Substring(0, query.IndexOf(": "));
-                result = await PerformScraperSearchAsync(platform, query);
+                result = PerformScraperSearch(platform, query);
             }
 
             // If still not found but contains "\\0", parse out everything behind it.
             if (result == null && query.Contains("\\0"))
             {
                 query = query.Substring(0, query.IndexOf("\\0"));
-                result = await PerformScraperSearchAsync(platform, query);
+                result = PerformScraperSearch(platform, query);
             }
 
             // If still not found and contains " vs ", try changing that to " vs. ".
             if (result == null && query.Contains(" vs "))
             {
                 query = query.Replace(" vs ", " vs. ");
-                result = await PerformScraperSearchAsync(platform, query);
+                result = PerformScraperSearch(platform, query);
             }
 
             return result;
         }
 
-        public static async Task<string> GetGameNameAsync(Platform platform, string query)
+        public static string GetGameName(Platform platform, string query)
         {
             // In most cases, we're given a filename as the input query, so we need to trim off the file
             // extension; one problem here is that the Path.GetFileNameWithoutExtension() function will
@@ -111,7 +113,7 @@ namespace Orbital7.MyGames
 
                     try
                     {
-                        string html = await WebHelper.DownloadSourceAsync("http://www.mamedb.com/game/" + initialGameName);
+                        string html = WebHelper.DownloadSource("http://www.mamedb.com/game/" + initialGameName);
                         if (!String.IsNullOrEmpty(html))
                         {
                             gameName = html.FindFirstBetween("<h1>", "</h1>");

@@ -3,11 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital7.MyGames", "Orbital7.MyGames\Orbital7.MyGames.csproj", "{DB5071F6-09DB-41FD-ABD0-7B21A0D9EEE5}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{DF03C6A3-1715-4416-808F-2848067770F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopApp", "Apps\DesktopApp\DesktopApp.csproj", "{587F7549-D7E1-44F8-B3FA-3218D17C5F4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital7.MyGames", "Orbital7.MyGames\Orbital7.MyGames.csproj", "{BF0E178B-7876-42CD-84E9-7476EE10C4CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{21399A15-D5AF-419D-B936-3921859ACFC0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net45", "net45", "{B06B083B-6A79-423A-A583-D9E63AC61D33}"
+	ProjectSection(SolutionItems) = preProject
+		Lib\net45\ImageSharp.dll = Lib\net45\ImageSharp.dll
+		Lib\net45\System.Buffers.dll = Lib\net45\System.Buffers.dll
+		Lib\net45\System.Numerics.Vectors.dll = Lib\net45\System.Numerics.Vectors.dll
+		Lib\net45\System.Runtime.CompilerServices.Unsafe.dll = Lib\net45\System.Runtime.CompilerServices.Unsafe.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard1.1", "netstandard1.1", "{7070AFB0-AF8B-43DA-8520-BD1E06096C49}"
+	ProjectSection(SolutionItems) = preProject
+		Lib\netstandard1.1\ImageSharp.dll = Lib\netstandard1.1\ImageSharp.dll
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,19 +30,21 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DB5071F6-09DB-41FD-ABD0-7B21A0D9EEE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB5071F6-09DB-41FD-ABD0-7B21A0D9EEE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB5071F6-09DB-41FD-ABD0-7B21A0D9EEE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB5071F6-09DB-41FD-ABD0-7B21A0D9EEE5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{587F7549-D7E1-44F8-B3FA-3218D17C5F4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{587F7549-D7E1-44F8-B3FA-3218D17C5F4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{587F7549-D7E1-44F8-B3FA-3218D17C5F4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{587F7549-D7E1-44F8-B3FA-3218D17C5F4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF0E178B-7876-42CD-84E9-7476EE10C4CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF0E178B-7876-42CD-84E9-7476EE10C4CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF0E178B-7876-42CD-84E9-7476EE10C4CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF0E178B-7876-42CD-84E9-7476EE10C4CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{587F7549-D7E1-44F8-B3FA-3218D17C5F4C} = {DF03C6A3-1715-4416-808F-2848067770F1}
+		{B06B083B-6A79-423A-A583-D9E63AC61D33} = {21399A15-D5AF-419D-B936-3921859ACFC0}
+		{7070AFB0-AF8B-43DA-8520-BD1E06096C49} = {21399A15-D5AF-419D-B936-3921859ACFC0}
 	EndGlobalSection
 EndGlobal

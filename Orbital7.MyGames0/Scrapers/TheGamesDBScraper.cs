@@ -1,10 +1,13 @@
-﻿using Orbital7.Extensions;
+﻿using Orbital7.Extensions.Windows;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml;
-using System.Xml.XPath;
 
 namespace Orbital7.MyGames.Scrapers
 {
@@ -15,86 +18,82 @@ namespace Orbital7.MyGames.Scrapers
             get { return "theGamesDB.net"; }
         }
 
-        public TheGamesDBScraper(string configFolderPath)
-            : base(configFolderPath)
+        public override int Priority
         {
-
+            get { return 100; }
         }
 
-        public override async Task<object> SearchExactAsync(Platform platform, string gameName)
+        public override Game SearchExact(Platform platform, string gameName)
         {
             Game game = null;
 
-            var navigator = await PerformSearchAsync(platform, gameName, true);
-            string imageBaseURL = XMLHelper.GetNodeValue(navigator, "baseImgUrl");
-
-            var gameNavigator = navigator.SelectSingleNode("Game");
-            if (gameNavigator != null)
-                game = ParseGame(gameNavigator, imageBaseURL);
+            var doc = PerformSearch(platform, gameName, true);
+            var gameNode = doc.DocumentElement.SelectSingleNode("Game");
+            if (gameNode != null)
+                game = ParseGame(doc, gameNode);
 
             return game;
         }
 
-        public override async Task<object> SearchAsync(Platform platform, string gameName)
+        public override List<Game> Search(Platform platform, string gameName)
         {
             List<Game> games = new List<Game>();
 
-            var navigator = await PerformSearchAsync(platform, gameName, false);
-            string imageBaseURL = XMLHelper.GetNodeValue(navigator, "baseImgUrl");
-
-            var gameNodes = navigator.Select("Game");
-            foreach (XPathNavigator gameNavigator in gameNodes)
-                games.Add(ParseGame(gameNavigator, imageBaseURL));
+            var doc = PerformSearch(platform, gameName, false);
+            var gameNodes = doc.DocumentElement.SelectNodes("Game");
+            foreach (XmlNode gameNode in gameNodes)
+                games.Add(ParseGame(doc, gameNode));
 
             return games;
         }
 
-        private async Task<XPathNavigator> PerformSearchAsync(Platform platform, string gameName, bool exact)
+        private XmlDocument PerformSearch(Platform platform, string gameName, bool exact)
         {
             // Search.
             string url = "http://thegamesdb.net/api/GetGame.php?" +
                          (exact ? "exactname=" : "name=") +
-                         gameName.UrlEncode() + "&platform=" +
-                         GetPlatformKey(platform).UrlEncode();
-            var stream = await WebHelper.DownloadStreamAsync(url);
+                         HttpUtility.UrlEncode(gameName) + "&platform=" +
+                         HttpUtility.UrlEncode(GetPlatformKey(platform));
+            string xml = WebHelper.DownloadSource(url);
 
             // Parse.
-            var doc = new XPathDocument(stream);
-            var navigator = doc.CreateNavigator();
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xml);
 
             // Validate.
-            var error = navigator.SelectSingleNode("Error");
-            if (error != null)
-                throw new Exception(error.Value);
+            if (doc.DocumentElement.Name == "Error")
+                throw new Exception(XMLHelper.GetNodeValue(doc.DocumentElement, "."));
 
-            return navigator.SelectSingleNode("/Data");
+            return doc;
         }
 
-        private Game ParseGame(XPathNavigator gameNavigator, string imageBaseURL)
+        private Game ParseGame(XmlDocument doc, XmlNode gameNode)
         {
+            string imageBaseURL = XMLHelper.GetNodeValue(doc.DocumentElement, "baseImgUrl");
+
             // Create the game.
             Game game = new Game();
-            game.ID = XMLHelper.GetNodeValue(gameNavigator, "id");
-            game.Genre = XMLHelper.GetNodeValue(gameNavigator, "Genres/genre");
-            game.Description = XMLHelper.GetNodeValue(gameNavigator, "Overview");
-            game.Developer = XMLHelper.GetNodeValue(gameNavigator, "Developer");
-            game.Publisher = XMLHelper.GetNodeValue(gameNavigator, "Publisher");
-            base.SetGameReleaseDate(game, XMLHelper.GetNodeValue(gameNavigator, "ReleaseDate"));
+            game.ID = XMLHelper.GetNodeValue(gameNode, "id");
+            game.Genre = XMLHelper.GetNodeValue(gameNode, "Genres/genre");
+            game.Description = XMLHelper.GetNodeValue(gameNode, "Overview");
+            game.Developer = XMLHelper.GetNodeValue(gameNode, "Developer");
+            game.Publisher = XMLHelper.GetNodeValue(gameNode, "Publisher");
+            base.SetGameReleaseDate(game, XMLHelper.GetNodeValue(gameNode, "ReleaseDate"));
 
             // Parse the rating.
-            string rating = XMLHelper.GetNodeValue(gameNavigator, "Rating");
+            string rating = XMLHelper.GetNodeValue(gameNode, "Rating");
             if (!String.IsNullOrEmpty(rating))
                 game.Rating = Convert.ToDouble(rating) / 10;     // Move from scale of 10 to scale of 1.
 
             // Parse the game name.
-            string name = XMLHelper.GetNodeValue(gameNavigator, "GameTitle");
+            string name = XMLHelper.GetNodeValue(gameNode, "GameTitle");
             if (name.Contains(" ("))
                 name = name.Substring(0, name.IndexOf(" ("));
             game.Name = name;
 
             // Download front boxart image.
-            string imagePartialURL = XMLHelper.GetNodeValue(gameNavigator, "Images/boxart[@side='front']");
-            string imageThumbURL = XMLHelper.GetAttributeValue(gameNavigator, "Images/boxart[@side='front']", "thumb");
+            string imagePartialURL = XMLHelper.GetNodeValue(gameNode, "Images/boxart[@side='front']");
+            string imageThumbURL = XMLHelper.GetAttributeValue(gameNode, "Images/boxart[@side='front']", "thumb");
             if (!String.IsNullOrEmpty(imagePartialURL))
                 base.SetGameImage(game, imageBaseURL + imagePartialURL);
             // Else download front boxart thumbnail.

@@ -1,4 +1,5 @@
 ﻿using Orbital7.Extensions;
+using Orbital7.Extensions.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,8 +13,6 @@ namespace Orbital7.MyGames
     {
         public const string FILENAME = "MyGames.config";
 
-        public string FolderPath { get; set; }
-
         public string RomsFolderPath { get; set; }
 
         public List<PlatformConfig> PlatformConfigs { get; set; } = new List<PlatformConfig>();
@@ -25,41 +24,34 @@ namespace Orbital7.MyGames
 
         }
 
-        public Config(string folderPath)
+        public Config(string romsFolderPath)
             : this()
-        {
-            this.FolderPath = folderPath;
-        }
-
-        public Config(string folderPath, string romsFolderPath)
-            : this(folderPath)
         {
             this.RomsFolderPath = romsFolderPath;
         }
 
-        private static string GetFilePath(string folderPath)
+        public static string GetFilePath(string folderPath)
         {
             return Path.Combine(folderPath, FILENAME);
         }
 
-        public static Config Load(string folderPath)
+        public static Config Load(string filePath = null)
         {
-            string filePath = GetFilePath(folderPath);
+            if (String.IsNullOrEmpty(filePath))
+                filePath = GetFilePath(FileSystemHelper.GetExecutingAssemblyFolder());
+
             if (File.Exists(filePath))
-            {
-                var config = XMLSerializationHelper.LoadFromXML<Config>(File.ReadAllText(filePath));
-                config.FolderPath = folderPath;
-                return config;
-            }
+                return XMLSerializationHelper.LoadFromXML<Config>(File.ReadAllText(filePath));
             else
-            {
                 return null;
-            }
         }
 
-        public void Save()
+        public void Save(string filePath = null)
         {
-            File.WriteAllText(GetFilePath(this.FolderPath), XMLSerializationHelper.SerializeToXML(this));
+            if (String.IsNullOrEmpty(filePath))
+                filePath = GetFilePath(FileSystemHelper.GetExecutingAssemblyFolder());
+
+            File.WriteAllText(filePath, XMLSerializationHelper.SerializeToXML(this));
         }
 
         public Device FindDevice(string directoryKey)

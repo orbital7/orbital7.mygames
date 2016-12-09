@@ -1,4 +1,5 @@
-﻿using Orbital7.Extensions.Windows;
+﻿using Orbital7.Extensions;
+using Orbital7.Extensions.Windows;
 using Orbital7.Extensions.Windows.Desktop.WPF;
 using Orbital7.MyGames;
 using System;
@@ -32,13 +33,18 @@ namespace DesktopApp
             InitializeComponent();
             App.SetWindowFont(this);
 
+            AsyncHelper.RunSync(() => LoadAsync(game));
+        }
+
+        public async Task LoadAsync(Game game)
+        {
             // Record.
             this.GameToMatch = game;
-            textQuery.Text = ScraperEngine.GetGameName(game.Platform, game.GameFilename);
+            textQuery.Text = await ScraperEngine.GetGameNameAsync(game.Platform, game.GameFilename);
             comboPlatform.SelectedItem = game.Platform;
 
             // Load the scrapers.
-            var scrapers = ScraperEngine.GatherScrapers();
+            var scrapers = ScraperEngine.GatherScrapers(game.GameList.Config.FolderPath);
             if (scrapers.Count > 0)
             {
                 foreach (var scraper in scrapers)
@@ -55,8 +61,8 @@ namespace DesktopApp
                 resultsView.Clear();
 
                 var engine = new ScraperEngine();
-                var results = engine.Search((Scraper)comboScraper.SelectedItem, (Platform)comboPlatform.SelectedItem, 
-                    textQuery.Text.Trim(), this.GameToMatch.GameFilename);
+                var results = AsyncHelper.RunSync<List<Game>>(() => engine.SearchAsync((Scraper)comboScraper.SelectedItem, (Platform)comboPlatform.SelectedItem, 
+                    textQuery.Text.Trim(), this.GameToMatch.GameFilename));
                 if (results.Count > 0)
                     resultsView.Load(results);
                 else
@@ -79,7 +85,7 @@ namespace DesktopApp
                 Mouse.OverrideCursor = Cursors.Wait;
                 if (this.MatchedGame != null)
                 {
-                    this.GameToMatch.Match(this.MatchedGame);
+                    this.GameToMatch.Match(this.MatchedGame, editGameView.GameImage);
                     this.DialogResult = true;
                     this.Close();
                 }
@@ -111,7 +117,7 @@ namespace DesktopApp
         private void resultsView_SelectionChanged()
         {
             this.MatchedGame = resultsView.SelectedGame;
-            editGameView.Load(this.MatchedGame);
+            editGameView.Load(this.GameToMatch.GameList.Config.FolderPath, this.MatchedGame);
             buttonMatch.IsEnabled = this.MatchedGame != null;
         }
     }

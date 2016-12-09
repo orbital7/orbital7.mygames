@@ -30,19 +30,24 @@ namespace DesktopApp
             App.SetWindowFont(this);
 
             this.Game = game;
-            editGameView.Load(game);
+            editGameView.Load(game.GameList.Config.FolderPath, game);
         }
 
         private void buttonSave_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                this.Game.SyncWithFileSystem();
+                Mouse.OverrideCursor = Cursors.Wait;
+                this.Game.Save(editGameView.GameImage);
                 this.DialogResult = true;
             }
             catch(Exception ex)
             {
                 MessageBoxHelper.ShowError(this, ex);
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
             }
 
             this.Close();

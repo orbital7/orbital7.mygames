@@ -10,7 +10,6 @@
 
 namespace Orbital7.MyGames.Properties {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -40,7 +39,7 @@ namespace Orbital7.MyGames.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Orbital7.MyGames.Properties.Resources", typeof(Resources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Orbital7.MyGames.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -77,7 +76,13 @@ namespace Orbital7.MyGames.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to This list contains all games supported by FB Alpha.
+        ///
+        ///8363 games supported in total; X = excluded from build; D = included in debug build only; NW = not working
+        ///
+        ///  name		  status  full name						  parent	  year	  company	  hardware	  remarks
+        ///+---------------+-------+-------------------------------------------------------+---------------+-------+---------------+---------------+---------------------------------------+
+        ///| 8ballact	|   NW	| &quot;8ballact&quot;						| 		| 1984	| Miscellaneous	| 		| Seatongrove Ltd (M [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string gamelist {
             get {

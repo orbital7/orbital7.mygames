@@ -1,11 +1,13 @@
-﻿using Orbital7.Extensions;
+﻿using Orbital7.Extensions.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
+using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml;
-using System.Xml.XPath;
 
 namespace Orbital7.MyGames.Scrapers
 {
@@ -16,79 +18,68 @@ namespace Orbital7.MyGames.Scrapers
             get { return "GiantBomb.com"; }
         }
 
-        public GiantBombScraper(string configFolderPath)
-            : base(configFolderPath)
-        {
-
-        }
-
-        public override async Task<object> SearchExactAsync(Platform platform, string gameName)
+        public override Game SearchExact(Platform platform, string gameName)
         {
             Game game = null;
 
-            var navigator = await PerformSearchAsync(platform, gameName);
-            var gameNavigator = navigator.SelectSingleNode("results/game[name/text()='" + gameName.Replace("'", "&quot") + "']");
-            if (gameNavigator != null)
-                game = ParseGame(gameNavigator);
+            var doc = PerformSearch(platform, gameName);
+            var gameNode = doc.DocumentElement.SelectSingleNode("results/game[name/text()='" + gameName.Replace("'", "&quot") + "']");
+            if (gameNode != null)
+                game = ParseGame(doc, gameNode);
 
             return game;
         }
 
-        public override async Task<object> SearchAsync(Platform platform, string gameName)
+        public override List<Game> Search(Platform platform, string gameName)
         {
             List<Game> games = new List<Game>();
 
-            var navigator = await PerformSearchAsync(platform, gameName);
-            foreach (XPathNavigator gameNavigator in navigator.Select("results/game"))
-                games.Add(ParseGame(gameNavigator));
+            var doc = PerformSearch(platform, gameName);
+            foreach (XmlNode gameNode in doc.DocumentElement.SelectNodes("results/game"))
+                games.Add(ParseGame(doc, gameNode));
 
             return games;
         }
 
-        private async Task<XPathNavigator> PerformSearchAsync(Platform platform, string gameName)
+        private XmlDocument PerformSearch(Platform platform, string gameName)
         {
             // Retrieve API key (to get a key, visit http://www.giantbomb.com/api/).
-            string apiKeyFilePath = Path.Combine(this.ConfigFolderPath, "GiantBombAPIKey.txt");
+            string apiKeyFilePath = Path.Combine(FileSystemHelper.GetExecutingAssemblyFolder(), "GiantBombAPIKey.txt");
             if (!File.Exists(apiKeyFilePath))
                 throw new Exception("File containing GiantBomb API Key not found at: " + apiKeyFilePath);
             string apiKey = File.ReadAllText(apiKeyFilePath);
 
-            //// Wait 1 second to comply with service frequency guidelines.
-            //System.Threading.Thread.Sleep(1000);
+            // Wait 1 second to comply with service frequency guidelines.
+            System.Threading.Thread.Sleep(1000);
 
             // Search.
             string url = "http://www.giantbomb.com/api/games/?api_key=" + apiKey + "&filter=" + 
-                         "name:" + gameName.UrlEncode() + "," +
-                         "platforms:" + GetPlatformKey(platform).UrlEncode();
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Add("user-agent", Scraper.USER_AGENT);
-            var response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var stream = await response.Content.ReadAsStreamAsync();
+                         "name:" + HttpUtility.UrlEncode(gameName) + "," +
+                         "platforms:" + HttpUtility.UrlEncode(GetPlatformKey(platform));
+            var webClient = new WebClient();
+            webClient.Headers.Add("user-agent", Scraper.USER_AGENT);
+            string xml = webClient.DownloadString(url);
 
             // Parse.
-            XmlDocument x = new XmlDocument();
-
-            var doc = new XPathDocument(stream);
-            var navigator = doc.CreateNavigator();
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xml);
 
             // Validate.
-            if (XMLHelper.GetNodeValue(navigator, "status_code") != "1")
-                throw new Exception(XMLHelper.GetNodeValue(navigator, "error"));
+            if (XMLHelper.GetNodeValue(doc.DocumentElement, "status_code") != "1")
+                throw new Exception(XMLHelper.GetNodeValue(doc.DocumentElement, "error"));
 
-            return navigator;
+            return doc;
         }
 
-        private Game ParseGame(XPathNavigator gameNavigator)
+        private Game ParseGame(XmlDocument doc, XmlNode gameNode)
         {
             // Create the game.
             Game game = new Game();
-            game.ID = XMLHelper.GetNodeValue(gameNavigator, "id");
-            game.Name = XMLHelper.GetNodeValue(gameNavigator, "name");
-            game.Description = XMLHelper.GetNodeValue(gameNavigator, "deck");
-            base.SetGameReleaseDate(game, XMLHelper.GetNodeValue(gameNavigator, "original_release_date"));
-            base.SetGameImage(game, XMLHelper.GetNodeValue(gameNavigator, "image/super_url"));
+            game.ID = XMLHelper.GetNodeValue(gameNode, "id");
+            game.Name = XMLHelper.GetNodeValue(gameNode, "name");
+            game.Description = XMLHelper.GetNodeValue(gameNode, "deck");
+            base.SetGameReleaseDate(game, XMLHelper.GetNodeValue(gameNode, "original_release_date"));
+            base.SetGameImage(game, XMLHelper.GetNodeValue(gameNode, "image/super_url"));
 
             // TODO: To get the remaining values, we would need to call the game-specific API.
             //game.Developer = 

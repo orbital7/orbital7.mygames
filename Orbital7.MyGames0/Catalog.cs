@@ -1,4 +1,4 @@
-﻿using Orbital7.Extensions;
+﻿using Orbital7.Extensions.Windows;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,14 +11,10 @@ namespace Orbital7.MyGames
 {
     public class Catalog
     {
-        public List<GameList> GameLists { get; private set; } = new List<GameList>();
-
-        public Config Config { get; private set; }
+        public List<GameList> GameLists { get; set; } = new List<GameList>();
 
         public Catalog(Config config)
         {
-            this.Config = config;
-
             foreach (var platformFolderPath in Directory.GetDirectories(config.RomsFolderPath))
             {
                 var platform = GameList.GetPlatform(Path.GetFileName(platformFolderPath));
@@ -46,7 +42,7 @@ namespace Orbital7.MyGames
         public void SyncWithDevice(string deviceDirectoryKey)
         {
             // Load the device from the configuration.
-            var config = Config.Load(this.Config.FolderPath);
+            var config = Config.Load();
             var device = config.FindDevice(deviceDirectoryKey);
             if (device == null)
                 throw new Exception("Device " + deviceDirectoryKey + " could not be found");

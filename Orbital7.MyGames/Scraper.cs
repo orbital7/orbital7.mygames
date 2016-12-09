@@ -1,10 +1,10 @@
-﻿using Orbital7.Extensions.Windows;
+﻿using ImageSharp;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,16 +14,18 @@ namespace Orbital7.MyGames
     {
         protected const string USER_AGENT = "orbital7.mygames.scraper";
 
+        public string ConfigFolderPath { get; private set; }
+
         public abstract string SourceName { get; }
 
-        public virtual int Priority
+        public Scraper(string configFolderPath)
         {
-            get { return 0; }
+            this.ConfigFolderPath = configFolderPath;
         }
 
-        public abstract Game SearchExact(Platform platform, string gameName);
+        public abstract Task<object> SearchExactAsync(Platform platform, string gameName);
 
-        public abstract List<Game> Search(Platform platform, string gameName);
+        public abstract Task<object> SearchAsync(Platform platform, string gameName);
 
         public override string ToString()
         {
@@ -42,32 +44,10 @@ namespace Orbital7.MyGames
             }
         }
         
-        protected void SetGameImage(Game game, string imageURL)
+        protected void SetGameImage(Game game, string imageUrl)
         {
-            if (!String.IsNullOrEmpty(imageURL))
-            {
-                try
-                {
-                    var webClient = new WebClient();
-                    webClient.Headers.Add("user-agent", USER_AGENT);
-                    byte[] imageContents = webClient.DownloadData(imageURL);
-                    SetGameImage(game, imageContents, Path.GetFileName(imageURL));
-                }
-                catch
-                {
-                    // Do nothing.
-                }
-            }
-        }
-
-        protected void SetGameImage(Game game, byte[] imageContents, string imageFilename)
-        {
-            if (imageContents != null && imageContents.Length > 0)
-            {
-                Bitmap bitmap = DrawingHelper.LoadBitmap(imageContents);
-                game.Image = bitmap.EnsureMaximumSize(640, 640, true);
-                game.ImagePath = imageFilename;
-            }
+            game.ImageFilePath = imageUrl;
+            game.HasImage = true;
         }
     }
 }

@@ -1,20 +1,12 @@
 ﻿using Orbital7.Extensions.Windows.Desktop.WPF;
 using Orbital7.MyGames;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DesktopApp
 {
@@ -30,18 +22,29 @@ namespace DesktopApp
             InitializeComponent();
         }
 
-        public void Load(Game game)
+        public byte[] GameImage
+        {
+            get
+            {
+                if (image.Source != null)
+                    return ((BitmapImage)image.Source).ToBitmap().ToByteArray();
+                else
+                    return null;
+            }
+        }
+
+        public void Load(string configFolderPath, Game game)
         {
             if (game != null)
             {
 
-                WPFHelper.FillComboBox(comboEmulator, game.GetAvailableEmulators(), game.Emulator);
-                WPFHelper.FillComboBox(comboGameConfig, game.GetAvailableGameConfigs(), game.GameConfig);
+                WPFHelper.FillComboBox(comboEmulator, game.GetAvailableEmulators(configFolderPath), game.Emulator);
+                WPFHelper.FillComboBox(comboGameConfig, game.GetAvailableGameConfigs(configFolderPath), game.GameConfig);
 
                 panel.IsEnabled = true;
                 this.Game = game;
                 this.DataContext = game;
-                UpdateImage(game.Image.ToImageSource());
+                UpdateImage(MediaHelper.GetBitmapImageSource(game.ImageFilePath));
                 this.Foreground = System.Windows.Media.Brushes.White;
             }
             else
@@ -76,10 +79,7 @@ namespace DesktopApp
         {
             var bitmap = System.Windows.Forms.Clipboard.GetImage() as Bitmap;
             if (bitmap != null)
-            {
-                this.Game.UpdateImage(bitmap);
-                UpdateImage(this.Game.Image.ToImageSource());
-            }
+                UpdateImage(bitmap.ToImageSource());
         }
     }
 }

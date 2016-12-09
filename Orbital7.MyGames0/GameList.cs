@@ -1,4 +1,5 @@
 ﻿using Orbital7.Extensions;
+using Orbital7.Extensions.Windows;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,9 +19,6 @@ namespace Orbital7.MyGames
         public const string SaveStatesFolderName = "savestates";
 
         [XmlIgnore]
-        public Config Config { get; private set; }
-
-        [XmlIgnore]
         public string PlatformFolderPath { get; set; }
 
         [XmlIgnore]
@@ -38,7 +36,7 @@ namespace Orbital7.MyGames
 
         }
 
-        private static string GetFilePath(string folderPath)
+        public static string GetFilePath(string folderPath)
         {
             return Path.Combine(folderPath, "gamelist.xml");
         }
@@ -68,7 +66,6 @@ namespace Orbital7.MyGames
                 FileSystemHelper.EnsureFolderExists(folderPath, GameList.GameConfigsFolderName, device.DirectoryKey);
 
             // Update.
-            gameList.Config = config;
             gameList.PlatformFolderPath = folderPath;
             gameList.Platform = platform.Value;
             gameList.SyncWithFileSystem();

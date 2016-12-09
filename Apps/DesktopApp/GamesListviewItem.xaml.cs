@@ -69,10 +69,9 @@ namespace DesktopApp
             textDeveloper.Text = this.Game.Developer;
             textRating.Text = this.Game.Rating > 0 ? this.Game.Rating.ToString("0.0") : "n/a";
             textReleaseDate.Text = this.Game.ReleaseDate.ToShortDateString("n/a");
-            //textEmulator.Text = this.Game.Emulator;
             textPlatform.Text = this.Game.Platform.ToDisplayString();
             textDescription.Text = this.Game.Description;
-            image.Source = this.Game.Image.ToImageSource();
+            image.Source = MediaHelper.GetBitmapImageSource(this.Game.ImageFilePath);
         }
 
         private void ShowGameDialog(Window dialog)

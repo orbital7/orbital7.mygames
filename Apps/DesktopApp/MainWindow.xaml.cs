@@ -1,4 +1,5 @@
-﻿using Orbital7.Extensions.Windows.Desktop.WPF;
+﻿using Orbital7.Extensions.Windows;
+using Orbital7.Extensions.Windows.Desktop.WPF;
 using Orbital7.MyGames;
 using System;
 using System.Collections.Generic;
@@ -43,14 +44,16 @@ namespace DesktopApp
 
         public Config LoadConfig()
         {
-            var config = Config.Load();
+            string configFolderPath = ReflectionHelper.GetExecutingAssemblyFolder();
+
+            var config = Config.Load(configFolderPath);
             if (config == null)
             {
                 string gamesPath = Orbital7.Extensions.Windows.Desktop.WinForms.CommonDialogsHelper.ShowFolderBrowseDialog(
                     "Select the location of your games folder:");
                 if (!String.IsNullOrEmpty(gamesPath))
                 {
-                    config = new Config(gamesPath);
+                    config = new Config(configFolderPath, gamesPath);
                     config.Save();
                 }
             }
@@ -77,7 +80,7 @@ namespace DesktopApp
 
         private void buttonMatchIncomplete_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new MatchGamesDialog(this.Catalog.GatherIncompleteGames());
+            var dialog = new MatchGamesDialog(this.Catalog.Config.FolderPath, this.Catalog.GatherIncompleteGames());
             dialog.Owner = this;
             dialog.ShowDialog();
             gamesListview.Update();
@@ -87,7 +90,7 @@ namespace DesktopApp
         {
             try
             {
-                var config = Config.Load();
+                var config = Config.Load(this.Catalog.Config.FolderPath);
                 if (config.Devices.Count > 0)
                 {
                     var device = config.Devices[0];

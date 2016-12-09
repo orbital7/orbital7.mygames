@@ -1,7 +1,7 @@
-﻿using ImageSharp;
-using Orbital7.Extensions;
+﻿using Orbital7.Extensions.Windows;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,8 +16,6 @@ namespace Orbital7.MyGames
         public const string DEFAULT_EMULATOR = "Default";
         public const string DEFAULT_GAME_CONFIG = "Default";
         public const string CUSTOM_GAME_CONFIG = "Custom";
-        public const int MAX_IMAGE_WIDTH = 640;
-        public const int MAX_IMAGE_HEIGHT = 640;
 
         [XmlAttribute(AttributeName = "source")]
         public string Source { get; set; }
@@ -64,8 +62,8 @@ namespace Orbital7.MyGames
         [XmlElement("platform")]
         public Platform Platform { get; set; }
 
-        [XmlElement("hasimage")]
-        public bool HasImage { get; set; }
+        [XmlIgnore]
+        public Bitmap Image { get; set; }
 
         [XmlIgnore]
         public GameList GameList { get; internal set; }
@@ -75,6 +73,12 @@ namespace Orbital7.MyGames
 
         [XmlIgnore]
         public string ImageFilePath { get; internal set; }
+
+        [XmlIgnore]
+        public bool HasImage
+        {
+            get { return this.Image != null && !String.IsNullOrEmpty(this.ImagePath); }
+        }
 
         public string ImageFilename
         {
@@ -163,13 +167,14 @@ namespace Orbital7.MyGames
             this.GameList = gameList;
 
             SetFilePaths();
-            UpdateLocalCustomGameConfigFile(config);
-            this.HasImage = File.Exists(this.ImagePath);
+            UpdateLocalCustomButtonMappingFile(config);
+            if (!String.IsNullOrEmpty(this.ImageFilePath))
+                this.Image = DrawingHelper.LoadBitmap(this.ImageFilePath);
 
             
         }
 
-        private void UpdateLocalCustomGameConfigFile(Config config)
+        private void UpdateLocalCustomButtonMappingFile(Config config)
         {
             foreach (var device in config.Devices)
             {
@@ -188,10 +193,7 @@ namespace Orbital7.MyGames
                 this.GameFilePath = Path.Combine(this.GameList.PlatformFolderPath, FileSystemHelper.ToWindowsPath(this.GamePath));
 
                 if (!String.IsNullOrEmpty(this.ImagePath))
-                {
                     this.ImageFilePath = Path.Combine(this.GameList.PlatformFolderPath, FileSystemHelper.ToWindowsPath(this.ImagePath));
-                    this.HasImage = File.Exists(this.ImageFilePath);
-                }
             }
         }
 
@@ -203,18 +205,23 @@ namespace Orbital7.MyGames
 
             SetFilePaths();
         }
+
+        public void UpdateImage(Bitmap image)
+        {
+            if (image != null)
+            {
+                this.Image = image.ToBitmap(System.Drawing.Imaging.ImageFormat.Png);
+                this.ImagePath = "Temp.png";
+                UpdateFilename(this.GameFilename);
+            }
+        }
         
         internal static string GetImageFilenameWithoutExtension(string gameFilename)
         {
             return Path.GetFileNameWithoutExtension(gameFilename) + "-image";
         }
 
-        public void Save(byte[] updatedImageContents)
-        {
-            Save(updatedImageContents != null ? new Image(new MemoryStream(updatedImageContents)) : null);
-        }
-
-        public void Save(Image image)
+        public void SyncWithFileSystem()
         {
             // Look for rename.
             if (this.GameFilename.ToLower() != Path.GetFileName(this.GameFilePath).ToLower())
@@ -236,32 +243,18 @@ namespace Orbital7.MyGames
                 SetFilePaths();
             }
 
-            // Update the image.
-            if (image != null)
-            {
-                using (var fileStream = new FileStream(this.ImageFilePath, FileMode.Create))
-                {
-                    image.MaxHeight = 640;
-                    image.MaxWidth = 640;
-                    image.Save(fileStream);
-                }
-                SetFilePaths();
-            }
+            // Update the button mapping.
+            UpdateLocalCustomButtonMappingFile(Config.Load());
 
-            // Update the game config.
-            UpdateLocalCustomGameConfigFile(Config.Load(this.GameList.Config.FolderPath));
+            // Ensure image is saved.
+            if (this.HasImage)
+                this.Image.Save(this.ImageFilePath);
 
             // Save.
             this.GameList.Save();
         }
 
-        public void Match(Game matchedGame, byte[] imageContents)
-        {
-            Match(matchedGame, imageContents != null ? 
-                new Image(new MemoryStream(imageContents)) : null);
-        }
-
-        public void Match(Game matchedGame, Image image)
+        public void Match(Game matchedGame)
         {
             // Copy over the properties.
             if (this.IsFilenameEditable)
@@ -274,9 +267,10 @@ namespace Orbital7.MyGames
             this.Genre = matchedGame.Genre;
             this.Description = matchedGame.Description;
             this.ImagePath = matchedGame.ImagePath;
+            this.Image = matchedGame.Image;
 
             // Update.
-            this.Save(image);
+            this.SyncWithFileSystem();
         }
 
         public void Delete()
@@ -298,27 +292,28 @@ namespace Orbital7.MyGames
             this.GameList.Save();
         }
 
-        public List<string> GetAvailableEmulators(string configFolderPath)
+        public List<string> GetAvailableEmulators(string configFilePath = null)
         {
             var list = new List<string>() { DEFAULT_EMULATOR };
 
-            var platformConfig = Config.Load(configFolderPath).FindPlatformConfig(this.Platform);
+            var platformConfig = Config.Load(configFilePath).FindPlatformConfig(this.Platform);
             if (platformConfig != null)
                 list.AddRange(platformConfig.Emulators);
 
             return list;
         }
 
-        public List<string> GetAvailableGameConfigs(string configFolderPath)
+        public List<string> GetAvailableGameConfigs(string configFilePath = null)
         {
             var list = new List<string>() { DEFAULT_GAME_CONFIG, CUSTOM_GAME_CONFIG };
 
-            var platformConfig = Config.Load(configFolderPath).FindPlatformConfig(this.Platform);
+            var platformConfig = Config.Load(configFilePath).FindPlatformConfig(this.Platform);
             if (platformConfig != null)
                 list.AddRange(platformConfig.GameConfigs);
 
             return list;
         }
+
 
         public string GetLocalCustomGameConfigFilePath(Device device)
         {

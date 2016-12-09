@@ -1,7 +1,9 @@
-﻿using Orbital7.Extensions.Windows.Desktop.WPF;
+﻿using Orbital7.Extensions;
+using Orbital7.Extensions.Windows.Desktop.WPF;
 using Orbital7.MyGames;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,19 +27,19 @@ namespace DesktopApp
 
         private List<Game> Games { get; set; }
 
-        public MatchGamesDialog(List<Game> games)
+        public MatchGamesDialog(string configFolderPath, List<Game> games)
         {
             InitializeComponent();
 
             this.Games = games;
 
-            foreach (var scraper in ScraperEngine.GatherScrapers())
+            foreach (var scraper in ScraperEngine.GatherScrapers(configFolderPath))
                 comboScraper.Items.Add(scraper);
             if (comboScraper.Items.Count > 0)
                 comboScraper.SelectedIndex = 0;
         }
 
-        private void MatchNow()
+        private async Task MatchNowAsync()
         {
             try
             {
@@ -53,30 +55,31 @@ namespace DesktopApp
                 // Match.
                 int index = 0;
                 textOutput.Clear();
+                Console.SetOut(new TextBoxStreamWriter(textOutput));
                 progress.Minimum = 0;
                 progress.Maximum = gamesToMatch.Count;
                 foreach (var game in gamesToMatch)
                 {
                     index++;
-                    textOutput.Text += "Matching " + index + "/" + gamesToMatch.Count + ": " + game.GameFilename + "...";
+                    Console.Write("Matching " + index + "/" + gamesToMatch.Count + ": " + game.GameFilename + "...");
                     textOutput.ScrollToEnd();
                     try
                     {
-                        var query = ScraperEngine.GetGameName(game.Platform, game.GameFilename);
-                        var matchedGame = engine.SearchExact(scraper, game.Platform, query, game.GameFilename);
+                        var query = await ScraperEngine.GetGameNameAsync(game.Platform, game.GameFilename);
+                        var matchedGame = await engine.SearchExactAsync(scraper, game.Platform, query, game.GameFilename);
                         if (matchedGame != null)
                         {
-                            game.Match(matchedGame);
-                            textOutput.Text += "MATCHED\n";
+                            game.Match(matchedGame, await WebHelper.DownloadFileContentsAsync(matchedGame.ImageFilePath));
+                            Console.WriteLine("MATCHED");
                         }
                         else
                         {
-                            textOutput.Text += "Not Matched\n";
+                            Console.WriteLine("Not Matched");
                         }
                     }
                     catch(Exception ex)
                     {
-                        textOutput.Text += "ERROR: " + ex.Message;
+                        Console.WriteLine("ERROR: " + ex.Message);
                     }
                     progress.Value++;
 
@@ -110,13 +113,22 @@ namespace DesktopApp
         {
             if (!this.ContinueMatching)
             {
-                MatchNow();
+                using (var worker = new BackgroundWorker())
+                {
+                    worker.DoWork += Worker_DoWork;
+                    worker.RunWorkerAsync();
+                }
             }
             else
             {
                 this.ContinueMatching = false;
                 buttonMatch.IsEnabled = false;
             }
+        }
+
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            AsyncHelper.RunSync(() => MatchNowAsync());
         }
     }
 }
