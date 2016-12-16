@@ -24,14 +24,16 @@ namespace DesktopApp
     /// </summary>
     public partial class MatchGameDialog : Window
     {
+        private CatalogEditor CatalogEditor { get; set; }
         private Game GameToMatch { get; set; }
 
         public Game MatchedGame { get; private set; }
 
-        public MatchGameDialog(Game game)
+        public MatchGameDialog(CatalogEditor catalogEditor, Game game)
         {
             InitializeComponent();
             App.SetWindowFont(this);
+            this.CatalogEditor = catalogEditor;
 
             AsyncHelper.RunSync(() => LoadAsync(game));
         }
@@ -44,7 +46,7 @@ namespace DesktopApp
             comboPlatform.SelectedItem = game.Platform;
 
             // Load the scrapers.
-            var scrapers = ScraperEngine.GatherScrapers(game.GameList.Config.FolderPath);
+            var scrapers = ScraperEngine.GatherScrapers(this.CatalogEditor.Config.FolderPath);
             if (scrapers.Count > 0)
             {
                 foreach (var scraper in scrapers)
@@ -64,7 +66,7 @@ namespace DesktopApp
                 var results = AsyncHelper.RunSync<List<Game>>(() => engine.SearchAsync((Scraper)comboScraper.SelectedItem, (Platform)comboPlatform.SelectedItem, 
                     textQuery.Text.Trim(), this.GameToMatch.GameFilename));
                 if (results.Count > 0)
-                    resultsView.Load(results);
+                    resultsView.Load(this.CatalogEditor, results);
                 else
                     resultsView.Clear();
             }
@@ -85,7 +87,7 @@ namespace DesktopApp
                 Mouse.OverrideCursor = Cursors.Wait;
                 if (this.MatchedGame != null)
                 {
-                    this.GameToMatch.Match(this.MatchedGame, editGameView.GameImage);
+                    this.CatalogEditor.MatchGame(this.GameToMatch, this.MatchedGame, editGameView.GameImage);
                     this.DialogResult = true;
                     this.Close();
                 }
@@ -117,7 +119,7 @@ namespace DesktopApp
         private void resultsView_SelectionChanged()
         {
             this.MatchedGame = resultsView.SelectedGame;
-            editGameView.Load(this.GameToMatch.GameList.Config.FolderPath, this.MatchedGame);
+            editGameView.Load(this.CatalogEditor, this.MatchedGame);
             buttonMatch.IsEnabled = this.MatchedGame != null;
         }
     }

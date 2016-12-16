@@ -13,6 +13,7 @@ namespace Orbital7.MyGames
     [XmlRoot("game")]
     public class Game
     {
+        private const string PATH_PREFIX = "./";
         public const string DEFAULT_EMULATOR = "Default";
         public const string DEFAULT_GAME_CONFIG = "Default";
         public const string CUSTOM_GAME_CONFIG = "Custom";
@@ -116,7 +117,7 @@ namespace Orbital7.MyGames
         public string GameFilename
         {
             get { return Path.GetFileName(this.GamePath); }
-            set { this.GamePath = "./" + value; }
+            set { this.GamePath = PATH_PREFIX + value; }
         }
 
         [XmlIgnore]
@@ -158,39 +159,25 @@ namespace Orbital7.MyGames
                 return this.GamePath;
         }
 
-        internal void Initialize(GameList gameList, Config config)
+        internal void Initialize(GameList gameList)
         {
             this.GameList = gameList;
-
             SetFilePaths();
-            UpdateLocalCustomGameConfigFile(config);
-            this.HasImage = File.Exists(this.ImagePath);
-
-            
-        }
-
-        private void UpdateLocalCustomGameConfigFile(Config config)
-        {
-            foreach (var device in config.Devices)
-            {
-                string filePath = GetLocalCustomGameConfigFilePath(device);
-                if (this.GameConfig == CUSTOM_GAME_CONFIG && !File.Exists(filePath))
-                    File.WriteAllText(filePath, "#TODO");
-                else if (this.GameConfig != CUSTOM_GAME_CONFIG && File.Exists(filePath))
-                    File.Delete(filePath);                
-            }
         }
 
         internal void SetFilePaths()
         {
             if (this.GameList != null)
             {
-                this.GameFilePath = Path.Combine(this.GameList.PlatformFolderPath, FileSystemHelper.ToWindowsPath(this.GamePath));
+                string pathSeparator = this.GameList.PlatformFolderPath.Contains("/") ? "/" : "\\";
+                this.GameFilePath = Path.Combine(this.GameList.PlatformFolderPath, 
+                    FileSystemHelper.NormalizePathSeparator(this.GamePath.Replace(PATH_PREFIX, ""), pathSeparator));
 
                 if (!String.IsNullOrEmpty(this.ImagePath))
                 {
-                    this.ImageFilePath = Path.Combine(this.GameList.PlatformFolderPath, FileSystemHelper.ToWindowsPath(this.ImagePath));
-                    this.HasImage = File.Exists(this.ImageFilePath);
+                    this.ImageFilePath = Path.Combine(this.GameList.PlatformFolderPath, 
+                        FileSystemHelper.NormalizePathSeparator(this.ImagePath.Replace(PATH_PREFIX, ""), pathSeparator));
+                    this.HasImage = this.GameList.AccessProvider.FileExists(this.ImageFilePath);
                 }
             }
         }
@@ -199,7 +186,9 @@ namespace Orbital7.MyGames
         {
             this.GameFilename = updatedFilename;
             if (this.HasImage)
-                this.ImagePath = "./images/" + GetImageFilenameWithoutExtension(updatedFilename) + Path.GetExtension(this.ImagePath);
+                this.ImagePath = Path.Combine(PATH_PREFIX + GameList.ImagesFolderName, 
+                                              GetImageFilenameWithoutExtension(updatedFilename) + 
+                                              Path.GetExtension(this.ImagePath));
 
             SetFilePaths();
         }
@@ -209,136 +198,6 @@ namespace Orbital7.MyGames
             return Path.GetFileNameWithoutExtension(gameFilename) + "-image";
         }
 
-        public void Save(byte[] updatedImageContents)
-        {
-            Save(updatedImageContents != null ? new Image(new MemoryStream(updatedImageContents)) : null);
-        }
-
-        public void Save(Image image)
-        {
-            // Look for rename.
-            if (this.GameFilename.ToLower() != Path.GetFileName(this.GameFilePath).ToLower())
-            {
-                // Record old values.
-                string gameFilePath = this.GameFilePath;
-                string imageFilePath = this.ImageFilePath;
-
-                // Update values.
-                this.UpdateFilename(this.GameFilename);
-
-                // Rename files.
-                File.Move(gameFilePath, this.GameFilePath);
-                if (!String.IsNullOrEmpty(imageFilePath) && File.Exists(imageFilePath))
-                    File.Move(imageFilePath, this.ImageFilePath);
-            }
-            else
-            {
-                SetFilePaths();
-            }
-
-            // Update the image.
-            if (image != null)
-            {
-                using (var fileStream = new FileStream(this.ImageFilePath, FileMode.Create))
-                {
-                    image.MaxHeight = 640;
-                    image.MaxWidth = 640;
-                    image.Save(fileStream);
-                }
-                SetFilePaths();
-            }
-
-            // Update the game config.
-            UpdateLocalCustomGameConfigFile(Config.Load(this.GameList.Config.FolderPath));
-
-            // Save.
-            this.GameList.Save();
-        }
-
-        public void Match(Game matchedGame, byte[] imageContents)
-        {
-            Match(matchedGame, imageContents != null ? 
-                new Image(new MemoryStream(imageContents)) : null);
-        }
-
-        public void Match(Game matchedGame, Image image)
-        {
-            // Copy over the properties.
-            if (this.IsFilenameEditable)
-                this.GameFilename = matchedGame.GameFilename;
-            this.Name = matchedGame.Name;
-            this.Publisher = matchedGame.Publisher;
-            this.Developer = matchedGame.Developer;
-            this.Rating = matchedGame.Rating;
-            this.ReleaseDate = matchedGame.ReleaseDate;
-            this.Genre = matchedGame.Genre;
-            this.Description = matchedGame.Description;
-            this.ImagePath = matchedGame.ImagePath;
-
-            // Update.
-            this.Save(image);
-        }
-
-        public void Delete()
-        {
-            if (File.Exists(this.GameFilePath))
-            {
-                // It's possible that a game is comprised of multiple files with the same name
-                // but different extensions (such as CD games, etc.).
-                var filePaths = Directory.GetFiles(Path.GetDirectoryName(this.GameFilePath),
-                    Path.GetFileNameWithoutExtension(this.GameFilePath) + ".*");
-                foreach (var filePath in filePaths)
-                    File.Delete(filePath);
-            }
-
-            if (File.Exists(this.ImageFilePath))
-                File.Delete(this.ImageFilePath);
-
-            this.GameList.Remove(this);
-            this.GameList.Save();
-        }
-
-        public List<string> GetAvailableEmulators(string configFolderPath)
-        {
-            var list = new List<string>() { DEFAULT_EMULATOR };
-
-            var platformConfig = Config.Load(configFolderPath).FindPlatformConfig(this.Platform);
-            if (platformConfig != null)
-                list.AddRange(platformConfig.Emulators);
-
-            return list;
-        }
-
-        public List<string> GetAvailableGameConfigs(string configFolderPath)
-        {
-            var list = new List<string>() { DEFAULT_GAME_CONFIG, CUSTOM_GAME_CONFIG };
-
-            var platformConfig = Config.Load(configFolderPath).FindPlatformConfig(this.Platform);
-            if (platformConfig != null)
-                list.AddRange(platformConfig.GameConfigs);
-
-            return list;
-        }
-
-        public string GetLocalCustomGameConfigFilePath(Device device)
-        {
-            return Path.Combine(this.GameList.PlatformFolderPath, GameList.GameConfigsFolderName, 
-                device.DirectoryKey, this.GameFilename + ".cfg");
-        }
-
-        public string GetLocalGameConfigContents(Device device)
-        {
-            string filePath = String.Empty;
-            if (this.GameConfig == CUSTOM_GAME_CONFIG)
-                filePath = GetLocalCustomGameConfigFilePath(device);
-            else if (this.GameConfig != DEFAULT_GAME_CONFIG)
-                filePath = Path.Combine(this.GameList.PlatformFolderPath, GameList.GameConfigsFolderName,
-                    device.DirectoryKey, this.GameConfig);
-
-            if (File.Exists(filePath))
-                return File.ReadAllText(filePath);
-            else
-                return null;
-        }
+        
     }
 }

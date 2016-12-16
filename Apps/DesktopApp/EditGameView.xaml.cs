@@ -33,13 +33,13 @@ namespace DesktopApp
             }
         }
 
-        public void Load(string configFolderPath, Game game)
+        public void Load(CatalogEditor catalogEditor, Game game)
         {
             if (game != null)
             {
 
-                WPFHelper.FillComboBox(comboEmulator, game.GetAvailableEmulators(configFolderPath), game.Emulator);
-                WPFHelper.FillComboBox(comboGameConfig, game.GetAvailableGameConfigs(configFolderPath), game.GameConfig);
+                WPFHelper.FillComboBox(comboEmulator, catalogEditor.GetAvailableEmulators(game.Platform), game.Emulator);
+                WPFHelper.FillComboBox(comboGameConfig, catalogEditor.GetAvailableGameConfigs(game.Platform), game.GameConfig);
 
                 panel.IsEnabled = true;
                 this.Game = game;

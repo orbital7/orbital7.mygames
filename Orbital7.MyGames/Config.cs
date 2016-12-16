@@ -5,34 +5,34 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Orbital7.MyGames
 {
-    public class Config
+    public abstract class Config
     {
         public const string FILENAME = "MyGames.config";
+
+        [XmlIgnore]
+        public IAccessProvider AccessProvider { get; private set; }
 
         public string FolderPath { get; set; }
 
         public string RomsFolderPath { get; set; }
 
-        public List<PlatformConfig> PlatformConfigs { get; set; } = new List<PlatformConfig>();
-
-        public List<Device> Devices { get; set; } = new List<Device>();
-
-        public Config()
+        public Config(IAccessProvider accessProvider)
         {
-
+            this.AccessProvider = accessProvider;
         }
 
-        public Config(string folderPath)
-            : this()
+        public Config(IAccessProvider accessProvider, string folderPath)
+            : this(accessProvider)
         {
             this.FolderPath = folderPath;
         }
 
-        public Config(string folderPath, string romsFolderPath)
-            : this(folderPath)
+        public Config(IAccessProvider accessProvider, string folderPath, string romsFolderPath)
+            : this(accessProvider, folderPath)
         {
             this.RomsFolderPath = romsFolderPath;
         }
@@ -42,12 +42,12 @@ namespace Orbital7.MyGames
             return Path.Combine(folderPath, FILENAME);
         }
 
-        public static Config Load(string folderPath)
+        public static T Load<T>(IAccessProvider accessProvider, string folderPath) where T : Config
         {
             string filePath = GetFilePath(folderPath);
-            if (File.Exists(filePath))
+            if (accessProvider.FileExists(filePath))
             {
-                var config = XMLSerializationHelper.LoadFromXML<Config>(File.ReadAllText(filePath));
+                T config = XMLSerializationHelper.LoadFromXML<T>(accessProvider.ReadAllText(filePath));
                 config.FolderPath = folderPath;
                 return config;
             }
@@ -59,21 +59,7 @@ namespace Orbital7.MyGames
 
         public void Save()
         {
-            File.WriteAllText(GetFilePath(this.FolderPath), XMLSerializationHelper.SerializeToXML(this));
-        }
-
-        public Device FindDevice(string directoryKey)
-        {
-            return (from x in this.Devices
-                    where x.DirectoryKey.ToLower() == directoryKey.ToLower()
-                    select x).FirstOrDefault();
-        }
-
-        public PlatformConfig FindPlatformConfig(Platform platform)
-        {
-            return (from x in this.PlatformConfigs
-                    where x.Platform == platform
-                    select x).FirstOrDefault();
+            this.AccessProvider.WriteAllText(GetFilePath(this.FolderPath), XMLSerializationHelper.SerializeToXML(this));
         }
     }
 }

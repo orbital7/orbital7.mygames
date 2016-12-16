@@ -40,10 +40,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Catalog.cs" />
+    <Compile Include="CatalogEditor.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Device.cs" />
+    <Compile Include="DeviceConfig.cs" />
+    <Compile Include="LocalAccessProvider.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameList.cs" />
+    <Compile Include="CatalogConfig.cs" />
+    <Compile Include="IAccessProvider.cs" />
+    <Compile Include="IConfig.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="PlatformConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -52,6 +58,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="DeviceSyncEngine.cs" />
+    <Compile Include="LocalSyncEngine.cs" />
     <Compile Include="Scraper.cs" />
     <Compile Include="ScraperEngine.cs" />
     <Compile Include="Scrapers\GiantBombScraper.cs" />

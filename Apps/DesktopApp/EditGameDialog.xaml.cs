@@ -22,15 +22,17 @@ namespace DesktopApp
     /// </summary>
     public partial class EditGameDialog : Window
     {
+        private CatalogEditor CatalogEditor { get; set; }
         private Game Game { get; set; }
 
-        public EditGameDialog(Game game)
+        public EditGameDialog(CatalogEditor catalogEditor, Game game)
         {
             InitializeComponent();
             App.SetWindowFont(this);
 
+            this.CatalogEditor = catalogEditor;
             this.Game = game;
-            editGameView.Load(game.GameList.Config.FolderPath, game);
+            editGameView.Load(catalogEditor, game);
         }
 
         private void buttonSave_Click(object sender, RoutedEventArgs e)
@@ -38,7 +40,7 @@ namespace DesktopApp
             try
             {
                 Mouse.OverrideCursor = Cursors.Wait;
-                this.Game.Save(editGameView.GameImage);
+                this.CatalogEditor.SaveGame(this.Game, editGameView.GameImage);
                 this.DialogResult = true;
             }
             catch(Exception ex)

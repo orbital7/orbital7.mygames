@@ -18,7 +18,7 @@ namespace Orbital7.MyGames
         public const string SaveStatesFolderName = "savestates";
 
         [XmlIgnore]
-        public Config Config { get; private set; }
+        public IAccessProvider AccessProvider { get; private set; }
 
         [XmlIgnore]
         public string PlatformFolderPath { get; set; }
@@ -33,17 +33,22 @@ namespace Orbital7.MyGames
             set { this.InnerList[index] = value; }
         }
 
+        public string FilePath
+        {
+            get { return GetFilePath(this.PlatformFolderPath); }
+        }
+
         public GameList()
         {
 
         }
 
-        private static string GetFilePath(string folderPath)
+        internal static string GetFilePath(string folderPath)
         {
             return Path.Combine(folderPath, "gamelist.xml");
         }
 
-        public static GameList Load(string folderPath, Config config)
+        internal static GameList Load(IAccessProvider accessProvider, string folderPath)
         {
             GameList gameList = null;
 
@@ -60,34 +65,15 @@ namespace Orbital7.MyGames
             else
                 gameList = new GameList();
 
-            // Ensure the necessary folders exist.
-            FileSystemHelper.EnsureFolderExists(folderPath, GameList.ImagesFolderName);
-            FileSystemHelper.EnsureFolderExists(folderPath, GameList.SaveStatesFolderName);
-            FileSystemHelper.EnsureFolderExists(folderPath, GameList.GameConfigsFolderName);
-            foreach (var device in config.Devices)
-                FileSystemHelper.EnsureFolderExists(folderPath, GameList.GameConfigsFolderName, device.DirectoryKey);
-
             // Update.
-            gameList.Config = config;
+            gameList.AccessProvider = accessProvider;
             gameList.PlatformFolderPath = folderPath;
             gameList.Platform = platform.Value;
-            gameList.SyncWithFileSystem();
-            gameList.Save();
 
             // Initialize.
-            gameList.Initialize(config);
+            gameList.Initialize();
                         
             return gameList;
-        }
-
-        public void Save(string folderPath = null)
-        {
-            if (folderPath == null)
-                folderPath = this.PlatformFolderPath;
-
-            string filePath = GetFilePath(folderPath);
-            File.WriteAllText(filePath, XMLSerializationHelper.SerializeToXML(this).Replace(
-                "<Game ", "<game ").Replace("</Game>", "</game>").Replace("<Game>", "<game>"));   // TODO: Fix.
         }
 
         public Game Add(Game game)
@@ -374,42 +360,10 @@ namespace Orbital7.MyGames
             return null;
         }
 
-        public void SyncWithFileSystem()
-        {
-            var fileExtensions = GetPlatformFileExtensions(this.Platform);
-
-            // Remove deleted.
-            for (int i = this.Count - 1; i >= 0; i--)
-            {
-                var game = this[i];
-                game.Platform = this.Platform;
-
-                string filePath = Path.Combine(this.PlatformFolderPath, FileSystemHelper.ToWindowsPath(game.GamePath));
-                if (!File.Exists(filePath))
-                {
-                    this.InnerList.Remove(game);
-                    if (!String.IsNullOrEmpty(game.ImagePath))
-                    {
-                        string imagePath = Path.Combine(this.PlatformFolderPath, FileSystemHelper.ToWindowsPath(game.ImagePath));
-                        if (File.Exists(imagePath))
-                            File.Delete(imagePath);
-                    }
-                }
-            }
-
-            // Add missing.
-            foreach (var filePath in Directory.GetFiles(this.PlatformFolderPath))
-            {
-                string filename = Path.GetFileName(filePath);
-                if (fileExtensions.Contains(Path.GetExtension(filename).ToLower()) && !this.Contains(filename))
-                    this.Add(new Game(this.Platform, filename));
-            }
-        }
-
-        internal void Initialize(Config config)
+        internal void Initialize()
         {
             foreach (Game game in this.InnerList)
-                game.Initialize(this, config);
+                game.Initialize(this);
         }
 
         public override string ToString()

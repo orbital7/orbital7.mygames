@@ -29,6 +29,8 @@ namespace DesktopApp
 
         public bool AllowEditing { get; set; }
 
+        private CatalogEditor CatalogEditor { get; set; }
+
         private List<Game> Games { get; set; }
 
         public GamesListviewItem SelectedItem { get; private set; }
@@ -43,8 +45,10 @@ namespace DesktopApp
             InitializeComponent();
         }
 
-        public void Load(List<Game> games)
+        public void Load(CatalogEditor catalogEditor, List<Game> games)
         {
+            this.CatalogEditor = catalogEditor;
+
             if (games != null)
                 this.Games = (from x in games orderby x.Name, x.GamePath select x).ToList();
             else
@@ -61,7 +65,8 @@ namespace DesktopApp
             {
                 foreach (Game game in this.Games)
                 {
-                    var item = new GamesListviewItem(this, game, this.AllowSelection, this.AllowEditing);
+                    var item = new GamesListviewItem(this, this.CatalogEditor, game, 
+                        this.AllowSelection, this.AllowEditing);
                     item.Margin = new Thickness(0, 10, 0, 5);
                     stackPanel.Children.Add(item);
                 }

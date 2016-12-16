@@ -23,7 +23,7 @@ namespace DesktopApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Catalog Catalog { get; set; }
+        private CatalogEditor CatalogEditor { get; set; }
 
         public MainWindow()
         {
@@ -33,8 +33,8 @@ namespace DesktopApp
             var config = LoadConfig();
             if (config != null)
             {
-                this.Catalog = new Catalog(config);
-                navigationTreeview.Load(this.Catalog);
+                this.CatalogEditor = new CatalogEditor(config);
+                navigationTreeview.Load(this.CatalogEditor.Catalog);
             }
             else
             {
@@ -42,18 +42,19 @@ namespace DesktopApp
             }
         }
 
-        public Config LoadConfig()
+        public CatalogConfig LoadConfig()
         {
             string configFolderPath = ReflectionHelper.GetExecutingAssemblyFolder();
 
-            var config = Config.Load(configFolderPath);
+            var accessProcessor = new LocalAccessProvider();
+            var config = Config.Load<CatalogConfig>(accessProcessor, configFolderPath);
             if (config == null)
             {
-                string gamesPath = Orbital7.Extensions.Windows.Desktop.WinForms.CommonDialogsHelper.ShowFolderBrowseDialog(
-                    "Select the location of your games folder:");
-                if (!String.IsNullOrEmpty(gamesPath))
+                string romsFolderPath = Orbital7.Extensions.Windows.Desktop.WinForms.CommonDialogsHelper.ShowFolderBrowseDialog(
+                    "Select the location of your ROMs folder:");
+                if (!String.IsNullOrEmpty(romsFolderPath))
                 {
-                    config = new Config(configFolderPath, gamesPath);
+                    config = new CatalogConfig(accessProcessor, configFolderPath, romsFolderPath);
                     config.Save();
                 }
             }
@@ -70,9 +71,9 @@ namespace DesktopApp
             if (item != null)
             {
                 if (item.Type == NavigationTreeviewModelItemType.Platform && item.GameList != null)
-                    gamesListview.Load((from Game x in item.GameList select x).ToList());
+                    gamesListview.Load(this.CatalogEditor, (from Game x in item.GameList select x).ToList());
                 else if (item.Type == NavigationTreeviewModelItemType.IncompleteGames)
-                    gamesListview.Load(this.Catalog.GatherIncompleteGames());
+                    gamesListview.Load(this.CatalogEditor, this.CatalogEditor.GatherIncompleteGames());
             }    
 
             Mouse.OverrideCursor = null;
@@ -80,7 +81,7 @@ namespace DesktopApp
 
         private void buttonMatchIncomplete_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new MatchGamesDialog(this.Catalog.Config.FolderPath, this.Catalog.GatherIncompleteGames());
+            var dialog = new MatchGamesDialog(this.CatalogEditor);
             dialog.Owner = this;
             dialog.ShowDialog();
             gamesListview.Update();
@@ -90,17 +91,10 @@ namespace DesktopApp
         {
             try
             {
-                var config = Config.Load(this.Catalog.Config.FolderPath);
-                if (config.Devices.Count > 0)
-                {
-                    var device = config.Devices[0];
-                    this.Catalog.SyncWithDevice(device.DirectoryKey);
-                    MessageBoxHelper.ShowMessage(this, device.Name + " synced successfully");
-                }
+                if (this.CatalogEditor.Config.Devices.Count > 0)
+                    new LocalSyncEngine().SyncWithDevice(this.CatalogEditor.Catalog, this.CatalogEditor.Config.Devices[0].DirectoryKey);
                 else
-                {
                     throw new Exception("Configuration does not specify any devices");
-                }
             }
             catch(Exception ex)
             {

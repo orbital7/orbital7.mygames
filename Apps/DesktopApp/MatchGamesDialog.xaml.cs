@@ -23,17 +23,20 @@ namespace DesktopApp
     /// </summary>
     public partial class MatchGamesDialog : Window
     {
-        private bool ContinueMatching = false;
+        private bool ContinueMatching { get; set; } = false;
+
+        private CatalogEditor CatalogEditor { get; set; }
 
         private List<Game> Games { get; set; }
 
-        public MatchGamesDialog(string configFolderPath, List<Game> games)
+        public MatchGamesDialog(CatalogEditor catalogEditor)
         {
             InitializeComponent();
 
-            this.Games = games;
+            this.CatalogEditor = catalogEditor;
+            this.Games = this.CatalogEditor.GatherIncompleteGames();
 
-            foreach (var scraper in ScraperEngine.GatherScrapers(configFolderPath))
+            foreach (var scraper in ScraperEngine.GatherScrapers(this.CatalogEditor.Config.FolderPath))
                 comboScraper.Items.Add(scraper);
             if (comboScraper.Items.Count > 0)
                 comboScraper.SelectedIndex = 0;
@@ -45,7 +48,7 @@ namespace DesktopApp
             {
                 var engine = new ScraperEngine();
                 var scraper = comboScraper.SelectedItem as Scraper;
-                var gamesToMatch = Catalog.IdentifyIncompleteGames(this.Games);
+                var gamesToMatch = CatalogEditor.IdentifyIncompleteGames(this.Games);
 
                 // Show matching.
                 this.ContinueMatching = true;
@@ -69,7 +72,8 @@ namespace DesktopApp
                         var matchedGame = await engine.SearchExactAsync(scraper, game.Platform, query, game.GameFilename);
                         if (matchedGame != null)
                         {
-                            game.Match(matchedGame, await WebHelper.DownloadFileContentsAsync(matchedGame.ImageFilePath));
+                            this.CatalogEditor.MatchGame(game, matchedGame, 
+                                await WebHelper.DownloadFileContentsAsync(matchedGame.ImageFilePath));
                             Console.WriteLine("MATCHED");
                         }
                         else

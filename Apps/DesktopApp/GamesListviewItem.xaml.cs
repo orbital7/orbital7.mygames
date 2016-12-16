@@ -23,6 +23,8 @@ namespace DesktopApp
     /// </summary>
     public partial class GamesListviewItem : UserControl
     {
+        private CatalogEditor CatalogEditor { get; set; }
+
         public Game Game { get; private set; }
 
         private GamesListview GamesListview { get; set; }
@@ -48,12 +50,14 @@ namespace DesktopApp
             }
         }
 
-        public GamesListviewItem(GamesListview parent, Game game, bool allowSelection, bool allowEditing)
+        public GamesListviewItem(GamesListview parent, CatalogEditor catalogEditor, 
+            Game game, bool allowSelection, bool allowEditing)
         {
             InitializeComponent();
 
             this.BackgroundColor = this.Background;
             this.GamesListview = parent;
+            this.CatalogEditor = catalogEditor;
             this.Game = game;
             this.AllowSelection = allowSelection;
             WPFHelper.SetVisible(editPanel, allowEditing);
@@ -84,12 +88,12 @@ namespace DesktopApp
 
         private void linkEdit_Click(object sender, RoutedEventArgs e)
         {
-            ShowGameDialog(new EditGameDialog(this.Game));            
+            ShowGameDialog(new EditGameDialog(this.CatalogEditor, this.Game));            
         }
 
         private void linkMatch_Click(object sender, RoutedEventArgs e)
         {
-            ShowGameDialog(new MatchGameDialog(this.Game));
+            ShowGameDialog(new MatchGameDialog(this.CatalogEditor, this.Game));
         }
 
         private void linkDelete_Click(object sender, RoutedEventArgs e)
@@ -99,7 +103,7 @@ namespace DesktopApp
                 if (MessageBoxHelper.AskQuestion(this, "Are you sure you want to delete the " +
                     this.Game.Platform.ToDisplayString() + " game " + this.Game.ToString() + "?"))
                 {
-                    this.Game.Delete();
+                    this.CatalogEditor.DeleteGame(this.Game);
                     this.GamesListview.Update();
                 }
             }
