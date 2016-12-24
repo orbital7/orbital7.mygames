@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orbital7.MyGames
+namespace Orbital7.MyGames.Scraping
 {
     public class ScraperEngine
     {

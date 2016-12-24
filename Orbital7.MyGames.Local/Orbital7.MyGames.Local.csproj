@@ -5,11 +5,11 @@
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BF0E178B-7876-42CD-84E9-7476EE10C4CB}</ProjectGuid>
+    <ProjectGuid>{10C25D8E-D3F6-476F-92B5-B67B01E7A520}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Orbital7.MyGames</RootNamespace>
-    <AssemblyName>Orbital7.MyGames</AssemblyName>
+    <RootNamespace>Orbital7.MyGames.Local</RootNamespace>
+    <AssemblyName>Orbital7.MyGames.Local</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -39,23 +39,17 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Catalog.cs" />
-    <Compile Include="CatalogEditor.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="Device.cs" />
-    <Compile Include="Game.cs" />
-    <Compile Include="GameList.cs" />
-    <Compile Include="CatalogConfig.cs" />
-    <Compile Include="IAccessProvider.cs" />
-    <Compile Include="IConfig.cs" />
-    <Compile Include="Platform.cs" />
-    <Compile Include="PlatformConfig.cs" />
+    <Compile Include="LocalAccessProvider.cs" />
+    <Compile Include="LocalSyncEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="ImageSharp">
-      <HintPath>..\Lib\netstandard1.1\ImageSharp.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\Orbital7.MyGames\Orbital7.MyGames.csproj">
+      <Project>{bf0e178b-7876-42cd-84e9-7476ee10c4cb}</Project>
+      <Name>Orbital7.MyGames</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Orbital7.Extensions">
       <HintPath>..\..\orbital7.extensions\Orbital7.Extensions\bin\Debug\Orbital7.Extensions.dll</HintPath>
     </Reference>

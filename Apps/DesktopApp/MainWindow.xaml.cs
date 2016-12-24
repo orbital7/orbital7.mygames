@@ -1,6 +1,7 @@
 ﻿using Orbital7.Extensions.Windows;
 using Orbital7.Extensions.Windows.Desktop.WPF;
 using Orbital7.MyGames;
+using Orbital7.MyGames.Local;
 using System;
 using System.Collections.Generic;
 using System.Linq;

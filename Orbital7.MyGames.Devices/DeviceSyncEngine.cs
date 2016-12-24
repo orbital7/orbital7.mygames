@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Orbital7.MyGames
+namespace Orbital7.MyGames.Devices
 {
     public class DeviceSyncEngine
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orbital7.MyGames
+namespace Orbital7.MyGames.Devices
 {
     public class DeviceConfig : Config
     {

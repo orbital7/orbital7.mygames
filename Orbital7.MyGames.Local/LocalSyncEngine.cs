@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orbital7.MyGames
+namespace Orbital7.MyGames.Local
 {
     public class LocalSyncEngine
     {

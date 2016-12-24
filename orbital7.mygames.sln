@@ -24,6 +24,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard1.1", "netstanda
 		Lib\netstandard1.1\ImageSharp.dll = Lib\netstandard1.1\ImageSharp.dll
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital7.MyGames.Local", "Orbital7.MyGames.Local\Orbital7.MyGames.Local.csproj", "{10C25D8E-D3F6-476F-92B5-B67B01E7A520}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital7.MyGames.Cloud", "Orbital7.MyGames.Cloud\Orbital7.MyGames.Cloud.csproj", "{F363C9FE-421E-427A-8D74-2B7D8D7550BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital7.MyGames.Devices", "Orbital7.MyGames.Devices\Orbital7.MyGames.Devices.csproj", "{517E2CF4-E7AA-4F4C-B838-2E058C0888C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital7.MyGames.Scraping", "Orbital7.MyGames.Scraping\Orbital7.MyGames.Scraping.csproj", "{2C2DBF16-4284-48EB-B9E8-5D221A95FFBB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +46,22 @@ Global
 		{BF0E178B-7876-42CD-84E9-7476EE10C4CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF0E178B-7876-42CD-84E9-7476EE10C4CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF0E178B-7876-42CD-84E9-7476EE10C4CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10C25D8E-D3F6-476F-92B5-B67B01E7A520}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10C25D8E-D3F6-476F-92B5-B67B01E7A520}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10C25D8E-D3F6-476F-92B5-B67B01E7A520}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10C25D8E-D3F6-476F-92B5-B67B01E7A520}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F363C9FE-421E-427A-8D74-2B7D8D7550BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F363C9FE-421E-427A-8D74-2B7D8D7550BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F363C9FE-421E-427A-8D74-2B7D8D7550BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F363C9FE-421E-427A-8D74-2B7D8D7550BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{517E2CF4-E7AA-4F4C-B838-2E058C0888C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{517E2CF4-E7AA-4F4C-B838-2E058C0888C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{517E2CF4-E7AA-4F4C-B838-2E058C0888C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{517E2CF4-E7AA-4F4C-B838-2E058C0888C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C2DBF16-4284-48EB-B9E8-5D221A95FFBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C2DBF16-4284-48EB-B9E8-5D221A95FFBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C2DBF16-4284-48EB-B9E8-5D221A95FFBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C2DBF16-4284-48EB-B9E8-5D221A95FFBB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

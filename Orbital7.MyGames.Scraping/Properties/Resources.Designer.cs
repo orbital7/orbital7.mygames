@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Orbital7.MyGames.Properties {
+namespace Orbital7.MyGames.Scraping.Properties {
     using System;
     using System.Reflection;
     
@@ -40,7 +40,7 @@ namespace Orbital7.MyGames.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Orbital7.MyGames.Properties.Resources", typeof(Resources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Orbital7.MyGames.Scraping.Properties.Resources", typeof(Resources).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -60,8 +60,8 @@ namespace Orbital7.MyGames.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
+		
+		/// <summary>
         ///   Looks up a localized string similar to ;******************************************************************************
         ///;* PUGSY&apos;S CHEATS Release Date: 18 MAY 2000 (Base release for MAME 0.36Final) *
         ///;*          Also includes cheats for MAME 0.37 BETA 1 and 2                   *

@@ -75,7 +75,7 @@ namespace Orbital7.MyGames
         public string GameFilePath { get; internal set; }
 
         [XmlIgnore]
-        public string ImageFilePath { get; internal set; }
+        public string ImageFilePath { get; set; }
 
         public string ImageFilename
         {
@@ -182,7 +182,7 @@ namespace Orbital7.MyGames
             }
         }
 
-        internal void UpdateFilename(string updatedFilename)
+        public void UpdateFilename(string updatedFilename)
         {
             this.GameFilename = updatedFilename;
             if (this.HasImage)
@@ -193,7 +193,7 @@ namespace Orbital7.MyGames
             SetFilePaths();
         }
         
-        internal static string GetImageFilenameWithoutExtension(string gameFilename)
+        public static string GetImageFilenameWithoutExtension(string gameFilename)
         {
             return Path.GetFileNameWithoutExtension(gameFilename) + "-image";
         }

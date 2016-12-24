@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.XPath;
 
-namespace Orbital7.MyGames.Scrapers
+namespace Orbital7.MyGames.Scraping.Scrapers
 {
     public class GiantBombScraper : Scraper
     {

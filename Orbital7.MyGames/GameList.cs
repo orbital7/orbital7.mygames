@@ -43,7 +43,7 @@ namespace Orbital7.MyGames
 
         }
 
-        internal static string GetFilePath(string folderPath)
+        public static string GetFilePath(string folderPath)
         {
             return Path.Combine(folderPath, "gamelist.xml");
         }
