@@ -5,17 +5,8 @@ using Orbital7.MyGames.Scraping;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace DesktopApp
 {
@@ -24,7 +15,11 @@ namespace DesktopApp
     /// </summary>
     public partial class MatchGamesDialog : Window
     {
-        private bool ContinueMatching { get; set; } = false;
+        private Scraper Scraper { get; set; }
+
+        private BackgroundWorker BackgroundWorker { get; set; }
+
+        private List<Game> GamesToMatch { get; set; }
 
         private CatalogEditor CatalogEditor { get; set; }
 
@@ -33,6 +28,7 @@ namespace DesktopApp
         public MatchGamesDialog(CatalogEditor catalogEditor)
         {
             InitializeComponent();
+            this.Closing += MatchGamesDialog_Closing;
 
             this.CatalogEditor = catalogEditor;
             this.Games = this.CatalogEditor.GatherIncompleteGames();
@@ -43,70 +39,56 @@ namespace DesktopApp
                 comboScraper.SelectedIndex = 0;
         }
 
-        private async Task MatchNowAsync()
+        private void MatchGamesDialog_Closing(object sender, CancelEventArgs e)
         {
-            try
+            if (this.BackgroundWorker != null)
             {
-                var engine = new ScraperEngine();
-                var scraper = comboScraper.SelectedItem as Scraper;
-                var gamesToMatch = CatalogEditor.IdentifyIncompleteGames(this.Games);
+                if (MessageBoxHelper.AskQuestion(this, "Bulk-Matching in progress; cancel?", true))
+                    this.BackgroundWorker.CancelAsync();
+                else
+                    e.Cancel = true;
+            }
+        }
 
-                // Show matching.
-                this.ContinueMatching = true;
-                buttonMatch.Content = "Stop";
-                buttonDone.IsEnabled = false;
+        private async Task MatchNowAsync(DoWorkEventArgs e)
+        {
+            int index = 0;
+            var engine = new ScraperEngine();
 
-                // Match.
-                int index = 0;
-                textOutput.Clear();
-                Console.SetOut(new TextBoxStreamWriter(textOutput));
-                progress.Minimum = 0;
-                progress.Maximum = gamesToMatch.Count;
-                foreach (var game in gamesToMatch)
+            // Match.
+            foreach (var game in this.GamesToMatch)
+            {
+                // Exit if cancellation pending.
+                if (this.BackgroundWorker.CancellationPending)
+                    break;
+
+                index++;
+                ReportProgress(index, "Matching " + index + "/" + this.GamesToMatch.Count + ": " + game.GameFilename + "...");
+                try
                 {
-                    index++;
-                    Console.Write("Matching " + index + "/" + gamesToMatch.Count + ": " + game.GameFilename + "...");
-                    textOutput.ScrollToEnd();
-                    try
+                    var query = await ScraperEngine.GetGameNameAsync(game.Platform, game.GameFilename);
+                    var matchedGame = await engine.SearchExactAsync(this.Scraper, game.Platform, query, game.GameFilename);
+                    if (matchedGame != null)
                     {
-                        var query = await ScraperEngine.GetGameNameAsync(game.Platform, game.GameFilename);
-                        var matchedGame = await engine.SearchExactAsync(scraper, game.Platform, query, game.GameFilename);
-                        if (matchedGame != null)
-                        {
-                            this.CatalogEditor.MatchGame(game, matchedGame, 
-                                await WebHelper.DownloadFileContentsAsync(matchedGame.ImageFilePath));
-                            Console.WriteLine("MATCHED");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Not Matched");
-                        }
+                        this.CatalogEditor.MatchGame(game, matchedGame, 
+                            await HttpHelper.DownloadFileContentsAsync(matchedGame.ImageFilePath));
+                        ReportProgress(index, "MATCHED\n");
                     }
-                    catch(Exception ex)
+                    else
                     {
-                        Console.WriteLine("ERROR: " + ex.Message);
+                        ReportProgress(index, "Not Matched\n");
                     }
-                    progress.Value++;
-
-                    // TODO: All of this should be run on a background thread. This is a hack to quickly enable 
-                    // start/stop functionality for testing.
-                    System.Windows.Forms.Application.DoEvents();
-                    if (!this.ContinueMatching)
-                        break;
+                }
+                catch(Exception ex)
+                {
+                    ReportProgress(index, "ERROR: " + ex.Message + "\n");
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBoxHelper.ShowError(this, ex);
-            }
-            finally
-            {
-                this.ContinueMatching = false;
-                buttonDone.IsEnabled = true;
-                buttonMatch.Content = "Match Now";
-                buttonMatch.IsEnabled = true;
-            }
+        }
 
+        private void ReportProgress(int index, string consoleOut)
+        {
+            this.BackgroundWorker.ReportProgress(Convert.ToInt32(index / this.GamesToMatch.Count * 100), consoleOut);
         }
 
         private void buttonDone_Click(object sender, RoutedEventArgs e)
@@ -116,24 +98,52 @@ namespace DesktopApp
 
         private void buttonMatch_Click(object sender, RoutedEventArgs e)
         {
-            if (!this.ContinueMatching)
+            if (this.BackgroundWorker == null)
             {
-                using (var worker = new BackgroundWorker())
-                {
-                    worker.DoWork += Worker_DoWork;
-                    worker.RunWorkerAsync();
-                }
+                this.Scraper = comboScraper.SelectedItem as Scraper;
+                buttonMatch.Content = "Stop";
+                buttonDone.IsEnabled = false;
+                textOutput.Clear();
+                Console.SetOut(new TextBoxStreamWriter(textOutput));
+                this.GamesToMatch = CatalogEditor.IdentifyIncompleteGames(this.Games);
+                progress.Minimum = 0;
+                progress.Maximum = this.GamesToMatch.Count;
+
+                this.BackgroundWorker = new BackgroundWorker();
+                this.BackgroundWorker.WorkerReportsProgress = true;
+                this.BackgroundWorker.WorkerSupportsCancellation = true;
+                this.BackgroundWorker.DoWork += Worker_DoWork;
+                this.BackgroundWorker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+                this.BackgroundWorker.ProgressChanged += Worker_ProgressChanged;
+                this.BackgroundWorker.RunWorkerAsync();
             }
             else
             {
-                this.ContinueMatching = false;
+                buttonMatch.Content = "Stopping...";
                 buttonMatch.IsEnabled = false;
+                this.BackgroundWorker.CancelAsync();
             }
+        }
+
+        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            progress.Value = progress.Maximum * e.ProgressPercentage / 100;
+            textOutput.ScrollToEnd();
+            Console.Write(e.UserState.ToString());
+        }
+
+        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //this.ContinueMatching = false;
+            this.BackgroundWorker = null;
+            buttonDone.IsEnabled = true;
+            buttonMatch.Content = "Match Now";
+            buttonMatch.IsEnabled = true;
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            AsyncHelper.RunSync(() => MatchNowAsync());
+            AsyncHelper.RunSync(() => MatchNowAsync(e));
         }
     }
 }

@@ -32,7 +32,7 @@ namespace DesktopApp
 
             this.CatalogEditor = catalogEditor;
             this.Game = game;
-            editGameView.Load(catalogEditor, game);
+            editGameView.Load(catalogEditor, game, true);
         }
 
         private void buttonSave_Click(object sender, RoutedEventArgs e)
@@ -40,7 +40,7 @@ namespace DesktopApp
             try
             {
                 Mouse.OverrideCursor = Cursors.Wait;
-                this.CatalogEditor.SaveGame(this.Game, editGameView.GameImage);
+                this.CatalogEditor.SaveGame(this.Game, editGameView.UpdatedGameImageContents);
                 this.DialogResult = true;
             }
             catch(Exception ex)

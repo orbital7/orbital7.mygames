@@ -16,7 +16,7 @@ namespace Orbital7.MyGames
 
         string DeleteFolderContents(string folderPath);
 
-        string[] GetFiles(string folderPath, string searchPattern = null);
+        string[] GetFilePaths(string folderPath, string searchPattern = null);
 
         bool IsDifferentCopyRequired(string sourcePath, string destinationPath);
 
@@ -32,6 +32,10 @@ namespace Orbital7.MyGames
 
         string ReadAllText(string filePath);
 
+        byte[] ReadAllBytes(string filePath);
+
         void WriteAllText(string filePath, string text);
+
+        void WriteAllBytes(string filePath, byte[] bytes);
     }
 }

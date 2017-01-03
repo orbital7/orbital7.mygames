@@ -88,7 +88,7 @@ namespace DesktopApp
                 Mouse.OverrideCursor = Cursors.Wait;
                 if (this.MatchedGame != null)
                 {
-                    this.CatalogEditor.MatchGame(this.GameToMatch, this.MatchedGame, editGameView.GameImage);
+                    this.CatalogEditor.MatchGame(this.GameToMatch, this.MatchedGame, editGameView.UpdatedGameImageContents);
                     this.DialogResult = true;
                     this.Close();
                 }
@@ -120,7 +120,7 @@ namespace DesktopApp
         private void resultsView_SelectionChanged()
         {
             this.MatchedGame = resultsView.SelectedGame;
-            editGameView.Load(this.CatalogEditor, this.MatchedGame);
+            editGameView.Load(this.CatalogEditor, this.MatchedGame, false);
             buttonMatch.IsEnabled = this.MatchedGame != null;
         }
     }

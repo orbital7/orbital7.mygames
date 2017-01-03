@@ -12,6 +12,9 @@ namespace Orbital7.MyGames
 
         public List<Device> Devices { get; set; } = new List<Device>();
 
+        public CatalogConfig()
+            : base() { }
+
         public CatalogConfig(IAccessProvider accessProvider)
             : base(accessProvider) { }
 

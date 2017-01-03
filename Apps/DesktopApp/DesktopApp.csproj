@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DesktopApp</RootNamespace>
     <AssemblyName>DesktopApp</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -38,17 +38,21 @@
     <Reference Include="ImageSharp">
       <HintPath>..\..\Lib\net45\ImageSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Orbital7.Extensions, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\orbital7.extensions\Orbital7.Extensions\bin\Debug\Orbital7.Extensions.dll</HintPath>
+    <Reference Include="itextsharp, Version=5.5.8.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\iTextSharp.5.5.8\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Orbital7.Extensions.Windows, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\orbital7.extensions\Orbital7.Extensions.Windows\bin\Debug\Orbital7.Extensions.Windows.dll</HintPath>
+    <Reference Include="Orbital7.Extensions, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Orbital7.Extensions.1.0.3\lib\portable45-net45+win8\Orbital7.Extensions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Orbital7.Extensions.Windows.Desktop, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\orbital7.extensions\Orbital7.Extensions.Windows.Desktop\bin\Debug\Orbital7.Extensions.Windows.Desktop.dll</HintPath>
+    <Reference Include="Orbital7.Extensions.Windows, Version=1.0.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Orbital7.Extensions.Windows.1.0.10\lib\net45\Orbital7.Extensions.Windows.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Orbital7.Extensions.Windows.Desktop, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Orbital7.Extensions.Windows.Desktop.1.0.8\lib\net45\Orbital7.Extensions.Windows.Desktop.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.NonGeneric, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -81,6 +85,9 @@
     <Compile Include="EditGameView.xaml.cs">
       <DependentUpon>EditGameView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GameImageView.xaml.cs">
+      <DependentUpon>GameImageView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MatchGameDialog.xaml.cs">
       <DependentUpon>MatchGameDialog.xaml</DependentUpon>
     </Compile>
@@ -97,6 +104,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="EditGameView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GameImageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -168,21 +179,28 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Orbital7.MyGames.Cloud\Orbital7.MyGames.Cloud.csproj">
+      <Project>{a3f34014-17aa-430c-8758-d081168431f3}</Project>
+      <Name>Orbital7.MyGames.Cloud</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Orbital7.MyGames.Local\Orbital7.MyGames.Local.csproj">
-      <Project>{10c25d8e-d3f6-476f-92b5-b67b01e7a520}</Project>
+      <Project>{a2683704-1961-4e78-982a-ce291d0386a2}</Project>
       <Name>Orbital7.MyGames.Local</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Orbital7.MyGames.Scraping\Orbital7.MyGames.Scraping.csproj">
-      <Project>{2c2dbf16-4284-48eb-b9e8-5d221a95ffbb}</Project>
+      <Project>{af33f402-6753-4823-8c84-11118d736ab4}</Project>
       <Name>Orbital7.MyGames.Scraping</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Orbital7.MyGames\Orbital7.MyGames.csproj">
-      <Project>{db5071f6-09db-41fd-abd0-7b21a0d9eee5}</Project>
+      <Project>{dea734b6-6565-4ddb-9bba-d2c0f06478bc}</Project>
       <Name>Orbital7.MyGames</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Images\" />
+    <Content Include="Lib\Microsoft.Win32.TaskScheduler.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

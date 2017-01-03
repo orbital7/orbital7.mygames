@@ -1,4 +1,5 @@
-﻿using Orbital7.Extensions.Windows.Desktop.WPF;
+﻿using Orbital7.Extensions.Windows;
+using Orbital7.Extensions.Windows.Desktop.WPF;
 using Orbital7.MyGames;
 using System;
 using System.Drawing;
@@ -17,23 +18,17 @@ namespace DesktopApp
     {
         public Game Game { get; private set; }
 
+        public byte[] UpdatedGameImageContents
+        {
+            get { return image.UpdatedGameImageContents; }
+        }
+
         public EditGameView()
         {
             InitializeComponent();
         }
 
-        public byte[] GameImage
-        {
-            get
-            {
-                if (image.Source != null)
-                    return ((BitmapImage)image.Source).ToBitmap().ToByteArray();
-                else
-                    return null;
-            }
-        }
-
-        public void Load(CatalogEditor catalogEditor, Game game)
+        public void Load(CatalogEditor catalogEditor, Game game, bool gameExists)
         {
             if (game != null)
             {
@@ -44,7 +39,8 @@ namespace DesktopApp
                 panel.IsEnabled = true;
                 this.Game = game;
                 this.DataContext = game;
-                UpdateImage(MediaHelper.GetBitmapImageSource(game.ImageFilePath));
+                image.Load(game, gameExists);
+                UpdateVisibility(game.HasImage);
                 this.Foreground = System.Windows.Media.Brushes.White;
             }
             else
@@ -58,28 +54,41 @@ namespace DesktopApp
             panel.IsEnabled = false;
             this.Game = null;
             this.DataContext = null;
-            image.Source = null;
+            image.Clear();
+            image.Visibility = Visibility.Visible;
             blockPaste.Visibility = Visibility.Collapsed;
             this.Foreground = System.Windows.Media.Brushes.DarkGray;
         }
 
-        private void UpdateImage(ImageSource imageSource)
+        private void UpdateVisibility(bool hasImage)
         {
-            image.Source = imageSource;
-            blockPaste.Visibility = image.Source == null ? Visibility.Visible : Visibility.Collapsed;
+            image.Visibility = hasImage ? Visibility.Visible : Visibility.Collapsed;
+            blockPaste.Visibility = !hasImage ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void UpdateImage(BitmapSource source, bool isUpdated, string imageFileExtension)
+        {
+            bool hasImage = image.UpdateImage(source, isUpdated, imageFileExtension, 
+                Convert.ToInt32(source.Width), Convert.ToInt32(source.Height));
+            UpdateVisibility(hasImage);
         }
 
         private void menuItemCopy_Click(object sender, RoutedEventArgs e)
         {
-            if (image.Source != null)
-                System.Windows.Forms.Clipboard.SetImage(((BitmapSource)image.Source).ToBitmap());
+            if (image.ImageSource != null)
+                Clipboard.SetImage((BitmapSource)image.ImageSource);
         }
 
-        private void menuItemPaste_Click(object sender, RoutedEventArgs e)
+        private void menuItemPasteAsJpg_Click(object sender, RoutedEventArgs e)
         {
-            var bitmap = System.Windows.Forms.Clipboard.GetImage() as Bitmap;
-            if (bitmap != null)
-                UpdateImage(bitmap.ToImageSource());
+            if (Clipboard.ContainsImage())
+                UpdateImage(Clipboard.GetImage(), true, ".jpg");
+        }
+
+        private void menuItemPasteAsPng_Click(object sender, RoutedEventArgs e)
+        {
+            if (Clipboard.ContainsImage())
+                UpdateImage(Clipboard.GetImage(), true, ".png");
         }
     }
 }

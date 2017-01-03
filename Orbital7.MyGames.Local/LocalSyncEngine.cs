@@ -1,11 +1,6 @@
-﻿using Orbital7.Extensions;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Orbital7.MyGames.Local
 {
@@ -64,7 +59,7 @@ namespace Orbital7.MyGames.Local
             var gameFileExtensions = GameList.GetPlatformFileExtensions(gameList.Platform);
             var saveStateFileExtensions = Catalog.GetSaveStateFileExtensions();
 
-            foreach (string deviceFilePath in this.AccessProvider.GetFiles(devicePlatformPath))
+            foreach (string deviceFilePath in this.AccessProvider.GetFilePaths(devicePlatformPath))
             {
                 string filename = Path.GetFileName(deviceFilePath);
                 string fileExtension = Path.GetExtension(filename).ToLower();
@@ -73,7 +68,7 @@ namespace Orbital7.MyGames.Local
                     if (!gameList.Contains(filename) && (gameList.Platform != Platform.NeoGeo && filename != "neogeo.zip"))
                     {
                         // Delete game files (could be more than one).
-                        var deviceGameFilePaths = this.AccessProvider.GetFiles(devicePlatformPath,
+                        var deviceGameFilePaths = this.AccessProvider.GetFilePaths(devicePlatformPath,
                             Path.GetFileNameWithoutExtension(filename) + ".*");
                         foreach (var deviceGameFilePath in deviceGameFilePaths)
                             this.AccessProvider.DeleteFile(deviceGameFilePath);
@@ -84,7 +79,7 @@ namespace Orbital7.MyGames.Local
                             this.AccessProvider.DeleteFile(deviceGameConfigFilePath);
 
                         // Delete game image file (should only be one, but we don't know the extension).
-                        var deviceImageFilePaths = this.AccessProvider.GetFiles(deviceImageFolderPath,
+                        var deviceImageFilePaths = this.AccessProvider.GetFilePaths(deviceImageFolderPath,
                             Game.GetImageFilenameWithoutExtension(filename) + ".*");
                         foreach (var deviceImageFilePath in deviceImageFilePaths)
                             this.AccessProvider.DeleteFile(deviceImageFilePath);
@@ -104,7 +99,7 @@ namespace Orbital7.MyGames.Local
             foreach (Game game in gameList)
             {
                 // Copy game files.
-                var gameFilePaths = this.AccessProvider.GetFiles(gameList.PlatformFolderPath,
+                var gameFilePaths = this.AccessProvider.GetFilePaths(gameList.PlatformFolderPath,
                     Path.GetFileNameWithoutExtension(game.GameFilename) + ".*");
                 foreach (var gameFilePath in gameFilePaths)
                 {
@@ -117,7 +112,7 @@ namespace Orbital7.MyGames.Local
                 }
 
                 // Copy save states.
-                var saveStateFilePaths = this.AccessProvider.GetFiles(Path.Combine(gameList.PlatformFolderPath, GameList.SaveStatesFolderName),
+                var saveStateFilePaths = this.AccessProvider.GetFilePaths(Path.Combine(gameList.PlatformFolderPath, GameList.SaveStatesFolderName),
                     Path.GetFileNameWithoutExtension(game.GameFilename) + ".*");
                 foreach (var saveStateFilePath in saveStateFilePaths)
                 {

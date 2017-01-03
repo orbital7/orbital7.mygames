@@ -111,7 +111,7 @@ namespace Orbital7.MyGames.Scraping
 
                     try
                     {
-                        string html = await WebHelper.DownloadSourceAsync("http://www.mamedb.com/game/" + initialGameName);
+                        string html = await HttpHelper.DownloadSourceAsync("http://www.mamedb.com/game/" + initialGameName);
                         if (!String.IsNullOrEmpty(html))
                         {
                             gameName = html.FindFirstBetween("<h1>", "</h1>");

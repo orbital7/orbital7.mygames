@@ -9,7 +9,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Border Margin="0,0,0,0" Name="border" BorderThickness="1" Background="Gray" BorderBrush="Gray" CornerRadius="3,3,3,3">
         <StackPanel Orientation="Horizontal">
-            <Image x:Name="image" Height="150px" Width="215px" />
+            <local:GameImageView x:Name="image" Height="150px" Width="215px" />
             <Grid Margin="10,0,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="18" />

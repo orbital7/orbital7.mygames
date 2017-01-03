@@ -1,11 +1,5 @@
-﻿using ImageSharp;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Orbital7.MyGames.Scraping
@@ -47,6 +41,7 @@ namespace Orbital7.MyGames.Scraping
         protected void SetGameImage(Game game, string imageUrl)
         {
             game.ImageFilePath = imageUrl;
+            game.ImagePath = Path.GetFileName(imageUrl);
             game.HasImage = true;
         }
     }

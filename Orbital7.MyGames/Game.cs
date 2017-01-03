@@ -1,5 +1,6 @@
 ﻿using ImageSharp;
 using Orbital7.Extensions;
+using Orbital7.Extensions.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,8 @@ namespace Orbital7.MyGames
     [XmlRoot("game")]
     public class Game
     {
-        private const string PATH_PREFIX = "./";
+        private const string PATH_SEPARATOR = "/";
+        private const string PATH_PREFIX = "." + PATH_SEPARATOR;
         public const string DEFAULT_EMULATOR = "Default";
         public const string DEFAULT_GAME_CONFIG = "Default";
         public const string CUSTOM_GAME_CONFIG = "Custom";
@@ -67,6 +69,12 @@ namespace Orbital7.MyGames
 
         [XmlElement("hasimage")]
         public bool HasImage { get; set; }
+
+        [XmlElement("imagewidth")]
+        public int ImageWidth { get; set; }
+
+        [XmlElement("imageheight")]
+        public int ImageHeight { get; set; }
 
         [XmlIgnore]
         public GameList GameList { get; internal set; }
@@ -186,9 +194,9 @@ namespace Orbital7.MyGames
         {
             this.GameFilename = updatedFilename;
             if (this.HasImage)
-                this.ImagePath = Path.Combine(PATH_PREFIX + GameList.ImagesFolderName, 
-                                              GetImageFilenameWithoutExtension(updatedFilename) + 
-                                              Path.GetExtension(this.ImagePath));
+                this.ImagePath = PATH_PREFIX + GameList.ImagesFolderName + PATH_SEPARATOR +
+                                 GetImageFilenameWithoutExtension(updatedFilename) + 
+                                 Path.GetExtension(this.ImagePath);
 
             SetFilePaths();
         }

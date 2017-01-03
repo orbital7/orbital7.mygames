@@ -20,7 +20,13 @@ namespace Orbital7.MyGames
 
         public string RomsFolderPath { get; set; }
 
+        public Config()
+        {
+
+        }
+
         public Config(IAccessProvider accessProvider)
+            : this()
         {
             this.AccessProvider = accessProvider;
         }
@@ -49,6 +55,7 @@ namespace Orbital7.MyGames
             {
                 T config = XMLSerializationHelper.LoadFromXML<T>(accessProvider.ReadAllText(filePath));
                 config.FolderPath = folderPath;
+                config.AccessProvider = accessProvider;
                 return config;
             }
             else

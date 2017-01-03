@@ -18,17 +18,21 @@
         </Style>
     </UserControl.Resources>
     <StackPanel x:Name="panel" Orientation="Horizontal" IsEnabled="False">
-        <TextBlock x:Name="blockPaste" VerticalAlignment="Center" Margin="140,0,0,0" Visibility="Collapsed">
-            <Hyperlink x:Name="buttonPaste" Click="menuItemPaste_Click">Paste</Hyperlink>
+        <TextBlock x:Name="blockPaste" Width="413px" VerticalAlignment="Center" TextAlignment="Center" Visibility="Collapsed">
+            <Hyperlink x:Name="buttonPasteAsJpg" Click="menuItemPasteAsJpg_Click">Paste as Jpeg</Hyperlink>
+            <LineBreak />
+            <LineBreak />
+            <Hyperlink x:Name="buttonPasteAsPng" Click="menuItemPasteAsPng_Click">Paste as Png</Hyperlink>
         </TextBlock>
-        <Image x:Name="image" Height="288px" Width="413px">
-            <Image.ContextMenu>
+        <local:GameImageView x:Name="image" Width="413px" Height="288px">
+            <local:GameImageView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem x:Name="menuItemCopy" Header="Copy" Click="menuItemCopy_Click"/>
-                    <MenuItem x:Name="menuItemPaste" Header="Paste" Click="menuItemPaste_Click"/>
+                    <MenuItem Header="Copy" Click="menuItemCopy_Click"/>
+                    <MenuItem Header="Paste as Jpeg" Click="menuItemPasteAsJpg_Click"/>
+                    <MenuItem Header="Paste as Png" Click="menuItemPasteAsPng_Click"/>
                 </ContextMenu>
-            </Image.ContextMenu>
-        </Image>
+            </local:GameImageView.ContextMenu>
+        </local:GameImageView>
         <Grid Margin="22,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="24px" />

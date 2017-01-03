@@ -1,4 +1,4 @@
-﻿using Orbital7.Extensions;
+﻿using Orbital7.Extensions.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,7 +39,7 @@ namespace Orbital7.MyGames.Scraping.Scrapers
             List<Game> games = new List<Game>();
 
             var navigator = await PerformSearchAsync(platform, gameName);
-            foreach (XPathNavigator gameNavigator in navigator.Select("results/game"))
+            foreach (XPathNavigator gameNavigator in navigator.Select(".//results/game"))
                 games.Add(ParseGame(gameNavigator));
 
             return games;
@@ -53,8 +53,8 @@ namespace Orbital7.MyGames.Scraping.Scrapers
                 throw new Exception("File containing GiantBomb API Key not found at: " + apiKeyFilePath);
             string apiKey = File.ReadAllText(apiKeyFilePath);
 
-            //// Wait 1 second to comply with service frequency guidelines.
-            //System.Threading.Thread.Sleep(1000);
+            // Wait 1 second to comply with service frequency guidelines.
+            System.Threading.Thread.Sleep(1000);
 
             // Search.
             string url = "http://www.giantbomb.com/api/games/?api_key=" + apiKey + "&filter=" + 
@@ -68,14 +68,12 @@ namespace Orbital7.MyGames.Scraping.Scrapers
             var stream = await response.Content.ReadAsStreamAsync();
 
             // Parse.
-            XmlDocument x = new XmlDocument();
-
             var doc = new XPathDocument(stream);
             var navigator = doc.CreateNavigator();
 
             // Validate.
-            if (XMLHelper.GetNodeValue(navigator, "status_code") != "1")
-                throw new Exception(XMLHelper.GetNodeValue(navigator, "error"));
+            if (XMLHelper.GetNodeValue(navigator, ".//status_code") != "1")
+                throw new Exception(XMLHelper.GetNodeValue(navigator, ".//error"));
 
             return navigator;
         }

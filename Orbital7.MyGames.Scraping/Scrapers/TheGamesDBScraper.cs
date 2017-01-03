@@ -1,9 +1,8 @@
 ﻿using Orbital7.Extensions;
+using Orbital7.Extensions.Windows;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.XPath;
 
 namespace Orbital7.MyGames.Scraping.Scrapers
@@ -56,7 +55,7 @@ namespace Orbital7.MyGames.Scraping.Scrapers
                          (exact ? "exactname=" : "name=") +
                          gameName.UrlEncode() + "&platform=" +
                          GetPlatformKey(platform).UrlEncode();
-            var stream = await WebHelper.DownloadStreamAsync(url);
+            var stream = await HttpHelper.DownloadStreamAsync(url);
 
             // Parse.
             var doc = new XPathDocument(stream);
@@ -97,9 +96,9 @@ namespace Orbital7.MyGames.Scraping.Scrapers
             string imageThumbURL = XMLHelper.GetAttributeValue(gameNavigator, "Images/boxart[@side='front']", "thumb");
             if (!String.IsNullOrEmpty(imagePartialURL))
                 base.SetGameImage(game, imageBaseURL + imagePartialURL);
-            // Else download front boxart thumbnail.
-            else if(!String.IsNullOrEmpty(imageThumbURL))
-                base.SetGameImage(game, imageBaseURL + imageThumbURL);
+            //// Else download front boxart thumbnail.
+            //else if(!String.IsNullOrEmpty(imageThumbURL))
+            //    base.SetGameImage(game, imageBaseURL + imageThumbURL);
 
             return game;
         }

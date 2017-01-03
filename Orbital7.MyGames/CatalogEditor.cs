@@ -40,7 +40,6 @@ namespace Orbital7.MyGames
                 "<Game ", "<game ").Replace("</Game>", "</game>").Replace("<Game>", "<game>"));   // TODO: Fix.
         }
 
-
         public void SyncGameListFiles(GameList gameList)
         {
             var fileExtensions = GameList.GetPlatformFileExtensions(gameList.Platform);
@@ -57,7 +56,7 @@ namespace Orbital7.MyGames
                     gameList.Remove(game);
                     if (!String.IsNullOrEmpty(game.ImagePath))
                     {
-                        string imagePath = Path.Combine(gameList.PlatformFolderPath, GameList.ImagesFolderName, game.ImageFilename);
+                        string imagePath = Path.Combine(gameList.ImagesFolderPath, game.ImageFilename);
                         if (this.AccessProvider.FileExists(imagePath))
                             this.AccessProvider.DeleteFile(imagePath);
                     }
@@ -96,6 +95,9 @@ namespace Orbital7.MyGames
 
         public void SaveGame(Game game, Image image)
         {
+            // Ensure images folder exists.
+            this.AccessProvider.EnsureFolderExists(game.GameList.ImagesFolderPath);
+
             // Look for rename.
             if (game.GameFilename.ToLower() != Path.GetFileName(game.GameFilePath).ToLower())
             {
@@ -119,11 +121,12 @@ namespace Orbital7.MyGames
             // Update the image.
             if (image != null)
             {
-                using (var fileStream = new FileStream(game.ImageFilePath, FileMode.Create))
+                using (var stream = new FileStream(game.ImageFilePath, FileMode.Create))
                 {
-                    image.MaxHeight = 640;
-                    image.MaxWidth = 640;
-                    image.Save(fileStream);
+                    var sizedImage = image.EnsureMaximumSize(640, 640);
+                    game.ImageWidth = sizedImage.Width;
+                    game.ImageHeight = sizedImage.Height;
+                    sizedImage.Save(stream, ImageSharpHelper.GetImageFormat(Path.GetExtension(game.ImagePath)));
                 }
                 game.SetFilePaths();
             }
@@ -177,7 +180,7 @@ namespace Orbital7.MyGames
             {
                 // It's possible that a game is comprised of multiple files with the same name
                 // but different extensions (such as CD games, etc.).
-                var filePaths = this.AccessProvider.GetFolderPaths(Path.GetDirectoryName(game.GameFilePath),
+                var filePaths = this.AccessProvider.GetFilePaths(Path.GetDirectoryName(game.GameFilePath),
                     Path.GetFileNameWithoutExtension(game.GameFilePath) + ".*");
                 foreach (var filePath in filePaths)
                     this.AccessProvider.DeleteFile(filePath);

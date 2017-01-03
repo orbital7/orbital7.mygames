@@ -1,10 +1,6 @@
-﻿using Orbital7.Extensions;
+﻿using Orbital7.Extensions.Windows;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Orbital7.MyGames.Local
 {
@@ -17,7 +13,10 @@ namespace Orbital7.MyGames.Local
 
         public string[] GetFolderPaths(string folderPath, string searchPattern = null)
         {
-            return Directory.GetDirectories(folderPath);
+            if (!String.IsNullOrEmpty(searchPattern))
+                return Directory.GetDirectories(folderPath, searchPattern);
+            else
+                return Directory.GetDirectories(folderPath);
         }
 
         public string EnsureFolderExists(params string[] paths)
@@ -30,9 +29,12 @@ namespace Orbital7.MyGames.Local
             return FileSystemHelper.EnsureFolderExists(folderPath);
         }
 
-        public string[] GetFiles(string folderPath, string searchPattern = null)
+        public string[] GetFilePaths(string folderPath, string searchPattern = null)
         {
-            return Directory.GetFiles(folderPath, searchPattern);
+            if (!String.IsNullOrEmpty(searchPattern))
+                return Directory.GetFiles(folderPath, searchPattern);
+            else
+                return Directory.GetFiles(folderPath);
         }
 
         public bool IsDifferentCopyRequired(string sourcePath, string destinationPath)
@@ -89,9 +91,19 @@ namespace Orbital7.MyGames.Local
             return File.ReadAllText(filePath);
         }
 
+        public byte[] ReadAllBytes(string filePath)
+        {
+            return File.ReadAllBytes(filePath);
+        }
+
         public void WriteAllText(string filePath, string text)
         {
             File.WriteAllText(filePath, text);
+        }
+
+        public void WriteAllBytes(string filePath, byte[] bytes)
+        {
+            File.WriteAllBytes(filePath, bytes);
         }
     }
 }

@@ -75,7 +75,7 @@ namespace DesktopApp
             textReleaseDate.Text = this.Game.ReleaseDate.ToShortDateString("n/a");
             textPlatform.Text = this.Game.Platform.ToDisplayString();
             textDescription.Text = this.Game.Description;
-            image.Source = MediaHelper.GetBitmapImageSource(this.Game.ImageFilePath);
+            image.Load(this.Game, true);
         }
 
         private void ShowGameDialog(Window dialog)
