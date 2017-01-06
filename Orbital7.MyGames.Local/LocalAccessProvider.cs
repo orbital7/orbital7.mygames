@@ -1,109 +1,116 @@
 ﻿using Orbital7.Extensions.Windows;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Orbital7.MyGames.Local
 {
     public class LocalAccessProvider : IAccessProvider
     {
-        public bool FolderExists(string folderPath)
+        public async Task<bool> FolderExistsAsync(string folderPath)
         {
-            return Directory.Exists(folderPath);
+            return await Task<bool>.Run(() => Directory.Exists(folderPath));
         }
 
-        public string[] GetFolderPaths(string folderPath, string searchPattern = null)
+        public async Task<string[]> GetFolderPathsAsync(string folderPath, string searchPattern = null)
         {
             if (!String.IsNullOrEmpty(searchPattern))
-                return Directory.GetDirectories(folderPath, searchPattern);
+                return await Task<string[]>.Run(() => Directory.GetDirectories(folderPath, searchPattern));
             else
-                return Directory.GetDirectories(folderPath);
+                return await Task<string[]>.Run(() => Directory.GetDirectories(folderPath));
         }
 
-        public string EnsureFolderExists(params string[] paths)
+        public async Task<string> EnsureFolderExistsAsync(params string[] paths)
         {
-            return FileSystemHelper.EnsureFolderExists(paths);
+            return await Task<string>.Run(() => FileSystemHelper.EnsureFolderExists(paths));
         }
 
-        public string DeleteFolderContents(string folderPath)
+        public async Task<string> DeleteFolderContentsAsync(string folderPath)
         {
-            return FileSystemHelper.EnsureFolderExists(folderPath);
+            return await Task<string>.Run(() => FileSystemHelper.EnsureFolderExists(folderPath));
         }
 
-        public string[] GetFilePaths(string folderPath, string searchPattern = null)
+        public async Task<string[]> GetFilePathsAsync(string folderPath, string searchPattern = null)
         {
             if (!String.IsNullOrEmpty(searchPattern))
-                return Directory.GetFiles(folderPath, searchPattern);
+                return await Task<string[]>.Run(() => Directory.GetFiles(folderPath, searchPattern));
             else
-                return Directory.GetFiles(folderPath);
+                return await Task<string[]>.Run(() => Directory.GetFiles(folderPath));
         }
 
-        public bool IsDifferentCopyRequired(string sourcePath, string destinationPath)
+        public async Task<bool> IsDifferentCopyRequiredAsync(string sourcePath, string destinationPath)
         {
-            if (File.Exists(destinationPath))
+            return await Task<bool>.Run(() =>
             {
-                var sourceProperties = new FileInfo(sourcePath);
-                var destProperties = new FileInfo(destinationPath);
-                return sourceProperties.LastWriteTimeUtc != destProperties.LastWriteTimeUtc ||
-                       sourceProperties.Length != destProperties.Length;
-            }
-            else
+                if (File.Exists(destinationPath))
+                {
+                    var sourceProperties = new FileInfo(sourcePath);
+                    var destProperties = new FileInfo(destinationPath);
+                    return sourceProperties.LastWriteTimeUtc != destProperties.LastWriteTimeUtc ||
+                           sourceProperties.Length != destProperties.Length;
+                }
+                else
+                {
+                    return true;
+                }
+            });
+        }
+
+        public async Task<bool> IsNewerCopyRequiredAsync(string sourcePath, string destinationPath)
+        {
+            return await Task<bool>.Run(() =>
             {
-                return true;
-            }
+                if (File.Exists(destinationPath))
+                {
+                    var sourceProperties = new FileInfo(sourcePath);
+                    var destProperties = new FileInfo(destinationPath);
+                    return sourceProperties.LastWriteTimeUtc > destProperties.LastWriteTimeUtc;
+                }
+                else
+                {
+                    return true;
+                }
+            });
         }
 
-        public bool IsNewerCopyRequired(string sourcePath, string destinationPath)
+        public async Task<bool> FileExistsAsync(string filePath)
         {
-            if (File.Exists(destinationPath))
-            {
-                var sourceProperties = new FileInfo(sourcePath);
-                var destProperties = new FileInfo(destinationPath);
-                return sourceProperties.LastWriteTimeUtc > destProperties.LastWriteTimeUtc;
-            }
-            else
-            {
-                return true;
-            }
+            return await Task<bool>.Run(() => File.Exists(filePath));
         }
 
-        public bool FileExists(string filePath)
+        public async Task MoveFileAsync(string sourcePath, string destinationPath)
         {
-            return File.Exists(filePath);
+            await Task.Run(() => File.Move(sourcePath, destinationPath));
         }
 
-        public void MoveFile(string sourcePath, string destinationPath)
+        public async Task CopyFileAsync(string sourcePath, string destinationPath)
         {
-            File.Move(sourcePath, destinationPath);
+            await Task.Run(() => File.Copy(sourcePath, destinationPath, true));
         }
 
-        public void CopyFile(string sourcePath, string destinationPath)
+        public async Task DeleteFileAsync(string filePath)
         {
-            File.Copy(sourcePath, destinationPath, true);
+            await Task.Run(() => File.Delete(filePath));
         }
 
-        public void DeleteFile(string filePath)
+        public async Task<string> ReadAllTextAsync(string filePath)
         {
-            File.Delete(filePath);
+            return await Task<bool>.Run(() => File.ReadAllText(filePath));
         }
 
-        public string ReadAllText(string filePath)
+        public async Task<byte[]> ReadAllBytesAsync(string filePath)
         {
-            return File.ReadAllText(filePath);
+            return await Task<bool>.Run(() => File.ReadAllBytes(filePath));
         }
 
-        public byte[] ReadAllBytes(string filePath)
+        public async Task WriteAllTextAsync(string filePath, string text)
         {
-            return File.ReadAllBytes(filePath);
+            await Task.Run(() => File.WriteAllText(filePath, text));
         }
 
-        public void WriteAllText(string filePath, string text)
+        public async Task WriteAllBytesAsync(string filePath, byte[] bytes)
         {
-            File.WriteAllText(filePath, text);
-        }
-
-        public void WriteAllBytes(string filePath, byte[] bytes)
-        {
-            File.WriteAllBytes(filePath, bytes);
+            await Task.Run(() => File.WriteAllBytes(filePath, bytes));
         }
     }
 }

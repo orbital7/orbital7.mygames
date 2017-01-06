@@ -39,7 +39,7 @@ namespace Orbital7.MyGames.Scraping
             {
                 game.Platform = platform;
                 game.Source = scraper.SourceName;
-                game.UpdateFilename(filename);
+                game.UpdateFilenameAsync(filename);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 
 namespace Orbital7.MyGames.Devices
 {
@@ -14,16 +15,16 @@ namespace Orbital7.MyGames.Devices
             this.AccessProvider = accessProvider;
         }
 
-        public void SyncGameSaveStates(Catalog catalog, bool includeGameConfigs)
+        public async Task SyncGameSaveStatesAsync(Catalog catalog, bool includeGameConfigs)
         {
             var saveStateFileExtensions = Catalog.GetSaveStateFileExtensions();
 
             foreach (var gameList in catalog.GameLists)
             {
-                string saveStatesFolderPath = this.AccessProvider.EnsureFolderExists(
+                string saveStatesFolderPath = await this.AccessProvider.EnsureFolderExistsAsync(
                     Path.Combine(gameList.PlatformFolderPath, GameList.SaveStatesFolderName));
 
-                string gameConfigsFolderPath = this.AccessProvider.EnsureFolderExists(
+                string gameConfigsFolderPath = await this.AccessProvider.EnsureFolderExistsAsync(
                     Path.Combine(gameList.PlatformFolderPath, GameList.GameConfigsFolderName));
 
                 foreach (var game in gameList)

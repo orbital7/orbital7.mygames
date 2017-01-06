@@ -88,7 +88,7 @@ namespace DesktopApp
                 Mouse.OverrideCursor = Cursors.Wait;
                 if (this.MatchedGame != null)
                 {
-                    this.CatalogEditor.MatchGame(this.GameToMatch, this.MatchedGame, editGameView.UpdatedGameImageContents);
+                    this.CatalogEditor.MatchGameAsync(this.GameToMatch, this.MatchedGame, editGameView.UpdatedGameImageContents);
                     this.DialogResult = true;
                     this.Close();
                 }

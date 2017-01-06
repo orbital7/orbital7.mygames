@@ -40,7 +40,7 @@ namespace DesktopApp
             try
             {
                 Mouse.OverrideCursor = Cursors.Wait;
-                this.CatalogEditor.SaveGame(this.Game, editGameView.UpdatedGameImageContents);
+                this.CatalogEditor.SaveGameAsync(this.Game, editGameView.UpdatedGameImageContents);
                 this.DialogResult = true;
             }
             catch(Exception ex)

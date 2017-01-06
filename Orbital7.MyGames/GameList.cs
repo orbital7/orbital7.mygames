@@ -53,7 +53,7 @@ namespace Orbital7.MyGames
             return Path.Combine(folderPath, "gamelist.xml");
         }
 
-        internal static GameList Load(IAccessProvider accessProvider, string folderPath)
+        internal static async Task<GameList> LoadAsync(IAccessProvider accessProvider, string folderPath)
         {
             GameList gameList = null;
 
@@ -76,7 +76,7 @@ namespace Orbital7.MyGames
             gameList.Platform = platform.Value;
 
             // Initialize.
-            gameList.Initialize();
+            await gameList.InitializeAsync();
                         
             return gameList;
         }
@@ -365,10 +365,10 @@ namespace Orbital7.MyGames
             return null;
         }
 
-        internal void Initialize()
+        internal async Task InitializeAsync()
         {
             foreach (Game game in this.InnerList)
-                game.Initialize(this);
+                await game.InitializeAsync(this);
         }
 
         public override string ToString()

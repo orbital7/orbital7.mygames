@@ -20,6 +20,8 @@ namespace Orbital7.MyGames
 
         public string RomsFolderPath { get; set; }
 
+        public List<PlatformConfig> PlatformConfigs { get; set; } = new List<PlatformConfig>();
+
         public Config()
         {
 
@@ -48,12 +50,12 @@ namespace Orbital7.MyGames
             return Path.Combine(folderPath, FILENAME);
         }
 
-        public static T Load<T>(IAccessProvider accessProvider, string folderPath) where T : Config
+        public static async Task<T> LoadAsync<T>(IAccessProvider accessProvider, string folderPath) where T : Config
         {
             string filePath = GetFilePath(folderPath);
-            if (accessProvider.FileExists(filePath))
+            if (await accessProvider.FileExistsAsync(filePath))
             {
-                T config = XMLSerializationHelper.LoadFromXML<T>(accessProvider.ReadAllText(filePath));
+                T config = XMLSerializationHelper.LoadFromXML<T>(await accessProvider.ReadAllTextAsync(filePath));
                 config.FolderPath = folderPath;
                 config.AccessProvider = accessProvider;
                 return config;
@@ -64,9 +66,16 @@ namespace Orbital7.MyGames
             }
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            this.AccessProvider.WriteAllText(GetFilePath(this.FolderPath), XMLSerializationHelper.SerializeToXML(this));
+            await this.AccessProvider.WriteAllTextAsync(GetFilePath(this.FolderPath), XMLSerializationHelper.SerializeToXML(this));
+        }
+
+        public PlatformConfig FindPlatformConfig(Platform platform)
+        {
+            return (from x in this.PlatformConfigs
+                    where x.Platform == platform
+                    select x).FirstOrDefault();
         }
     }
 }

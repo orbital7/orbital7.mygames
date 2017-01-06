@@ -103,7 +103,7 @@ namespace DesktopApp
                 if (MessageBoxHelper.AskQuestion(this, "Are you sure you want to delete the " +
                     this.Game.Platform.ToDisplayString() + " game " + this.Game.ToString() + "?"))
                 {
-                    this.CatalogEditor.DeleteGame(this.Game);
+                    this.CatalogEditor.DeleteGameAsync(this.Game);
                     this.GamesListview.Update();
                 }
             }

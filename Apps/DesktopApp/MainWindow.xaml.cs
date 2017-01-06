@@ -1,4 +1,5 @@
-﻿using Orbital7.Extensions.Windows;
+﻿using Orbital7.Extensions;
+using Orbital7.Extensions.Windows;
 using Orbital7.Extensions.Windows.Desktop.WPF;
 using Orbital7.MyGames;
 using Orbital7.MyGames.Local;
@@ -31,7 +32,7 @@ namespace DesktopApp
             InitializeComponent();
             App.SetWindowFont(this);
 
-            var config = LoadConfig();
+            var config = AsyncHelper.RunSync(() => LoadConfigAsync());
             if (config != null)
             {
                 this.CatalogEditor = new CatalogEditor(config);
@@ -43,12 +44,12 @@ namespace DesktopApp
             }
         }
 
-        public CatalogConfig LoadConfig()
+        public async Task<CatalogConfig> LoadConfigAsync()
         {
             string configFolderPath = ReflectionHelper.GetExecutingAssemblyFolder();
 
             var accessProcessor = new LocalAccessProvider();
-            var config = Config.Load<CatalogConfig>(accessProcessor, configFolderPath);
+            var config = await Config.LoadAsync<CatalogConfig>(accessProcessor, configFolderPath);
             if (config == null)
             {
                 string romsFolderPath = Orbital7.Extensions.Windows.Desktop.WinForms.CommonDialogsHelper.ShowFolderBrowseDialog(
@@ -56,11 +57,17 @@ namespace DesktopApp
                 if (!String.IsNullOrEmpty(romsFolderPath))
                 {
                     config = new CatalogConfig(accessProcessor, configFolderPath, romsFolderPath);
-                    config.Save();
+                    await config.SaveAsync();
                 }
             }
 
             return config;
+        }
+
+        private async Task SyncDeviceAsync(string deviceDirectoryKey)
+        {
+            var engine = new LocalSyncEngine();
+            await engine.SyncWithDeviceAsync(this.CatalogEditor.Catalog, deviceDirectoryKey);
         }
 
         private void navigationTreeview_NavigationTreeviewItemSelected(NavigationTreeviewModelItem item)
@@ -93,7 +100,7 @@ namespace DesktopApp
             try
             {
                 if (this.CatalogEditor.Config.Devices.Count > 0)
-                    new LocalSyncEngine().SyncWithDevice(this.CatalogEditor.Catalog, this.CatalogEditor.Config.Devices[0].DirectoryKey);
+                    AsyncHelper.RunSync(() => SyncDeviceAsync(this.CatalogEditor.Config.Devices[0].DirectoryKey));
                 else
                     throw new Exception("Configuration does not specify any devices");
             }

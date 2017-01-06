@@ -8,34 +8,34 @@ namespace Orbital7.MyGames
 {
     public interface IAccessProvider
     {
-        bool FolderExists(string folderPath);
+        Task<bool> FolderExistsAsync(string folderPath);
 
-        string[] GetFolderPaths(string folderPath, string searchPattern = null);
+        Task<string[]> GetFolderPathsAsync(string folderPath, string searchPattern = null);
 
-        string EnsureFolderExists(params string[] paths);
+        Task<string> EnsureFolderExistsAsync(params string[] paths);
 
-        string DeleteFolderContents(string folderPath);
+        Task<string> DeleteFolderContentsAsync(string folderPath);
 
-        string[] GetFilePaths(string folderPath, string searchPattern = null);
+        Task<string[]> GetFilePathsAsync(string folderPath, string searchPattern = null);
 
-        bool IsDifferentCopyRequired(string sourcePath, string destinationPath);
+        Task<bool> IsDifferentCopyRequiredAsync(string sourcePath, string destinationPath);
 
-        bool IsNewerCopyRequired(string sourcePath, string destinationPath);
+        Task<bool> IsNewerCopyRequiredAsync(string sourcePath, string destinationPath);
 
-        bool FileExists(string filePath);
+        Task<bool> FileExistsAsync(string filePath);
 
-        void MoveFile(string sourcePath, string destinationPath);
+        Task MoveFileAsync(string sourcePath, string destinationPath);
 
-        void CopyFile(string sourcePath, string destinationPath);
+        Task CopyFileAsync(string sourcePath, string destinationPath);
 
-        void DeleteFile(string filePath);
+        Task DeleteFileAsync(string filePath);
 
-        string ReadAllText(string filePath);
+        Task<string> ReadAllTextAsync(string filePath);
 
-        byte[] ReadAllBytes(string filePath);
+        Task<byte[]> ReadAllBytesAsync(string filePath);
 
-        void WriteAllText(string filePath, string text);
+        Task WriteAllTextAsync(string filePath, string text);
 
-        void WriteAllBytes(string filePath, byte[] bytes);
+        Task WriteAllBytesAsync(string filePath, byte[] bytes);
     }
 }

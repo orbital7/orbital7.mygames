@@ -167,13 +167,13 @@ namespace Orbital7.MyGames
                 return this.GamePath;
         }
 
-        internal void Initialize(GameList gameList)
+        internal async Task InitializeAsync(GameList gameList)
         {
             this.GameList = gameList;
-            SetFilePaths();
+            await SetFilePathsAsync();
         }
 
-        internal void SetFilePaths()
+        internal async Task SetFilePathsAsync()
         {
             if (this.GameList != null)
             {
@@ -185,12 +185,12 @@ namespace Orbital7.MyGames
                 {
                     this.ImageFilePath = Path.Combine(this.GameList.PlatformFolderPath, 
                         FileSystemHelper.NormalizePathSeparator(this.ImagePath.Replace(PATH_PREFIX, ""), pathSeparator));
-                    this.HasImage = this.GameList.AccessProvider.FileExists(this.ImageFilePath);
+                    this.HasImage = await this.GameList.AccessProvider.FileExistsAsync(this.ImageFilePath);
                 }
             }
         }
 
-        public void UpdateFilename(string updatedFilename)
+        public async Task UpdateFilenameAsync(string updatedFilename)
         {
             this.GameFilename = updatedFilename;
             if (this.HasImage)
@@ -198,14 +198,12 @@ namespace Orbital7.MyGames
                                  GetImageFilenameWithoutExtension(updatedFilename) + 
                                  Path.GetExtension(this.ImagePath);
 
-            SetFilePaths();
+            await SetFilePathsAsync();
         }
         
         public static string GetImageFilenameWithoutExtension(string gameFilename)
         {
             return Path.GetFileNameWithoutExtension(gameFilename) + "-image";
         }
-
-        
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orbital7.MyGames
 {
@@ -21,26 +22,29 @@ namespace Orbital7.MyGames
             this.AccessProvider = catalogConfig.AccessProvider;
 
             this.Catalog = new Catalog(catalogConfig);
+            AsyncHelper.RunSync(() => InitializeAsync());
+        }
 
+        private async Task InitializeAsync()
+        {
             foreach (var gameList in this.Catalog.GameLists)
             {
-                SyncGameListFiles(gameList);
+                await SyncGameListFilesAsync(gameList);
                 SaveGameList(gameList);
 
                 foreach (Game game in gameList)
-                    UpdateLocalCustomGameConfigFile(game);
+                    await UpdateLocalCustomGameConfigFileAsync(game);
             }
-
         }
 
         public void SaveGameList(GameList gameList)
         {
             string filePath = GameList.GetFilePath(gameList.PlatformFolderPath);
-            this.AccessProvider.WriteAllText(filePath, XMLSerializationHelper.SerializeToXML(gameList).Replace(
+            this.AccessProvider.WriteAllTextAsync(filePath, XMLSerializationHelper.SerializeToXML(gameList).Replace(
                 "<Game ", "<game ").Replace("</Game>", "</game>").Replace("<Game>", "<game>"));   // TODO: Fix.
         }
 
-        public void SyncGameListFiles(GameList gameList)
+        public async Task SyncGameListFilesAsync(GameList gameList)
         {
             var fileExtensions = GameList.GetPlatformFileExtensions(gameList.Platform);
 
@@ -51,14 +55,14 @@ namespace Orbital7.MyGames
                 game.Platform = gameList.Platform;
 
                 string filePath = Path.Combine(gameList.PlatformFolderPath, game.GameFilename);
-                if (!this.AccessProvider.FileExists(filePath))
+                if (!await this.AccessProvider.FileExistsAsync(filePath))
                 {
                     gameList.Remove(game);
                     if (!String.IsNullOrEmpty(game.ImagePath))
                     {
                         string imagePath = Path.Combine(gameList.ImagesFolderPath, game.ImageFilename);
-                        if (this.AccessProvider.FileExists(imagePath))
-                            this.AccessProvider.DeleteFile(imagePath);
+                        if (await this.AccessProvider.FileExistsAsync(imagePath))
+                            await this.AccessProvider.DeleteFileAsync(imagePath);
                     }
                 }
             }
@@ -88,15 +92,16 @@ namespace Orbital7.MyGames
                     select x).ToList();
         }
 
-        public void SaveGame(Game game, byte[] updatedImageContents)
+        public async Task SaveGameAsync(Game game, byte[] updatedImageContents)
         {
-            SaveGame(game, updatedImageContents != null ? new Image(new MemoryStream(updatedImageContents)) : null);
+            await SaveGameAsync(game, updatedImageContents != null ? 
+                new Image(new MemoryStream(updatedImageContents)) : null);
         }
 
-        public void SaveGame(Game game, Image image)
+        public async Task SaveGameAsync(Game game, Image image)
         {
             // Ensure images folder exists.
-            this.AccessProvider.EnsureFolderExists(game.GameList.ImagesFolderPath);
+            await this.AccessProvider.EnsureFolderExistsAsync(game.GameList.ImagesFolderPath);
 
             // Look for rename.
             if (game.GameFilename.ToLower() != Path.GetFileName(game.GameFilePath).ToLower())
@@ -106,7 +111,7 @@ namespace Orbital7.MyGames
                 string imageFilePath = game.ImageFilePath;
 
                 // Update values.
-                game.UpdateFilename(game.GameFilename);
+                await game.UpdateFilenameAsync(game.GameFilename);
 
                 // Rename files.
                 File.Move(gameFilePath, game.GameFilePath);
@@ -115,7 +120,7 @@ namespace Orbital7.MyGames
             }
             else
             {
-                game.SetFilePaths();
+                await game.SetFilePathsAsync();
             }
 
             // Update the image.
@@ -128,35 +133,35 @@ namespace Orbital7.MyGames
                     game.ImageHeight = sizedImage.Height;
                     sizedImage.Save(stream, ImageSharpHelper.GetImageFormat(Path.GetExtension(game.ImagePath)));
                 }
-                game.SetFilePaths();
+                await game.SetFilePathsAsync();
             }
 
             // Update the game config.
-            UpdateLocalCustomGameConfigFile(game);
+            await UpdateLocalCustomGameConfigFileAsync(game);
 
             // Save.
             SaveGameList(game.GameList);
         }
 
-        private void UpdateLocalCustomGameConfigFile(Game game)
+        private async Task UpdateLocalCustomGameConfigFileAsync(Game game)
         {
             foreach (var device in this.Config.Devices)
             {
-                string filePath = GetLocalCustomGameConfigFilePath(game, device);
+                string filePath = await GetLocalCustomGameConfigFilePathAsync(game, device);
                 if (game.GameConfig == Game.CUSTOM_GAME_CONFIG && !File.Exists(filePath))
-                    this.AccessProvider.WriteAllText(filePath, "#TODO");
+                    await this.AccessProvider.WriteAllTextAsync(filePath, "#TODO");
                 else if (game.GameConfig != Game.CUSTOM_GAME_CONFIG && File.Exists(filePath))
-                    this.AccessProvider.DeleteFile(filePath);
+                    await this.AccessProvider.DeleteFileAsync(filePath);
             }
         }
 
-        public void MatchGame(Game game, Game matchedGame, byte[] imageContents)
+        public async Task MatchGameAsync(Game game, Game matchedGame, byte[] imageContents)
         {
-            MatchGame(game, matchedGame, imageContents != null ?
+            await MatchGameAsync(game, matchedGame, imageContents != null ?
                 new Image(new MemoryStream(imageContents)) : null);
         }
 
-        public void MatchGame(Game game, Game matchedGame, Image image)
+        public async Task MatchGameAsync(Game game, Game matchedGame, Image image)
         {
             // Copy over the properties.
             if (game.IsFilenameEditable)
@@ -171,23 +176,23 @@ namespace Orbital7.MyGames
             game.ImagePath = matchedGame.ImagePath;
 
             // Update.
-            SaveGame(game, image);
+            await SaveGameAsync(game, image);
         }
 
-        public void DeleteGame(Game game)
+        public async Task DeleteGameAsync(Game game)
         {
             if (File.Exists(game.GameFilePath))
             {
                 // It's possible that a game is comprised of multiple files with the same name
                 // but different extensions (such as CD games, etc.).
-                var filePaths = this.AccessProvider.GetFilePaths(Path.GetDirectoryName(game.GameFilePath),
+                var filePaths = await this.AccessProvider.GetFilePathsAsync(Path.GetDirectoryName(game.GameFilePath),
                     Path.GetFileNameWithoutExtension(game.GameFilePath) + ".*");
                 foreach (var filePath in filePaths)
-                    this.AccessProvider.DeleteFile(filePath);
+                    await this.AccessProvider.DeleteFileAsync(filePath);
             }
 
-            if (this.AccessProvider.FileExists(game.ImageFilePath))
-                this.AccessProvider.DeleteFile(game.ImageFilePath);
+            if (await this.AccessProvider.FileExistsAsync(game.ImageFilePath))
+                await this.AccessProvider.DeleteFileAsync(game.ImageFilePath);
 
             game.GameList.Remove(game);
             SaveGameList(game.GameList);
@@ -215,10 +220,10 @@ namespace Orbital7.MyGames
             return list;
         }
 
-        public static string GetLocalCustomGameConfigFilePath(Game game, Device device)
+        public static async Task<string> GetLocalCustomGameConfigFilePathAsync(Game game, Device device)
         {
-            string deviceGameConfigsPath = game.GameList.AccessProvider.EnsureFolderExists(game.GameList.PlatformFolderPath,
-                GameList.GameConfigsFolderName, device.DirectoryKey);
+            string deviceGameConfigsPath = await game.GameList.AccessProvider.EnsureFolderExistsAsync(
+                game.GameList.PlatformFolderPath, GameList.GameConfigsFolderName, device.DirectoryKey);
             return Path.Combine(deviceGameConfigsPath, game.GameFilename + ".cfg");
         }
     }

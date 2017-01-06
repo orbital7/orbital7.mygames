@@ -70,7 +70,7 @@ namespace DesktopApp
                     var matchedGame = await engine.SearchExactAsync(this.Scraper, game.Platform, query, game.GameFilename);
                     if (matchedGame != null)
                     {
-                        this.CatalogEditor.MatchGame(game, matchedGame, 
+                        await this.CatalogEditor.MatchGameAsync(game, matchedGame, 
                             await HttpHelper.DownloadFileContentsAsync(matchedGame.ImageFilePath));
                         ReportProgress(index, "MATCHED\n");
                     }

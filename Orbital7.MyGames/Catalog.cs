@@ -25,11 +25,16 @@ namespace Orbital7.MyGames
             this.Config = config;
             this.AccessProvider = config.AccessProvider;
 
-            foreach (var platformFolderPath in this.AccessProvider.GetFolderPaths(config.RomsFolderPath))
+            AsyncHelper.RunSync(() => InitializeAsync());
+        }
+
+        private async Task InitializeAsync()
+        {
+            foreach (var platformFolderPath in await this.AccessProvider.GetFolderPathsAsync(this.Config.RomsFolderPath))
             {
                 var platform = GameList.GetPlatform(Path.GetFileName(platformFolderPath));
                 if (platform.HasValue)
-                    this.GameLists.Add(GameList.Load(this.AccessProvider, platformFolderPath));
+                    this.GameLists.Add(await GameList.LoadAsync(this.AccessProvider, platformFolderPath));
             }
         }
                 

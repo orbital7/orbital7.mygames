@@ -8,8 +8,6 @@ namespace Orbital7.MyGames
 {
     public class CatalogConfig : Config
     {
-        public List<PlatformConfig> PlatformConfigs { get; set; } = new List<PlatformConfig>();
-
         public List<Device> Devices { get; set; } = new List<Device>();
 
         public CatalogConfig()
@@ -33,13 +31,6 @@ namespace Orbital7.MyGames
         {
             return (from x in this.Devices
                     where x.DirectoryKey.ToLower() == directoryKey.ToLower()
-                    select x).FirstOrDefault();
-        }
-
-        public PlatformConfig FindPlatformConfig(Platform platform)
-        {
-            return (from x in this.PlatformConfigs
-                    where x.Platform == platform
                     select x).FirstOrDefault();
         }
     }
