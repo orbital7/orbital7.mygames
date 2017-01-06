@@ -61,6 +61,8 @@
     <Compile Include="CatalogEditor.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Device.cs" />
+    <Compile Include="DeviceSyncEngine.cs" />
+    <Compile Include="DeviceSyncEngineProgress.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameList.cs" />
     <Compile Include="IAccessProvider.cs" />

@@ -32,19 +32,25 @@ namespace DesktopApp
             InitializeComponent();
             App.SetWindowFont(this);
 
+            if (!UpdateView())
+                this.Close();
+        }
+
+        private bool UpdateView()
+        {
             var config = AsyncHelper.RunSync(() => LoadConfigAsync());
             if (config != null)
             {
                 this.CatalogEditor = new CatalogEditor(config);
                 navigationTreeview.Load(this.CatalogEditor.Catalog);
+                gamesListview.Clear();
+                return true;
             }
-            else
-            {
-                this.Close();
-            }
+
+            return false;
         }
 
-        public async Task<CatalogConfig> LoadConfigAsync()
+        private async Task<CatalogConfig> LoadConfigAsync()
         {
             string configFolderPath = ReflectionHelper.GetExecutingAssemblyFolder();
 
@@ -62,12 +68,6 @@ namespace DesktopApp
             }
 
             return config;
-        }
-
-        private async Task SyncDeviceAsync(string deviceDirectoryKey)
-        {
-            var engine = new LocalSyncEngine();
-            await engine.SyncWithDeviceAsync(this.CatalogEditor.Catalog, deviceDirectoryKey);
         }
 
         private void navigationTreeview_NavigationTreeviewItemSelected(NavigationTreeviewModelItem item)
@@ -97,17 +97,28 @@ namespace DesktopApp
 
         private void buttonSyncWithDevice_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (this.CatalogEditor.Config.Devices.Count > 0)
-                    AsyncHelper.RunSync(() => SyncDeviceAsync(this.CatalogEditor.Config.Devices[0].DirectoryKey));
-                else
-                    throw new Exception("Configuration does not specify any devices");
-            }
-            catch(Exception ex)
-            {
-                MessageBoxHelper.ShowError(this, ex);
-            }
+            var dialog = new SyncDeviceDialog(this.CatalogEditor.Catalog);
+            dialog.Owner = this;
+            dialog.ShowDialog();
+        }
+
+        private void buttonRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateView();
+        }
+
+        private void buttonOpenROMsFolder_Click(object sender, RoutedEventArgs e)
+        {
+            ProcessHelper.OpenFileViaShell(this.CatalogEditor.Config.RomsFolderPath);
+        }
+
+        private void buttonSettings_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new SettingsDialog(this.CatalogEditor.Config);
+            dialog.Owner = this;
+            var result = dialog.ShowDialog();
+            if (result.HasValue && result.Value)
+                UpdateView();
         }
     }
 }

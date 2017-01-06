@@ -1,0 +1,25 @@
+﻿<Window x:Class="DesktopApp.SyncDeviceDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DesktopApp"
+        mc:Ignorable="d" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize"
+        BorderThickness="2px" BorderBrush="Orange" Background="Black" Foreground="White"
+        Width="400px" Height="250px" Title="Sync Device">
+    <DockPanel Margin="5">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5">
+            <Label Foreground="White" DockPanel.Dock="Left">Device:</Label>
+            <Button x:Name="buttonSync" Click="buttonSync_Click" Margin="0,0,5,0" 
+                    DockPanel.Dock="Right" FontWeight="Bold" Height="22px" Width="100px" 
+                    IsEnabled="False" IsDefault="True">Sync Now</Button>
+            <ComboBox x:Name="comboDevice" Margin="5,0,10,0" 
+                      Height="22px" BorderThickness="0" />
+        </DockPanel>
+        <ProgressBar x:Name="progress" DockPanel.Dock="Top" Height="18px" Margin="5,5,5,5"/>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
+            <Button x:Name="buttonDone" Click="buttonDone_Click" Width="65" Height="22" IsCancel="True">Done</Button>
+        </StackPanel>
+        <TextBox x:Name="textOutput" TextWrapping="Wrap" IsReadOnly="True" Background="Gray" Margin="5,5,5,5" VerticalScrollBarVisibility="Visible" />
+    </DockPanel>
+</Window>

@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LocalAccessProvider.cs" />
-    <Compile Include="LocalSyncEngine.cs" />
+    <Compile Include="LocalDevicePushSyncEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

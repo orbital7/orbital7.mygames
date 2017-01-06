@@ -75,11 +75,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="EditDeviceDialog.xaml.cs">
+      <DependentUpon>EditDeviceDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EditGameDialog.xaml.cs">
       <DependentUpon>EditGameDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="EditGameView.xaml.cs">
       <DependentUpon>EditGameView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EditPlatformConfigDialog.xaml.cs">
+      <DependentUpon>EditPlatformConfigDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="GameImageView.xaml.cs">
       <DependentUpon>GameImageView.xaml</DependentUpon>
@@ -95,11 +101,25 @@
     </Compile>
     <Compile Include="NavigationTreeviewModel.cs" />
     <Compile Include="NavigationTreeviewModelItem.cs" />
+    <Compile Include="SettingsDialog.xaml.cs">
+      <DependentUpon>SettingsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SyncDeviceDialog.xaml.cs">
+      <DependentUpon>SyncDeviceDialog.xaml</DependentUpon>
+    </Compile>
+    <Page Include="EditDeviceDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="EditGameDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="EditGameView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditPlatformConfigDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -142,6 +162,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="NavigationTreeview.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettingsDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SyncDeviceDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -10,9 +10,15 @@
     <DockPanel>
         <ToolBarTray DockPanel.Dock="Top" Background="Black">
             <ToolBar Background="Black" Foreground="White">
-                <Button x:Name="buttonMatchIncomplete" Click="buttonMatchIncomplete_Click" Foreground="White">Bulk Exact-Match Incomplete Games</Button>
+                <Button x:Name="buttonRefresh" Click="buttonRefresh_Click" Foreground="White">Refresh</Button>
                 <Separator/>
-                <Button x:Name="buttonSyncWithDevice" Click="buttonSyncWithDevice_Click" Foreground="White">Sync with First Device</Button>
+                <Button x:Name="buttonMatchIncomplete" Click="buttonMatchIncomplete_Click" Foreground="White">Bulk Match</Button>
+                <Separator/>
+                <Button x:Name="buttonSyncWithDevice" Click="buttonSyncWithDevice_Click" Foreground="White">Sync with Device</Button>
+                <Separator/>
+                <Button x:Name="buttonOpenROMsFolder" Click="buttonOpenROMsFolder_Click" Foreground="White">Open ROMs Folder in File Explorer</Button>
+                <Separator/>
+                <Button x:Name="buttonSettings" Click="buttonSettings_Click" Foreground="White">Settings</Button>
             </ToolBar>
         </ToolBarTray>
         <local:NavigationTreeview x:Name="navigationTreeview" DockPanel.Dock="Left" Width="125px" Margin="10,5,0,10"

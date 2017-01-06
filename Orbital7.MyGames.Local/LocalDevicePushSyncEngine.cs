@@ -5,44 +5,34 @@ using System.Threading.Tasks;
 
 namespace Orbital7.MyGames.Local
 {
-    public class LocalSyncEngine
+    public class LocalDevicePushSyncEngine : DeviceSyncEngine
     {
-        private IAccessProvider AccessProvider { get; set; }
+        public event DeviceSyncEngineProgressDelegate Progress;
 
-        public LocalSyncEngine()
+        public LocalDevicePushSyncEngine()
         {
             this.AccessProvider = new LocalAccessProvider();
         }
 
-        public async Task SyncWithDeviceAsync(Catalog catalog, string deviceDirectoryKey)
+        protected override async Task SyncAsync()
         {
-            // Load the device from the configuration.
-            var config = await Config.LoadAsync<CatalogConfig>(this.AccessProvider, catalog.Config.FolderPath);
-            var device = config.FindDevice(deviceDirectoryKey);
-            if (device == null)
-                throw new Exception("Device " + deviceDirectoryKey + " could not be found");
-
-            // Test connection.
-            bool exists = await this.AccessProvider.FolderExistsAsync(device.RomsPath);
-            if (!exists)
-                throw new Exception(device.Name + " game path is not accessible: " + device.RomsPath);
-
             // Loop.
-            int index = 0;
-            foreach (var gameList in catalog.GameLists)
+            foreach (var gameList in this.Catalog.GameLists)
             {
-                index++;
-                Debug.WriteLine("Syncing GameList " + index + "/" + catalog.GameLists.Count + ": " +
-                    gameList.Platform.ToDisplayString());
+                if (this.Cancel)
+                    break;
 
-                string devicePlatformPath = Path.Combine(device.RomsPath, Path.GetFileName(gameList.PlatformFolderPath));
-                if (device.SyncPlatform(gameList.Platform))
+                NotifyProgress("Syncing " + gameList.Platform.ToDisplayString());
+                this.Index++;
+
+                string devicePlatformPath = Path.Combine(this.Device.RomsPath, Path.GetFileName(gameList.PlatformFolderPath));
+                if (this.Device.SyncPlatform(gameList.Platform))
                 {
                     await this.AccessProvider.EnsureFolderExistsAsync(devicePlatformPath);
                     string deviceImageFolderPath = await this.AccessProvider.EnsureFolderExistsAsync(devicePlatformPath, 
                         GameList.ImagesFolderName);
                     await ProcessDeviceFilesAsync(devicePlatformPath, deviceImageFolderPath, gameList);
-                    await PushGameFilesToDeviceAsync(device, devicePlatformPath, deviceImageFolderPath, gameList);
+                    await PushGameFilesToDeviceAsync(devicePlatformPath, deviceImageFolderPath, gameList);
                     await this.AccessProvider.CopyFileAsync(gameList.FilePath, GameList.GetFilePath(devicePlatformPath));
                 }
                 else if (await this.AccessProvider.FolderExistsAsync(devicePlatformPath))
@@ -52,8 +42,18 @@ namespace Orbital7.MyGames.Local
             }
 
             // Update the device.
-            device.LastSyncedDate = DateTime.UtcNow;
-            await catalog.Config.SaveAsync();
+            this.Device.LastSyncedDate = DateTime.UtcNow;
+            await this.Catalog.Config.SaveAsync();
+        }
+
+        private void NotifyProgress(string description)
+        {
+            this.Progress?.Invoke(new DeviceSyncEngineProgress()
+            {
+                GameListIndex = this.Index,
+                GameListsCount = this.Catalog.GameLists.Count,
+                Description = description,
+            });
         }
 
         private async Task ProcessDeviceFilesAsync(string devicePlatformPath, string deviceImageFolderPath, GameList gameList)
@@ -63,6 +63,9 @@ namespace Orbital7.MyGames.Local
 
             foreach (string deviceFilePath in await this.AccessProvider.GetFilePathsAsync(devicePlatformPath))
             {
+                if (this.Cancel)
+                    break;
+
                 string filename = Path.GetFileName(deviceFilePath);
                 string fileExtension = Path.GetExtension(filename).ToLower();
                 if (gameFileExtensions.Contains(fileExtension))
@@ -96,20 +99,26 @@ namespace Orbital7.MyGames.Local
             }
         }
 
-        private async Task PushGameFilesToDeviceAsync(Device device, string devicePlatformPath, 
+        private async Task PushGameFilesToDeviceAsync(string devicePlatformPath, 
             string deviceImageFolderPath, GameList gameList)
         {
             foreach (Game game in gameList)
             {
+                if (this.Cancel)
+                    break;
+
                 // Copy game files.
                 var gameFilePaths = await this.AccessProvider.GetFilePathsAsync(gameList.PlatformFolderPath,
                     Path.GetFileNameWithoutExtension(game.GameFilename) + ".*");
                 foreach (var gameFilePath in gameFilePaths)
                 {
+                    if (this.Cancel)
+                        break;
+
                     string deviceFilePath = Path.Combine(devicePlatformPath, Path.GetFileName(gameFilePath));
                     if (await this.AccessProvider.IsDifferentCopyRequiredAsync(gameFilePath, deviceFilePath))
                     {
-                        Debug.WriteLine(" - Copying " + Path.GetFileName(gameFilePath));
+                        NotifyProgress(" - Copying " + Path.GetFileName(gameFilePath));
                         await this.AccessProvider.CopyFileAsync(gameFilePath, deviceFilePath);
                     }
                 }
@@ -119,10 +128,13 @@ namespace Orbital7.MyGames.Local
                     GameList.SaveStatesFolderName), Path.GetFileNameWithoutExtension(game.GameFilename) + ".*");
                 foreach (var saveStateFilePath in saveStateFilePaths)
                 {
+                    if (this.Cancel)
+                        break;
+
                     string deviceFilePath = Path.Combine(devicePlatformPath, Path.GetFileName(saveStateFilePath));
                     if (await this.AccessProvider.IsDifferentCopyRequiredAsync(saveStateFilePath, deviceFilePath))
                     {
-                        Debug.WriteLine(" - Copying " + Path.GetFileName(saveStateFilePath));
+                        NotifyProgress(" - Copying " + Path.GetFileName(saveStateFilePath));
                         await this.AccessProvider.CopyFileAsync(saveStateFilePath, deviceFilePath);
                     }
                 }
@@ -131,7 +143,7 @@ namespace Orbital7.MyGames.Local
                 string deviceGameConfigFilePath = Path.Combine(devicePlatformPath, game.GameFilename + ".cfg");
                 if (game.GameConfig != Game.DEFAULT_GAME_CONFIG)
                 {
-                    string localContents = await GetLocalGameConfigContentsAsync(game, device);
+                    string localContents = await GetLocalGameConfigContentsAsync(game);
                     if (!await this.AccessProvider.FileExistsAsync(deviceGameConfigFilePath) || await this.AccessProvider.ReadAllTextAsync(deviceGameConfigFilePath) != localContents)
                         await this.AccessProvider.WriteAllTextAsync(deviceGameConfigFilePath, localContents);
                 }
@@ -150,14 +162,14 @@ namespace Orbital7.MyGames.Local
             }
         }
 
-        private async Task<string> GetLocalGameConfigContentsAsync(Game game, Device device)
+        private async Task<string> GetLocalGameConfigContentsAsync(Game game)
         {
             string filePath = String.Empty;
             if (game.GameConfig == Game.CUSTOM_GAME_CONFIG)
-                filePath = await CatalogEditor.GetLocalCustomGameConfigFilePathAsync(game, device);
+                filePath = await CatalogEditor.GetLocalCustomGameConfigFilePathAsync(game, this.Device);
             else if (game.GameConfig != Game.DEFAULT_GAME_CONFIG)
                 filePath = Path.Combine(game.GameList.PlatformFolderPath, GameList.GameConfigsFolderName,
-                    device.DirectoryKey, game.GameConfig);
+                    this.Device.DirectoryKey, game.GameConfig);
 
             if (File.Exists(filePath))
                 return File.ReadAllText(filePath);

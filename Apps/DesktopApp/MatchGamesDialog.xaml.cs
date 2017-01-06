@@ -134,7 +134,6 @@ namespace DesktopApp
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            //this.ContinueMatching = false;
             this.BackgroundWorker = null;
             buttonDone.IsEnabled = true;
             buttonMatch.Content = "Match Now";
