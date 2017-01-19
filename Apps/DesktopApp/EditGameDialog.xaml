@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DesktopApp"
-        mc:Ignorable="d" ShowInTaskbar="False" 
-        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="False"
         BorderThickness="2px" BorderBrush="Orange" Background="Black" Foreground="White"
         Title="Edit Game" Height="376px" Width="890px">
     <DockPanel Margin="5">

@@ -14,6 +14,14 @@ namespace Orbital7.MyGames.Local
             this.AccessProvider = new LocalAccessProvider();
         }
 
+        protected override async Task ValidateAsync(Catalog catalog, Device device)
+        {
+            // Test connection.
+            bool exists = await this.AccessProvider.FolderExistsAsync(device.RomsPath);
+            if (!exists)
+                throw new Exception(device.Name + " game path is not accessible: " + device.RomsPath);
+        }
+
         protected override async Task SyncAsync()
         {
             // Loop.

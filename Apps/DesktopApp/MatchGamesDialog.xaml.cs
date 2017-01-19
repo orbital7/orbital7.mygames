@@ -28,6 +28,7 @@ namespace DesktopApp
         public MatchGamesDialog(CatalogEditor catalogEditor)
         {
             InitializeComponent();
+            App.SetWindowFont(this);
             this.Closing += MatchGamesDialog_Closing;
 
             this.CatalogEditor = catalogEditor;

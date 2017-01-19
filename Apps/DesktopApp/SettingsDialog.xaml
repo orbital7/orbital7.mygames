@@ -4,36 +4,35 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DesktopApp"
-        mc:Ignorable="d" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="False"
         BorderThickness="2px" BorderBrush="Orange" Background="Black" Foreground="White"
-        Width="600px" Title="Settings">
+        Width="600px" Height="462px" Title="Settings">
     <StackPanel Orientation="Vertical" Margin="5px">
         <Label Foreground="White" FontWeight="Bold">ROMs Path</Label>
         <DockPanel Margin="5,0,0,0">
-            <Button x:Name="buttonRomsPathBrowse" Click="buttonRomsPathBrowse_Click" DockPanel.Dock="Right" Margin="5,0,0,0">Browse</Button>
+            <Button x:Name="buttonRomsPathBrowse" Click="buttonRomsPathBrowse_Click" DockPanel.Dock="Right" Margin="5,0,0,0" Padding="5,0,5,0">Browse</Button>
             <TextBox x:Name="textRomsPath" IsEnabled="False" Text="{ Binding Path=RomsFolderPath }"/>
         </DockPanel>
         <Label Foreground="White" FontWeight="Bold" Margin="0,5,0,0">Platform Configs</Label>
-        <DockPanel Height="100px" Margin="5,0,0,0">
+        <DockPanel Height="135px" Margin="5,0,0,0">
             <ToolBar DockPanel.Dock="Top" Background="Black" Margin="-5,0,0,0">
                 <Button x:Name="buttonAddPlatformConfig" Click="buttonAddPlatformConfig_Click" Foreground="White">Add</Button>
                 <Separator/>
-                <Button x:Name="buttonEditPlatformConfig" Click="buttonEditPlatformConfig_Click" Foreground="White">Edit</Button>
+                <Button x:Name="buttonEditPlatformConfig" Click="buttonEditPlatformConfig_Click" Foreground="White" IsEnabled="False">Edit</Button>
                 <Separator/>
-                <Button x:Name="buttonDeletePlatformConfig" Click="buttonDeletePlatformConfig_Click" Foreground="White">Delete</Button>
+                <Button x:Name="buttonDeletePlatformConfig" Click="buttonDeletePlatformConfig_Click" Foreground="White" IsEnabled="False">Delete</Button>
             </ToolBar>
             <ListBox x:Name="listPlatformConfigs" SelectionChanged="listPlatformConfigs_SelectionChanged"/>
         </DockPanel>
         <Label Foreground="White" FontWeight="Bold" Margin="0,5,0,0">Devices</Label>
-        <DockPanel Height="100px" Margin="5,0,0,0">
+        <DockPanel Height="135px" Margin="5,0,0,0">
             <ToolBar DockPanel.Dock="Top" Background="Black" Margin="-5,0,0,0">
                 <Button x:Name="buttonAddDevice" Click="buttonAddDevice_Click" Foreground="White">Add</Button>
                 <Separator/>
-                <Button x:Name="buttonEditDevice" Click="buttonEditDevice_Click" Foreground="White">Edit</Button>
+                <Button x:Name="buttonEditDevice" Click="buttonEditDevice_Click" Foreground="White" IsEnabled="False">Edit</Button>
                 <Separator/>
-                <Button x:Name="buttonDeleteDevice" Click="buttonDeleteDevice_Click" Foreground="White">Delete</Button>
-                <Separator/>
-                <Button x:Name="buttonExportDeviceConfig" Click="buttonExportDeviceConfig_Click" Foreground="White">Export Device Config</Button>
+                <Button x:Name="buttonDeleteDevice" Click="buttonDeleteDevice_Click" Foreground="White" IsEnabled="False">Delete</Button>
             </ToolBar>
             <ListBox x:Name="listDevices" SelectionChanged="listDevices_SelectionChanged"/>
         </DockPanel>

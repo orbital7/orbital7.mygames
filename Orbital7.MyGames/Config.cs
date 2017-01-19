@@ -14,7 +14,7 @@ namespace Orbital7.MyGames
         public const string FILENAME = "MyGames.config";
 
         [XmlIgnore]
-        public IAccessProvider AccessProvider { get; private set; }
+        public IAccessProvider AccessProvider { get; internal set; }
 
         public string FolderPath { get; set; }
 
@@ -76,6 +76,13 @@ namespace Orbital7.MyGames
             return (from x in this.PlatformConfigs
                     where x.Platform == platform
                     select x).FirstOrDefault();
+        }
+
+        public T Clone<T>() where T : Config
+        {
+            var config = XMLSerializationHelper.CloneObject<T>((T)this);
+            config.AccessProvider = this.AccessProvider;
+            return config;
         }
     }
 }

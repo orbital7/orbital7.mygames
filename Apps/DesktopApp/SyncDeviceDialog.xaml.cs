@@ -35,6 +35,7 @@ namespace DesktopApp
         public SyncDeviceDialog(Catalog catalog)
         {
             InitializeComponent();
+            App.SetWindowFont(this);
             this.Closing += SyncDeviceDialog_Closing;
 
             this.Catalog = catalog;

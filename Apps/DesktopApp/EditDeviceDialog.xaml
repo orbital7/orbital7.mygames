@@ -4,9 +4,56 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DesktopApp"
+        xmlns:mygames="clr-namespace:Orbital7.MyGames;assembly=Orbital7.MyGames"
+        xmlns:extns="clr-namespace:Orbital7.Extensions.Windows.Desktop.WPF;assembly=Orbital7.Extensions.Windows.Desktop"
         mc:Ignorable="d"
-        Title="EditDeviceDialog" Height="300" Width="300">
-    <Grid>
-        
-    </Grid>
+        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="False"
+        BorderThickness="2px" BorderBrush="Orange" Background="Black" Foreground="White"
+        Width="350px" Height="330px" Title="[Action] Device">
+    <DockPanel Margin="5px">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0" DockPanel.Dock="Bottom">
+            <Button x:Name="buttonDone" Click="buttonDone_Click" Width="65" Height="22" IsDefault="True">Done</Button>
+            <Button x:Name="buttonCancel" Click="buttonCancel_Click" Width="65" Height="22" IsCancel="True" Margin="5,0,0,0">Cancel</Button>
+        </StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="24px" />
+                <RowDefinition Height="24px" />
+                <RowDefinition Height="24px" />
+                <RowDefinition Height="40px" />
+                <RowDefinition Height="135px" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="140px" />
+                <ColumnDefinition Width="185px" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0">Name:</TextBlock>
+            <TextBox Grid.Row="0" Grid.Column="1" BorderThickness="0px" Margin="0,0,0,4" Text="{ Binding Path=Name }" />
+            <TextBlock Grid.Row="1" Grid.Column="0">Directory Key:</TextBlock>
+            <TextBox Grid.Row="1" Grid.Column="1" BorderThickness="0px" Margin="0,0,0,4" Text="{ Binding Path=DirectoryKey }" />
+            <TextBlock Grid.Row="2" Grid.Column="0">Sharename/IP Address:</TextBlock>
+            <TextBox Grid.Row="2" Grid.Column="1" BorderThickness="0px" Margin="0,0,0,4" Text="{ Binding Path=Address }" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,1,0,0">Sync Type:</TextBlock>
+            <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Vertical">
+                <StackPanel.Resources>
+                    <extns:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+                </StackPanel.Resources>
+                <RadioButton Foreground="White" Margin="0,2,0,5" IsChecked="{Binding Path=SyncType, 
+                    Converter={StaticResource EnumToBooleanConverter}, 
+                    ConverterParameter={x:Static mygames:DeviceSyncType.AllExceptSelections}}">All But Selections</RadioButton>
+                <RadioButton Foreground="White" IsChecked="{Binding Path=SyncType, 
+                    Converter={StaticResource EnumToBooleanConverter}, 
+                    ConverterParameter={x:Static mygames:DeviceSyncType.OnlySelections}}">Only Selections</RadioButton>
+            </StackPanel>
+            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,5,0,0">Sync Selections:</TextBlock>
+            <DockPanel Grid.Row="4" Grid.Column="1">
+                <ToolBar DockPanel.Dock="Top" Background="Black" Margin="-5,0,0,0">
+                    <Button x:Name="buttonAddSyncSelection" Click="buttonAddSyncSelection_Click" Foreground="White">Add</Button>
+                    <Separator/>
+                    <Button x:Name="buttonDeleteSyncSelection" Click="buttonDeleteSyncSelection_Click" Foreground="White" IsEnabled="False">Delete</Button>
+                </ToolBar>
+                <ListBox x:Name="listSyncSelections" SelectionChanged="listSyncSelections_SelectionChanged"/>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
 </Window>

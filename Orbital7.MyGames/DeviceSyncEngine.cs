@@ -33,15 +33,15 @@ namespace Orbital7.MyGames
             // Clear.
             Clear();
 
-            // Test connection.
-            bool exists = await this.AccessProvider.FolderExistsAsync(device.RomsPath);
-            if (!exists)
-                throw new Exception(device.Name + " game path is not accessible: " + device.RomsPath);
+            // Validate.
+            await ValidateAsync(catalog, device);
 
             // Validate complete, record.
             this.Catalog = catalog;
             this.Device = device;
         }
+
+        protected abstract Task ValidateAsync(Catalog catalog, Device device);
 
         public async Task StartSyncAsync()
         {

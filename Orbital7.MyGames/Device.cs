@@ -9,9 +9,9 @@ namespace Orbital7.MyGames
 {
     public enum DeviceSyncType
     {
-        AllExcept,
+        AllExceptSelections,
 
-        OnlySelected,
+        OnlySelections,
     }
 
     public class Device
@@ -24,9 +24,7 @@ namespace Orbital7.MyGames
 
         public DateTime? LastSyncedDate { get; set; }
 
-        public DeviceSyncType SyncType { get; set; } = DeviceSyncType.AllExcept;
-
-        public List<Platform> SyncPlatformExceptions { get; set; } = new List<Platform>();
+        public DeviceSyncType SyncType { get; set; } = DeviceSyncType.AllExceptSelections;
 
         public List<Platform> SyncPlatformSelections { get; set; } = new List<Platform>();
 
@@ -40,11 +38,25 @@ namespace Orbital7.MyGames
             return this.Name;
         }
 
+        public void Validate()
+        {
+            if (String.IsNullOrEmpty(this.Name))
+                throw new Exception("A value is required for Name");
+            else if (String.IsNullOrEmpty(this.DirectoryKey))
+                throw new Exception("A value is required for Directory Key");
+            else if (!this.DirectoryKey.IsWindowsFileSystemSafe())
+                throw new Exception("The Directory Key cannot contain the characters " + StringExtensions.IllegalWindowsFileSystemChars);
+            else if (String.IsNullOrEmpty(this.Address))
+                throw new Exception("A share-name or ip address is required for Address");
+            else if (this.SyncType == DeviceSyncType.OnlySelections && this.SyncPlatformSelections.Count == 0)
+                throw new Exception("Sync has been set for Only Selections, but no Selections have been added");
+        }
+
         public bool SyncPlatform(Platform platform)
         {
-            if (this.SyncType == DeviceSyncType.AllExcept)
-                return !this.SyncPlatformExceptions.Contains(platform);
-            else if (this.SyncType == DeviceSyncType.OnlySelected)
+            if (this.SyncType == DeviceSyncType.AllExceptSelections)
+                return !this.SyncPlatformSelections.Contains(platform);
+            else if (this.SyncType == DeviceSyncType.OnlySelections)
                 return this.SyncPlatformSelections.Contains(platform);
             else
                 return false;
