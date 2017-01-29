@@ -22,6 +22,8 @@ namespace Orbital7.MyGames
 
         Task<bool> IsNewerCopyRequiredAsync(string sourcePath, string destinationPath);
 
+        Task<int> CompareFileCopiesAsync(string file1Path, string file2Path);
+
         Task<bool> FileExistsAsync(string filePath);
 
         Task MoveFileAsync(string sourcePath, string destinationPath);

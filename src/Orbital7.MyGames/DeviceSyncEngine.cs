@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,6 +58,36 @@ namespace Orbital7.MyGames
         public void StopSync()
         {
             this.Cancel = true;
+        }
+
+        protected void NotifyProgress(DeviceSyncEngineProgressDelegate progress, string description)
+        {
+            progress?.Invoke(new DeviceSyncEngineProgress()
+            {
+                GameListIndex = this.Index,
+                GameListsCount = this.Catalog.GameLists.Count,
+                Description = description,
+            });
+        }
+
+        protected void DeleteGameFiles(string platformFolderPath, string imagesFolderPath, string filename)
+        {
+            // Delete game files (could be more than one).
+            var deviceGameFilePaths = Directory.GetFiles(platformFolderPath,
+                Path.GetFileNameWithoutExtension(filename) + ".*");
+            foreach (var deviceGameFilePath in deviceGameFilePaths)
+                File.Delete(deviceGameFilePath);
+
+            // Delete game config files (should only be one, or not exist at all).
+            var deviceGameConfigFilePath = Path.Combine(platformFolderPath, filename + ".cfg");
+            if (File.Exists(deviceGameConfigFilePath))
+                File.Delete(deviceGameConfigFilePath);
+
+            // Delete game image file (should only be one, but we don't know the extension).
+            var deviceImageFilePaths = Directory.GetFiles(imagesFolderPath,
+                Game.GetImageFilenameWithoutExtension(filename) + ".*");
+            foreach (var deviceImageFilePath in deviceImageFilePaths)
+                File.Delete(deviceImageFilePath);
         }
     }
 }

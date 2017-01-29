@@ -49,9 +49,13 @@ namespace Orbital7.MyGames.Local
                     return sourceProperties.LastWriteTimeUtc != destProperties.LastWriteTimeUtc ||
                            sourceProperties.Length != destProperties.Length;
                 }
-                else
+                else if (File.Exists(sourcePath))
                 {
                     return true;
+                }
+                else
+                {
+                    return false;
                 }
             });
         }
@@ -66,9 +70,43 @@ namespace Orbital7.MyGames.Local
                     var destProperties = new FileInfo(destinationPath);
                     return sourceProperties.LastWriteTimeUtc > destProperties.LastWriteTimeUtc;
                 }
-                else
+                else if (File.Exists(sourcePath))
                 {
                     return true;
+                }
+                else
+                {
+                    return false;
+                }
+            });
+        }
+
+        public async Task<int> CompareFileCopiesAsync(string file1Path, string file2Path)
+        {
+            return await Task<bool>.Run(() =>
+            {
+                if (File.Exists(file1Path) && File.Exists(file2Path))
+                {
+                    var file1Properties = new FileInfo(file1Path);
+                    var file2Properties = new FileInfo(file2Path);
+                    if (file1Properties.LastWriteTimeUtc > file2Properties.LastWriteTimeUtc)
+                        return 1;
+                    else if (file1Properties.LastWriteTimeUtc < file2Properties.LastWriteTimeUtc)
+                        return -1;
+                    else
+                        return 0;
+                }
+                else if (File.Exists(file1Path))
+                {
+                    return 1;
+                }
+                else if (File.Exists(file2Path))
+                {
+                    return -1;
+                }
+                else
+                {
+                    return 0;
                 }
             });
         }

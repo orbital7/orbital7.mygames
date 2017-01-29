@@ -8,6 +8,14 @@ namespace Orbital7.MyGames.Devices
 {
     public class DeviceConfig : Config
     {
+        public string CatalogFolderPath { get; set; }
+
+        public DateTime? LastFullSync { get; set; }
+
+        public DateTime? LastSaveStatesAndConfigsSync{ get; set; }
+
+        public DateTime? LastSaveStatesPush { get; set; }
+
         public Device Device { get; set; }
 
         public DeviceConfig(IAccessProvider accessProvider)

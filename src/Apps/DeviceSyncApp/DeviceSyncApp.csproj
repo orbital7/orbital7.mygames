@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1B46ED7C-667D-4BDA-ACB1-96EA9ACC1DBE}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{5B94ED26-84F5-49FE-86B1-8C40758FE4E8}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Orbital7.MyGames.Devices</RootNamespace>
-    <AssemblyName>Orbital7.MyGames.Devices</AssemblyName>
+    <RootNamespace>DeviceSyncApp</RootNamespace>
+    <AssemblyName>DeviceSyncApp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -30,18 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="itextsharp, Version=5.5.8.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>..\packages\iTextSharp.5.5.8\lib\itextsharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Orbital7.Extensions, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Orbital7.Extensions.1.0.4\lib\portable45-net45+win8\Orbital7.Extensions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Orbital7.Extensions.Windows, Version=1.0.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Orbital7.Extensions.Windows.1.0.12\lib\net45\Orbital7.Extensions.Windows.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,18 +42,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeviceConfig.cs" />
-    <Compile Include="DevicePullSyncEngine.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Orbital7.MyGames\Orbital7.MyGames.csproj">
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Orbital7.MyGames.Cloud\Orbital7.MyGames.Cloud.csproj">
+      <Project>{a3f34014-17aa-430c-8758-d081168431f3}</Project>
+      <Name>Orbital7.MyGames.Cloud</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Orbital7.MyGames.Devices\Orbital7.MyGames.Devices.csproj">
+      <Project>{1b46ed7c-667d-4bda-acb1-96ea9acc1dbe}</Project>
+      <Name>Orbital7.MyGames.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Orbital7.MyGames.Local\Orbital7.MyGames.Local.csproj">
+      <Project>{a2683704-1961-4e78-982a-ce291d0386a2}</Project>
+      <Name>Orbital7.MyGames.Local</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Orbital7.MyGames\Orbital7.MyGames.csproj">
       <Project>{dea734b6-6565-4ddb-9bba-d2c0f06478bc}</Project>
       <Name>Orbital7.MyGames</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

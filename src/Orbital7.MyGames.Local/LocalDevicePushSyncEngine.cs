@@ -30,7 +30,7 @@ namespace Orbital7.MyGames.Local
                 if (this.Cancel)
                     break;
 
-                NotifyProgress("Syncing " + gameList.Platform.ToDisplayString());
+                NotifyProgress(this.Progress, "Syncing " + gameList.Platform.ToDisplayString());
                 this.Index++;
 
                 string devicePlatformPath = Path.Combine(this.Device.RomsPath, Path.GetFileName(gameList.PlatformFolderPath));
@@ -53,17 +53,7 @@ namespace Orbital7.MyGames.Local
             this.Device.LastSyncedDate = DateTime.UtcNow;
             await this.Catalog.Config.SaveAsync();
         }
-
-        private void NotifyProgress(string description)
-        {
-            this.Progress?.Invoke(new DeviceSyncEngineProgress()
-            {
-                GameListIndex = this.Index,
-                GameListsCount = this.Catalog.GameLists.Count,
-                Description = description,
-            });
-        }
-
+        
         private async Task ProcessDeviceFilesAsync(string devicePlatformPath, string deviceImageFolderPath, GameList gameList)
         {
             var gameFileExtensions = GameList.GetPlatformFileExtensions(gameList.Platform);
@@ -80,22 +70,8 @@ namespace Orbital7.MyGames.Local
                 {
                     if (!gameList.Contains(filename) && (gameList.Platform != Platform.NeoGeo && filename != "neogeo.zip"))
                     {
-                        // Delete game files (could be more than one).
-                        var deviceGameFilePaths = await this.AccessProvider.GetFilePathsAsync(devicePlatformPath,
-                            Path.GetFileNameWithoutExtension(filename) + ".*");
-                        foreach (var deviceGameFilePath in deviceGameFilePaths)
-                            await this.AccessProvider.DeleteFileAsync(deviceGameFilePath);
-
-                        // Delete game config files (should only be one, or not exist at all).
-                        var deviceGameConfigFilePath = Path.Combine(devicePlatformPath, filename + ".cfg");
-                        if (await this.AccessProvider.FileExistsAsync(deviceGameConfigFilePath))
-                            await this.AccessProvider.DeleteFileAsync(deviceGameConfigFilePath);
-
-                        // Delete game image file (should only be one, but we don't know the extension).
-                        var deviceImageFilePaths = await this.AccessProvider.GetFilePathsAsync(deviceImageFolderPath,
-                            Game.GetImageFilenameWithoutExtension(filename) + ".*");
-                        foreach (var deviceImageFilePath in deviceImageFilePaths)
-                            await this.AccessProvider.DeleteFileAsync(deviceImageFilePath);
+                        NotifyProgress(this.Progress, " - Removing " + filename);
+                        base.DeleteGameFiles(devicePlatformPath, deviceImageFolderPath, filename);
                     }
                 }
                 else if (saveStateFileExtensions.Contains(fileExtension))
@@ -126,7 +102,7 @@ namespace Orbital7.MyGames.Local
                     string deviceFilePath = Path.Combine(devicePlatformPath, Path.GetFileName(gameFilePath));
                     if (await this.AccessProvider.IsDifferentCopyRequiredAsync(gameFilePath, deviceFilePath))
                     {
-                        NotifyProgress(" - Copying " + Path.GetFileName(gameFilePath));
+                        NotifyProgress(this.Progress, " - Copying " + Path.GetFileName(gameFilePath));
                         await this.AccessProvider.CopyFileAsync(gameFilePath, deviceFilePath);
                     }
                 }
@@ -142,7 +118,7 @@ namespace Orbital7.MyGames.Local
                     string deviceFilePath = Path.Combine(devicePlatformPath, Path.GetFileName(saveStateFilePath));
                     if (await this.AccessProvider.IsDifferentCopyRequiredAsync(saveStateFilePath, deviceFilePath))
                     {
-                        NotifyProgress(" - Copying " + Path.GetFileName(saveStateFilePath));
+                        NotifyProgress(this.Progress, " - Copying " + Path.GetFileName(saveStateFilePath));
                         await this.AccessProvider.CopyFileAsync(saveStateFilePath, deviceFilePath);
                     }
                 }
@@ -179,8 +155,8 @@ namespace Orbital7.MyGames.Local
                 filePath = Path.Combine(game.GameList.PlatformFolderPath, GameList.GameConfigsFolderName,
                     this.Device.DirectoryKey, game.GameConfig);
 
-            if (File.Exists(filePath))
-                return File.ReadAllText(filePath);
+            if (await this.AccessProvider.FileExistsAsync(filePath))
+                return await this.AccessProvider.ReadAllTextAsync(filePath);
             else
                 return null;
         }
