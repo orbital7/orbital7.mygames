@@ -58,6 +58,9 @@ namespace Orbital7.MyGames.Devices
             }
 
             await deviceConfig.SaveAsync();
+
+            // Notify complete.
+            base.NotifySyncComplete(this.Progress);
         }
 
         private async Task UpdateCatalogGameListsAsync(DeviceConfig deviceConfig)

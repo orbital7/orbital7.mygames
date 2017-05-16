@@ -50,6 +50,7 @@ namespace Orbital7.MyGames
             if (this.Device == null)
                 throw new Exception("No device has been loaded into the Device Sync Engine");
 
+            // Sync.
             await SyncAsync();
         }
 
@@ -68,6 +69,11 @@ namespace Orbital7.MyGames
                 GameListsCount = this.Catalog.GameLists.Count,
                 Description = description,
             });
+        }
+
+        protected void NotifySyncComplete(DeviceSyncEngineProgressDelegate progress)
+        {
+            NotifyProgress(progress, "\nSYNC COMPLETE");
         }
 
         protected void DeleteGameFiles(string platformFolderPath, string imagesFolderPath, string filename)

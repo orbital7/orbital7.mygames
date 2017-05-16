@@ -52,6 +52,9 @@ namespace Orbital7.MyGames.Local
             // Update the device.
             this.Device.LastSyncedDate = DateTime.UtcNow;
             await this.Catalog.Config.SaveAsync();
+
+            // Notify complete.
+            base.NotifySyncComplete(this.Progress);
         }
         
         private async Task ProcessDeviceFilesAsync(string devicePlatformPath, string deviceImageFolderPath, GameList gameList)
