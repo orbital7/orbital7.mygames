@@ -30,7 +30,7 @@ namespace Orbital7.MyGames.Local
                 if (this.Cancel)
                     break;
 
-                NotifyProgress(this.Progress, "Syncing " + gameList.Platform.ToDisplayString());
+                NotifyProgress(this.Progress, "Syncing " + gameList.Platform.ToDisplayString() + "\n");
                 this.Index++;
 
                 string devicePlatformPath = Path.Combine(this.Device.RomsPath, Path.GetFileName(gameList.PlatformFolderPath));
@@ -70,7 +70,7 @@ namespace Orbital7.MyGames.Local
                 {
                     if (!gameList.Contains(filename) && (gameList.Platform != Platform.NeoGeo && filename != "neogeo.zip"))
                     {
-                        NotifyProgress(this.Progress, " - Removing " + filename);
+                        NotifyProgress(this.Progress, " - Removing " + filename + "\n");
                         base.DeleteGameFiles(devicePlatformPath, deviceImageFolderPath, filename);
                     }
                 }
@@ -102,7 +102,7 @@ namespace Orbital7.MyGames.Local
                     string deviceFilePath = Path.Combine(devicePlatformPath, Path.GetFileName(gameFilePath));
                     if (await this.AccessProvider.IsDifferentCopyRequiredAsync(gameFilePath, deviceFilePath))
                     {
-                        NotifyProgress(this.Progress, " - Copying " + Path.GetFileName(gameFilePath));
+                        NotifyProgress(this.Progress, " - Copying " + Path.GetFileName(gameFilePath) + "\n");
                         await this.AccessProvider.CopyFileAsync(gameFilePath, deviceFilePath);
                     }
                 }
@@ -118,7 +118,7 @@ namespace Orbital7.MyGames.Local
                     string deviceFilePath = Path.Combine(devicePlatformPath, Path.GetFileName(saveStateFilePath));
                     if (await this.AccessProvider.IsDifferentCopyRequiredAsync(saveStateFilePath, deviceFilePath))
                     {
-                        NotifyProgress(this.Progress, " - Copying " + Path.GetFileName(saveStateFilePath));
+                        NotifyProgress(this.Progress, " - Copying " + Path.GetFileName(saveStateFilePath) + "\n");
                         await this.AccessProvider.CopyFileAsync(saveStateFilePath, deviceFilePath);
                     }
                 }

@@ -62,7 +62,7 @@ namespace Orbital7.MyGames.Devices
 
         private async Task UpdateCatalogGameListsAsync(DeviceConfig deviceConfig)
         {
-            NotifyProgress(this.Progress, "Updating Catalog Game Lists");
+            NotifyProgress(this.Progress, "Updating Catalog Game Lists\n");
 
             foreach (string folderPath in await this.AccessProvider.GetFolderPathsAsync(deviceConfig.RomsFolderPath))
             {
@@ -81,13 +81,13 @@ namespace Orbital7.MyGames.Devices
 
                         if (await this.AccessProvider.IsNewerCopyRequiredAsync(sourcePath, destPath))
                         {
-                            NotifyProgress(this.Progress, " - Downloading " + Path.GetFileName(sourcePath) + " for " + platformFolderName);
+                            NotifyProgress(this.Progress, " - Downloading " + Path.GetFileName(sourcePath) + " for " + platformFolderName + "\n");
                             await this.AccessProvider.CopyFileAsync(sourcePath, destPath);
                         }
                     }
                     else
                     {
-                        NotifyProgress(this.Progress, " - Removing files for " + platformFolderName);
+                        NotifyProgress(this.Progress, " - Removing files for " + platformFolderName + "\n");
                         FileSystemHelper.DeleteFolderContents(folderPath);
 
                     }
@@ -107,7 +107,7 @@ namespace Orbital7.MyGames.Devices
                 if (this.Cancel)
                     break;
 
-                NotifyProgress(this.Progress, "Updating " + gameList.Platform + " Contents");
+                NotifyProgress(this.Progress, "Updating " + gameList.Platform + " Contents\n");
                 this.Index++;
 
                 string platformFolderName = Path.GetDirectoryName(gameList.PlatformFolderPath);
@@ -166,7 +166,7 @@ namespace Orbital7.MyGames.Devices
                 {
                     if (!gameList.Contains(filename) && (gameList.Platform != Platform.NeoGeo && filename != "neogeo.zip"))
                     {
-                        NotifyProgress(this.Progress, " - Removing " + filename);
+                        NotifyProgress(this.Progress, " - Removing " + filename + "\n");
                         base.DeleteGameFiles(gameList.PlatformFolderPath, gameList.ImagesFolderPath, filename);
                     }
                 }
@@ -179,7 +179,7 @@ namespace Orbital7.MyGames.Devices
             string catalogGamePath = Path.Combine(deviceConfig.CatalogFolderPath, platformFolderName, game.GameFilename);
             if (await this.AccessProvider.IsDifferentCopyRequiredAsync(catalogGamePath, game.GameFilePath))
             {
-                NotifyProgress(this.Progress, " - Downloading " + game.GameFilename);
+                NotifyProgress(this.Progress, " - Downloading " + game.GameFilename + "\n");
                 await this.AccessProvider.WriteAllBytesAsync(game.GameFilePath,
                     await this.AccessProvider.ReadAllBytesAsync(catalogGamePath));
             }
@@ -188,7 +188,7 @@ namespace Orbital7.MyGames.Devices
             string catalogGameImagePath = Path.Combine(deviceConfig.CatalogFolderPath, platformFolderName, GameList.ImagesFolderName, game.ImageFilename);
             if (await this.AccessProvider.IsDifferentCopyRequiredAsync(catalogGameImagePath, game.ImageFilePath))
             {
-                NotifyProgress(this.Progress, " - Downloading " + game.ImageFilename);
+                NotifyProgress(this.Progress, " - Downloading " + game.ImageFilename + "\n");
                 await this.AccessProvider.WriteAllBytesAsync(game.ImageFilePath,
                     await this.AccessProvider.ReadAllBytesAsync(catalogGameImagePath));
             }
@@ -231,12 +231,12 @@ namespace Orbital7.MyGames.Devices
             int compareResult = await this.AccessProvider.CompareFileCopiesAsync(catalogSaveStateFilePath, deviceSaveStateFilePath);
             if (compareResult > 0)
             {
-                NotifyProgress(this.Progress, " - Downloading " + saveStateFilename);
+                NotifyProgress(this.Progress, " - Downloading " + saveStateFilename + "\n");
                 await this.AccessProvider.CopyFileAsync(catalogSaveStateFilePath, deviceSaveStateFilePath);
             }
             else if (compareResult < 0)
             {
-                NotifyProgress(this.Progress, " - Uploading " + saveStateFilename);
+                NotifyProgress(this.Progress, " - Uploading " + saveStateFilename + "\n");
                 await this.AccessProvider.CopyFileAsync(deviceSaveStateFilePath, catalogSaveStateFilePath);
             }
         }
@@ -282,7 +282,7 @@ namespace Orbital7.MyGames.Devices
                         if ((deviceConfig.LastSaveStatesPush.HasValue && new FileInfo(filePath).LastWriteTimeUtc > deviceConfig.LastSaveStatesPush.Value) ||
                             (await this.AccessProvider.IsNewerCopyRequiredAsync(filePath, catalogSaveStateFilePath)))
                         {
-                            NotifyProgress(this.Progress, " - Uploading " + saveStateFilename);
+                            NotifyProgress(this.Progress, " - Uploading " + saveStateFilename + "\n");
                             await this.AccessProvider.CopyFileAsync(filePath, catalogSaveStateFilePath);
                         }
                     }

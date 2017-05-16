@@ -27,13 +27,20 @@ namespace Orbital7.MyGames
 
         private async Task InitializeAsync()
         {
-            foreach (var gameList in this.Catalog.GameLists)
+            try
             {
-                await SyncGameListFilesAsync(gameList);
-                SaveGameList(gameList);
+                foreach (var gameList in this.Catalog.GameLists)
+                {
+                    await SyncGameListFilesAsync(gameList);
+                    SaveGameList(gameList);
 
-                foreach (Game game in gameList)
-                    await UpdateLocalCustomGameConfigFileAsync(game);
+                    foreach (Game game in gameList)
+                        await UpdateLocalCustomGameConfigFileAsync(game);
+                }
+            }
+            catch(Exception ex)
+            {
+                ex.ToString();
             }
         }
 
