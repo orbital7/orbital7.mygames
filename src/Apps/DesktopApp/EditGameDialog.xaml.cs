@@ -1,4 +1,4 @@
-﻿using Orbital7.Extensions.Windows.Desktop.WPF;
+﻿using Orbital7.Extensions.NETFramework.WPF;
 using Orbital7.MyGames;
 using System;
 using System.Collections.Generic;

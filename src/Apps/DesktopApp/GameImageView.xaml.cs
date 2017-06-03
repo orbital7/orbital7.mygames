@@ -1,5 +1,4 @@
-﻿using Orbital7.Extensions.Windows;
-using Orbital7.Extensions.Windows.Desktop.WPF;
+﻿using Orbital7.Extensions.NETFramework.WPF;
 using Orbital7.MyGames;
 using System.Drawing;
 using System.Windows.Controls;

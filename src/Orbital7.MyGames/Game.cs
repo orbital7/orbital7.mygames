@@ -1,6 +1,5 @@
 ﻿using ImageSharp;
 using Orbital7.Extensions;
-using Orbital7.Extensions.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;

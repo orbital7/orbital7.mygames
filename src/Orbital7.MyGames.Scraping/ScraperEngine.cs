@@ -1,6 +1,7 @@
 ﻿using Orbital7.Extensions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Orbital7.MyGames.Scraping
@@ -21,7 +22,7 @@ namespace Orbital7.MyGames.Scraping
         public async Task<Game> SearchExactAsync(Scraper scraper, Platform platform, string query, string filename)
         {
             var game = (Game)(await ExecuteSearchAsync(platform, query, scraper.SearchExactAsync));
-            UpdateGameResult(game, scraper, platform, filename);
+            await UpdateGameResultAsync(game, scraper, platform, filename);
             return game;
         }
 
@@ -29,17 +30,17 @@ namespace Orbital7.MyGames.Scraping
         {
             var games = (List<Game>)(await ExecuteSearchAsync(platform, query, scraper.SearchAsync));
             foreach (var game in games)
-                UpdateGameResult(game, scraper, platform, filename);
+                await UpdateGameResultAsync(game, scraper, platform, filename);
             return games;
         }
 
-        private static void UpdateGameResult(Game game, Scraper scraper, Platform platform, string filename)
+        private static async Task UpdateGameResultAsync(Game game, Scraper scraper, Platform platform, string filename)
         {
             if (game != null)
             {
                 game.Platform = platform;
                 game.Source = scraper.SourceName;
-                game.UpdateFilenameAsync(filename);
+                await game.UpdateFilenameAsync(filename);
             }
         }
 
@@ -99,7 +100,8 @@ namespace Orbital7.MyGames.Scraping
             if (platform == Platform.Arcade || platform == Platform.NeoGeo)
             {
                 // Try to parse out name in FBA game list.
-                string fbaLine = Properties.Resources.gamelist.FindFirstBetween("\r\n| " + gameName + "\t", "\r\n");
+                string gameList = GetGameList();
+                string fbaLine = gameList.FindFirstBetween("\r\n| " + gameName + "\t", "\r\n");
                 if (!String.IsNullOrEmpty(fbaLine))
                 {
                     gameName = fbaLine.Parse("|", false)[2].Trim();
@@ -123,20 +125,21 @@ namespace Orbital7.MyGames.Scraping
                     // If not found, try the Mame4All list.
                     if (!found)
                     {
-                        int endIndex = Properties.Resources.cheat_dat.IndexOf(" ]\n" + initialGameName + ":");
+                        string cheatData = GetCheatData();
+                        int endIndex = cheatData.IndexOf(" ]\n" + initialGameName + ":");
                         if (endIndex > 0)
                         {
-                            int startIndex = Properties.Resources.cheat_dat.LastIndexOf("\n; [", endIndex);
+                            int startIndex = cheatData.LastIndexOf("\n; [", endIndex);
                             if (startIndex > 0)
-                                gameName = Properties.Resources.cheat_dat.Substring(startIndex + 4, endIndex - startIndex - 4);
+                                gameName = cheatData.Substring(startIndex + 4, endIndex - startIndex - 4);
                         }
                         else
                         {
-                            int startIndex = Properties.Resources.cheat_dat.IndexOf("]\n; " + initialGameName + " ");
+                            int startIndex = cheatData.IndexOf("]\n; " + initialGameName + " ");
                             if (startIndex > 0)
                             {
-                                endIndex = Properties.Resources.cheat_dat.IndexOf("\n", startIndex + 5);
-                                string noCheatLine = Properties.Resources.cheat_dat.Substring(startIndex, endIndex - startIndex);
+                                endIndex = cheatData.IndexOf("\n", startIndex + 5);
+                                string noCheatLine = cheatData.Substring(startIndex, endIndex - startIndex);
                                 gameName = noCheatLine.FindFirstBetween("[", "]");
                             }
                         }
@@ -153,5 +156,17 @@ namespace Orbital7.MyGames.Scraping
 
             return gameName;
         }   
+
+        // TODO: Resources don't yet appear to be working in .NETStandard 2 Preview 1, so just use local files.
+        private static string GetGameList()
+        {
+            return File.ReadAllText(Path.Combine(ReflectionHelper.GetExecutingAssemblyFolder(), "gamelist.txt"));
+        }
+
+        // TODO: Resources don't yet appear to be working in .NETStandard 2 Preview 1, so just use local files.
+        private static string GetCheatData()
+        {
+            return File.ReadAllText(Path.Combine(ReflectionHelper.GetExecutingAssemblyFolder(), "cheat.dat.txt"));
+        }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Orbital7.Extensions;
-using Orbital7.Extensions.Windows;
-using Orbital7.Extensions.Windows.Desktop.WPF;
+using Orbital7.Extensions.NETFramework.WPF;
 using Orbital7.MyGames;
 using Orbital7.MyGames.Local;
 using System;
@@ -58,7 +57,7 @@ namespace DesktopApp
             var config = await Config.LoadAsync<CatalogConfig>(accessProcessor, configFolderPath);
             if (config == null)
             {
-                string romsFolderPath = Orbital7.Extensions.Windows.Desktop.WinForms.CommonDialogsHelper.ShowFolderBrowseDialog(
+                string romsFolderPath = CommonDialogsHelper.ShowFolderBrowseDialog(
                     "Select the location of your ROMs folder:");
                 if (!String.IsNullOrEmpty(romsFolderPath))
                 {
