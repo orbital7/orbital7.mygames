@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <Reference Include="Orbital7.Extensions">
-      <HintPath>..\..\..\orbital7.extensions\bin\Orbital7.Extensions.dll</HintPath>
+      <HintPath>..\..\..\orbital7.extensions\bin\debug\netstandard2.0\Orbital7.Extensions.dll</HintPath>
     </Reference>
   </ItemGroup>
 

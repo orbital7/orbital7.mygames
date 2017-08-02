@@ -157,16 +157,14 @@ namespace Orbital7.MyGames.Scraping
             return gameName;
         }   
 
-        // TODO: Resources don't yet appear to be working in .NETStandard 2 Preview 1, so just use local files.
         private static string GetGameList()
         {
-            return File.ReadAllText(Path.Combine(ReflectionHelper.GetExecutingAssemblyFolder(), "gamelist.txt"));
+            return Properties.Resources.gamelist;
         }
 
-        // TODO: Resources don't yet appear to be working in .NETStandard 2 Preview 1, so just use local files.
         private static string GetCheatData()
         {
-            return File.ReadAllText(Path.Combine(ReflectionHelper.GetExecutingAssemblyFolder(), "cheat.dat.txt"));
+            return Properties.Resources.cheat_dat;
         }
     }
 }

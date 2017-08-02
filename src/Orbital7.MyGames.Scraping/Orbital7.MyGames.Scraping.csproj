@@ -13,21 +13,23 @@
 
   <ItemGroup>
     <Reference Include="Orbital7.Extensions">
-      <HintPath>..\..\..\orbital7.extensions\bin\Orbital7.Extensions.dll</HintPath>
+      <HintPath>..\..\..\orbital7.extensions\bin\debug\netstandard2.0\Orbital7.Extensions.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\cheat.dat.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\gamelist.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
