@@ -51,7 +51,7 @@ namespace DesktopApp
 
         private async Task<CatalogConfig> LoadConfigAsync()
         {
-            string configFolderPath = ReflectionHelper.GetExecutingAssemblyFolder();
+            string configFolderPath = ReflectionHelper.GetExecutingAssemblyFolderPath();
 
             var accessProcessor = new LocalAccessProvider();
             var config = await Config.LoadAsync<CatalogConfig>(accessProcessor, configFolderPath);
