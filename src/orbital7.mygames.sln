@@ -1,26 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26510.0
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{DF03C6A3-1715-4416-808F-2848067770F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopApp", "Apps\DesktopApp\DesktopApp.csproj", "{587F7549-D7E1-44F8-B3FA-3218D17C5F4C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{21399A15-D5AF-419D-B936-3921859ACFC0}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net45", "net45", "{B06B083B-6A79-423A-A583-D9E63AC61D33}"
-	ProjectSection(SolutionItems) = preProject
-		Lib\net45\ImageSharp.dll = Lib\net45\ImageSharp.dll
-		Lib\net45\System.Buffers.dll = Lib\net45\System.Buffers.dll
-		Lib\net45\System.Numerics.Vectors.dll = Lib\net45\System.Numerics.Vectors.dll
-		Lib\net45\System.Runtime.CompilerServices.Unsafe.dll = Lib\net45\System.Runtime.CompilerServices.Unsafe.dll
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard1.1", "netstandard1.1", "{7070AFB0-AF8B-43DA-8520-BD1E06096C49}"
-	ProjectSection(SolutionItems) = preProject
-		Lib\netstandard1.1\ImageSharp.dll = Lib\netstandard1.1\ImageSharp.dll
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital7.MyGames", "Orbital7.MyGames\Orbital7.MyGames.csproj", "{BC4084A6-9C18-4C62-9A64-E0F4889C5BB1}"
 EndProject
@@ -74,8 +59,9 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{587F7549-D7E1-44F8-B3FA-3218D17C5F4C} = {DF03C6A3-1715-4416-808F-2848067770F1}
-		{B06B083B-6A79-423A-A583-D9E63AC61D33} = {21399A15-D5AF-419D-B936-3921859ACFC0}
-		{7070AFB0-AF8B-43DA-8520-BD1E06096C49} = {21399A15-D5AF-419D-B936-3921859ACFC0}
 		{2A2AF238-CF27-4080-8B16-2A01A9B414D9} = {DF03C6A3-1715-4416-808F-2848067770F1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F1ACE35C-956E-4553-8C86-A6E58A7DBB04}
 	EndGlobalSection
 EndGlobal
