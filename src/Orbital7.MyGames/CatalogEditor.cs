@@ -1,4 +1,4 @@
-﻿using ImageSharp;
+﻿using SixLabors.ImageSharp;
 using Orbital7.Extensions;
 using System;
 using System.Collections.Generic;
@@ -47,7 +47,7 @@ namespace Orbital7.MyGames
         public void SaveGameList(GameList gameList)
         {
             string filePath = GameList.GetFilePath(gameList.PlatformFolderPath);
-            this.AccessProvider.WriteAllTextAsync(filePath, XMLSerializationHelper.SerializeToXML(gameList).Replace(
+            this.AccessProvider.WriteAllTextAsync(filePath, SerializationHelper.SerializeToXml(gameList).Replace(
                 "<Game ", "<game ").Replace("</Game>", "</game>").Replace("<Game>", "<game>"));   // TODO: Fix.
         }
 
@@ -102,10 +102,10 @@ namespace Orbital7.MyGames
         public async Task SaveGameAsync(Game game, byte[] updatedImageContents)
         {
             await SaveGameAsync(game, updatedImageContents != null ? 
-                new Image(new MemoryStream(updatedImageContents)) : null);
+                Image.Load(new MemoryStream(updatedImageContents)) : null);
         }
 
-        public async Task SaveGameAsync(Game game, Image image)
+        public async Task SaveGameAsync(Game game, Image<Rgba32> image)
         {
             // Ensure images folder exists.
             await this.AccessProvider.EnsureFolderExistsAsync(game.GameList.ImagesFolderPath);
@@ -135,10 +135,10 @@ namespace Orbital7.MyGames
             {
                 using (var stream = new FileStream(game.ImageFilePath, FileMode.Create))
                 {
-                    var sizedImage = image.EnsureMaximumSize(640, 640);
-                    game.ImageWidth = sizedImage.Width;
-                    game.ImageHeight = sizedImage.Height;
-                    sizedImage.Save(stream, ImageSharpHelper.GetImageFormat(Path.GetExtension(game.ImagePath)));
+                    image.Mutate(x => x.EnsureMaximumSize(640, 640));
+                    game.ImageWidth = image.Width;
+                    game.ImageHeight = image.Height;
+                    image.Save(stream, ImageSharpHelper.GetImageFormat(Path.GetExtension(game.ImagePath)));
                 }
                 await game.SetFilePathsAsync();
             }
@@ -165,10 +165,10 @@ namespace Orbital7.MyGames
         public async Task MatchGameAsync(Game game, Game matchedGame, byte[] imageContents)
         {
             await MatchGameAsync(game, matchedGame, imageContents != null ?
-                new Image(new MemoryStream(imageContents)) : null);
+                Image.Load(new MemoryStream(imageContents)) : null);
         }
 
-        public async Task MatchGameAsync(Game game, Game matchedGame, Image image)
+        public async Task MatchGameAsync(Game game, Game matchedGame, Image<Rgba32> image)
         {
             // Copy over the properties.
             if (game.IsFilenameEditable)

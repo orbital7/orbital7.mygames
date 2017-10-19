@@ -1,5 +1,5 @@
 ﻿using Orbital7.Extensions;
-using Orbital7.Extensions.NETFramework.WPF;
+using Orbital7.Extensions.WPF;
 using Orbital7.MyGames;
 using System;
 using System.Collections;
@@ -31,7 +31,7 @@ namespace DesktopApp
             App.SetWindowFont(this);
             this.Title = action + " Platform Config";
 
-            this.PlatformConfig = XMLSerializationHelper.CloneObject<PlatformConfig>(platformConfig);
+            this.PlatformConfig = SerializationHelper.CloneObject<PlatformConfig>(platformConfig);
             WPFHelper.FillComboBox(comboPlatform, EnumHelper.EnumToList<Platform>(),
                 this.PlatformConfig.Platform);
             this.DataContext = this.PlatformConfig;

@@ -8,14 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RevStackCore-ImageSharp" Version="0.9.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Orbital7.Extensions">
-      <HintPath>..\..\..\orbital7.extensions\bin\debug\netstandard2.0\Orbital7.Extensions.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Orbital7.Extensions" Version="2.0.16" />
   </ItemGroup>
 
 </Project>

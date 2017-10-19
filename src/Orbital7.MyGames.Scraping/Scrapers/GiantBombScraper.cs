@@ -26,10 +26,10 @@ namespace Orbital7.MyGames.Scraping.Scrapers
         {
             Game game = null;
 
-            var navigator = await PerformSearchAsync(platform, gameName);
-            var gameNavigator = navigator.SelectSingleNode("results/game[name/text()='" + gameName.Replace("'", "&quot") + "']");
-            if (gameNavigator != null)
-                game = ParseGame(gameNavigator);
+            var resultsNode = await PerformSearchAsync(platform, gameName);
+            var gameNode = resultsNode.SelectSingleNode("game[name/text()='" + gameName.Replace("'", "&quot") + "']");
+            if (gameNode != null)
+                game = ParseGame(gameNode);
 
             return game;
         }
@@ -38,14 +38,14 @@ namespace Orbital7.MyGames.Scraping.Scrapers
         {
             List<Game> games = new List<Game>();
 
-            var navigator = await PerformSearchAsync(platform, gameName);
-            foreach (XPathNavigator gameNavigator in navigator.Select(".//results/game"))
-                games.Add(ParseGame(gameNavigator));
+            var resultsNode = await PerformSearchAsync(platform, gameName);
+            foreach (XmlNode gameNode in resultsNode.SelectNodes("game"))
+                games.Add(ParseGame(gameNode));
 
             return games;
         }
 
-        private async Task<XPathNavigator> PerformSearchAsync(Platform platform, string gameName)
+        private async Task<XmlNode> PerformSearchAsync(Platform platform, string gameName)
         {
             // Retrieve API key (to get a key, visit http://www.giantbomb.com/api/).
             string apiKeyFilePath = Path.Combine(this.ConfigFolderPath, "GiantBombAPIKey.txt");
@@ -65,28 +65,28 @@ namespace Orbital7.MyGames.Scraping.Scrapers
             request.Headers.Add("user-agent", Scraper.USER_AGENT);
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
-            var stream = await response.Content.ReadAsStreamAsync();
+            var xml = await response.Content.ReadAsStringAsync();
 
             // Parse.
-            var doc = new XPathDocument(stream);
-            var navigator = doc.CreateNavigator();
+            var doc = new XmlDocument();
+            doc.LoadXml(xml);
 
             // Validate.
-            if (XMLHelper.GetNodeValue(navigator, ".//status_code") != "1")
-                throw new Exception(XMLHelper.GetNodeValue(navigator, ".//error"));
+            if (doc.DocumentElement.GetNodeValue(".//status_code") != "1")
+                throw new Exception(doc.DocumentElement.GetNodeValue(".//error"));
 
-            return navigator;
+            return doc.DocumentElement;
         }
 
-        private Game ParseGame(XPathNavigator gameNavigator)
+        private Game ParseGame(XmlNode gameNode)
         {
             // Create the game.
             Game game = new Game();
-            game.ID = XMLHelper.GetNodeValue(gameNavigator, "id");
-            game.Name = XMLHelper.GetNodeValue(gameNavigator, "name");
-            game.Description = XMLHelper.GetNodeValue(gameNavigator, "deck");
-            base.SetGameReleaseDate(game, XMLHelper.GetNodeValue(gameNavigator, "original_release_date"));
-            base.SetGameImage(game, XMLHelper.GetNodeValue(gameNavigator, "image/super_url"));
+            game.ID = gameNode.GetNodeValue("id");
+            game.Name = gameNode.GetNodeValue("name");
+            game.Description = gameNode.GetNodeValue("deck");
+            base.SetGameReleaseDate(game, gameNode.GetNodeValue("original_release_date"));
+            base.SetGameImage(game, gameNode.GetNodeValue("image/super_url"));
 
             // TODO: To get the remaining values, we would need to call the game-specific API.
             //game.Developer = 

@@ -55,7 +55,7 @@ namespace Orbital7.MyGames
             string filePath = GetFilePath(folderPath);
             if (await accessProvider.FileExistsAsync(filePath))
             {
-                T config = XMLSerializationHelper.LoadFromXML<T>(await accessProvider.ReadAllTextAsync(filePath));
+                T config = SerializationHelper.LoadFromXml<T>(await accessProvider.ReadAllTextAsync(filePath));
                 config.FolderPath = folderPath;
                 config.AccessProvider = accessProvider;
                 return config;
@@ -68,7 +68,7 @@ namespace Orbital7.MyGames
 
         public async Task SaveAsync()
         {
-            await this.AccessProvider.WriteAllTextAsync(GetFilePath(this.FolderPath), XMLSerializationHelper.SerializeToXML(this));
+            await this.AccessProvider.WriteAllTextAsync(GetFilePath(this.FolderPath), SerializationHelper.SerializeToXml(this));
         }
 
         public PlatformConfig FindPlatformConfig(Platform platform)
@@ -80,7 +80,7 @@ namespace Orbital7.MyGames
 
         public T Clone<T>() where T : Config
         {
-            var config = XMLSerializationHelper.CloneObject<T>((T)this);
+            var config = SerializationHelper.CloneObject<T>((T)this);
             config.AccessProvider = this.AccessProvider;
             return config;
         }

@@ -1,5 +1,5 @@
 ﻿using Orbital7.Extensions;
-using Orbital7.Extensions.NETFramework.WPF;
+using Orbital7.Extensions.WPF;
 using Orbital7.MyGames;
 using System;
 using System.Collections.Generic;
@@ -30,7 +30,7 @@ namespace DesktopApp
             App.SetWindowFont(this);
             this.Title = action + " Device";
 
-            this.Device = XMLSerializationHelper.CloneObject<Device>(device);
+            this.Device = SerializationHelper.CloneObject<Device>(device);
             this.DataContext = this.Device;
 
             UpdateSyncSelections();

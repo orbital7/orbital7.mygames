@@ -1,5 +1,5 @@
 ﻿using Orbital7.Extensions;
-using Orbital7.Extensions.NETFramework.WPF;
+using Orbital7.Extensions.WPF;
 using Orbital7.MyGames;
 using Orbital7.MyGames.Scraping;
 using System;
@@ -87,7 +87,7 @@ namespace DesktopApp
                 Mouse.OverrideCursor = Cursors.Wait;
                 if (this.MatchedGame != null)
                 {
-                    this.CatalogEditor.MatchGameAsync(this.GameToMatch, this.MatchedGame, editGameView.UpdatedGameImageContents);
+                    AsyncHelper.RunSync(() => this.CatalogEditor.MatchGameAsync(this.GameToMatch, this.MatchedGame, editGameView.UpdatedGameImageContents));
                     this.DialogResult = true;
                     this.Close();
                 }

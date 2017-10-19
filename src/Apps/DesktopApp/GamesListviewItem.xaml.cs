@@ -1,4 +1,4 @@
-﻿using Orbital7.Extensions.NETFramework.WPF;
+﻿using Orbital7.Extensions.WPF;
 using Orbital7.MyGames;
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Drawing;
+using Orbital7.Extensions;
 
 namespace DesktopApp
 {
@@ -103,7 +104,7 @@ namespace DesktopApp
                 if (MessageBoxHelper.AskQuestion(this, "Are you sure you want to delete the " +
                     this.Game.Platform.ToDisplayString() + " game " + this.Game.ToString() + "?"))
                 {
-                    this.CatalogEditor.DeleteGameAsync(this.Game);
+                    AsyncHelper.RunSync(() => this.CatalogEditor.DeleteGameAsync(this.Game));
                     this.GamesListview.Update();
                 }
             }

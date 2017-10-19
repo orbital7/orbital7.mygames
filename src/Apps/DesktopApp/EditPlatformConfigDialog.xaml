@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mygames="clr-namespace:Orbital7.MyGames;assembly=Orbital7.MyGames"
-        xmlns:extns="clr-namespace:Orbital7.Extensions.NETFramework.WPF;assembly=Orbital7.Extensions.NETFramework.WPF"
+        xmlns:extns="clr-namespace:Orbital7.Extensions.WPF;assembly=Orbital7.Extensions.WPF"
         xmlns:local="clr-namespace:DesktopApp"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="False"

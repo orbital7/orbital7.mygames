@@ -1,4 +1,5 @@
-﻿using Orbital7.Extensions.NETFramework.WPF;
+﻿using Orbital7.Extensions;
+using Orbital7.Extensions.WPF;
 using Orbital7.MyGames;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace DesktopApp
             try
             {
                 Mouse.OverrideCursor = Cursors.Wait;
-                this.CatalogEditor.SaveGameAsync(this.Game, editGameView.UpdatedGameImageContents);
+                AsyncHelper.RunSync(() => this.CatalogEditor.SaveGameAsync(this.Game, editGameView.UpdatedGameImageContents));
                 this.DialogResult = true;
             }
             catch(Exception ex)

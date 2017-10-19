@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DesktopApp"
         xmlns:mygames="clr-namespace:Orbital7.MyGames;assembly=Orbital7.MyGames"
-        xmlns:extns="clr-namespace:Orbital7.Extensions.NETFramework.WPF;assembly=Orbital7.Extensions.NETFramework.WPF"
+        xmlns:extns="clr-namespace:Orbital7.Extensions.WPF;assembly=Orbital7.Extensions.WPF"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="False"
         BorderThickness="2px" BorderBrush="Orange" Background="Black" Foreground="White"

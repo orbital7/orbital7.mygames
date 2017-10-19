@@ -1,4 +1,4 @@
-﻿using ImageSharp;
+﻿using SixLabors.ImageSharp;
 using Orbital7.Extensions;
 using System;
 using System.Collections.Generic;
