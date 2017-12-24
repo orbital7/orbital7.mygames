@@ -43,6 +43,11 @@ namespace Orbital7.MyGames
             get { return Path.Combine(this.PlatformFolderPath, ImagesFolderName); }
         }
 
+        public string PlatformFolderName
+        {
+            get { return Path.GetFileName(this.PlatformFolderPath); }
+        }
+
         public GameList()
         {
 

@@ -1,8 +1,10 @@
-﻿using Orbital7.Extensions.WPF;
+﻿using Orbital7.Extensions;
+using Orbital7.Extensions.WPF;
 using Orbital7.MyGames;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -70,6 +72,7 @@ namespace DesktopApp
             bool hasImage = image.UpdateImage(source, isUpdated, imageFileExtension, 
                 Convert.ToInt32(source.Width), Convert.ToInt32(source.Height));
             UpdateVisibility(hasImage);
+            AsyncHelper.RunSync(() => this.Game.UpdateHasImageAsync(hasImage, imageFileExtension));
         }
 
         private void menuItemCopy_Click(object sender, RoutedEventArgs e)

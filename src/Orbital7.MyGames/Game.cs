@@ -192,10 +192,18 @@ namespace Orbital7.MyGames
         public async Task UpdateFilenameAsync(string updatedFilename)
         {
             this.GameFilename = updatedFilename;
+            await UpdateHasImageAsync(this.HasImage, Path.GetExtension(this.ImagePath));
+        }
+
+        public async Task UpdateHasImageAsync(bool hasImage, string imageFileExtension)
+        {
+            this.HasImage = hasImage;
+
             if (this.HasImage)
                 this.ImagePath = PATH_PREFIX + GameList.ImagesFolderName + PATH_SEPARATOR +
-                                 GetImageFilenameWithoutExtension(updatedFilename) + 
-                                 Path.GetExtension(this.ImagePath);
+                                 GetImageFilenameWithoutExtension(this.GameFilename) + imageFileExtension;
+            else
+                this.ImagePath = null;
 
             await SetFilePathsAsync();
         }

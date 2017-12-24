@@ -113,12 +113,10 @@ namespace Orbital7.MyGames.Devices
                 NotifyProgress(this.Progress, "Updating " + gameList.Platform + " Contents\n");
                 this.Index++;
 
-                string platformFolderName = Path.GetDirectoryName(gameList.PlatformFolderPath);
-
                 string catalogSaveStatesFolderPath = await this.AccessProvider.EnsureFolderExistsAsync(
-                    Path.Combine(deviceConfig.CatalogFolderPath, platformFolderName, GameList.SaveStatesFolderName));
+                    Path.Combine(deviceConfig.CatalogFolderPath, gameList.PlatformFolderName, GameList.SaveStatesFolderName));
 
-                var gameConfigs = await DownloadCatalogGameConfigsAsync(deviceConfig, platformFolderName);
+                var gameConfigs = await DownloadCatalogGameConfigsAsync(deviceConfig, gameList.PlatformFolderName);
 
                 foreach (Game game in gameList)
                 {
@@ -127,7 +125,7 @@ namespace Orbital7.MyGames.Devices
 
                     // Update game.
                     if (updateGames)
-                        await UpdateGameAsync(deviceConfig, platformFolderName, game);
+                        await UpdateGameAsync(deviceConfig, gameList.PlatformFolderName, game);
 
                     // Update save states.
                     var deviceSaveStateFilePaths = Directory.GetFiles(Path.Combine(gameList.PlatformFolderPath,
@@ -269,10 +267,8 @@ namespace Orbital7.MyGames.Devices
                 if (this.Cancel)
                     break;
 
-                string platformFolderName = Path.GetDirectoryName(gameList.PlatformFolderPath);
-
                 string catalogSaveStatesFolderPath = await this.AccessProvider.EnsureFolderExistsAsync(
-                    Path.Combine(deviceConfig.CatalogFolderPath, platformFolderName, GameList.SaveStatesFolderName));
+                    Path.Combine(deviceConfig.CatalogFolderPath, gameList.PlatformFolderName, GameList.SaveStatesFolderName));
 
                 foreach (var filePath in await this.AccessProvider.GetFilePathsAsync(gameList.PlatformFolderPath))
                 {

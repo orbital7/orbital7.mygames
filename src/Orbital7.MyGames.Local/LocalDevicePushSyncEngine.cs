@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Orbital7.MyGames.Local
@@ -49,6 +51,9 @@ namespace Orbital7.MyGames.Local
                 }
             }
 
+            // Write the Emulators config file.
+            WriteEmulatorsConfigFile();
+
             // Update the device.
             this.Device.LastSyncedDate = DateTime.UtcNow;
             await this.Catalog.Config.SaveAsync();
@@ -56,7 +61,24 @@ namespace Orbital7.MyGames.Local
             // Notify complete.
             base.NotifySyncComplete(this.Progress);
         }
-        
+
+        private void WriteEmulatorsConfigFile()
+        {
+            var contents = new StringBuilder();
+
+            foreach (var gameList in this.Catalog.GameLists)
+            {
+                var nonDefaultEmulatorGames = (from Game x in gameList
+                                               where x.Emulator != Game.DEFAULT_EMULATOR
+                                               select x).ToList();
+                foreach (var game in nonDefaultEmulatorGames)
+                    contents.AppendLine(gameList.PlatformFolderName + "_" + Path.GetFileNameWithoutExtension(game.GameFilename) + " = " + game.Emulator.EncloseInQuotes());
+            }
+
+            string filePath = Path.Combine(this.Device.RootPath, @"configs\all\emulators.cfg");
+            File.WriteAllText(filePath, contents.ToString());
+        }
+
         private async Task ProcessDeviceFilesAsync(string devicePlatformPath, string deviceImageFolderPath, GameList gameList)
         {
             var gameFileExtensions = GameList.GetPlatformFileExtensions(gameList.Platform);

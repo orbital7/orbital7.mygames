@@ -30,7 +30,12 @@ namespace Orbital7.MyGames
 
         public string RomsPath
         {
-            get { return Path.Combine("\\\\" + this.Address, "roms"); }
+            get { return Path.Combine(this.RootPath, "roms"); }
+        }
+
+        public string RootPath
+        {
+            get { return "\\\\" + this.Address; }
         }
 
         public override string ToString()

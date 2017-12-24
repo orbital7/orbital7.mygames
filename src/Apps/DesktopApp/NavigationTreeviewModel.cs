@@ -1,11 +1,7 @@
 ﻿using Orbital7.MyGames;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace DesktopApp
@@ -38,7 +34,7 @@ namespace DesktopApp
             {
                 platformItem.Children.Add(new NavigationTreeviewModelItem()
                 {
-                    Text = Path.GetFileName(gameList.PlatformFolderPath),
+                    Text = gameList.PlatformFolderName,
                     Type = NavigationTreeviewModelItemType.Platform,
                     GameList = gameList,
                 });
