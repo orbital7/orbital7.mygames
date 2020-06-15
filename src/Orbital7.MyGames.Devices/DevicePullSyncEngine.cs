@@ -187,7 +187,7 @@ namespace Orbital7.MyGames.Devices
 
             // Game Image.
             string catalogGameImagePath = Path.Combine(deviceConfig.CatalogFolderPath, platformFolderName, GameList.ImagesFolderName, game.ImageFilename);
-            if (await this.AccessProvider.IsDifferentCopyRequiredAsync(catalogGameImagePath, game.ImageFilePath))
+            if (await this.AccessProvider.IsNewerCopyRequiredAsync(catalogGameImagePath, game.ImageFilePath))
             {
                 NotifyProgress(this.Progress, " - Downloading " + game.ImageFilename + "\n");
                 await this.AccessProvider.WriteAllBytesAsync(game.ImageFilePath,

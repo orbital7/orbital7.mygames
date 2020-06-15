@@ -141,7 +141,7 @@ namespace Orbital7.MyGames.Local
                         break;
 
                     string deviceFilePath = Path.Combine(devicePlatformPath, Path.GetFileName(saveStateFilePath));
-                    if (await this.AccessProvider.IsDifferentCopyRequiredAsync(saveStateFilePath, deviceFilePath))
+                    if (await this.AccessProvider.IsNewerCopyRequiredAsync(saveStateFilePath, deviceFilePath))
                     {
                         NotifyProgress(this.Progress, " - Copying " + Path.GetFileName(saveStateFilePath) + "\n");
                         await this.AccessProvider.CopyFileAsync(saveStateFilePath, deviceFilePath);

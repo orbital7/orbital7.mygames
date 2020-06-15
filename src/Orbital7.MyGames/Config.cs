@@ -55,7 +55,7 @@ namespace Orbital7.MyGames
             string filePath = GetFilePath(folderPath);
             if (await accessProvider.FileExistsAsync(filePath))
             {
-                T config = SerializationHelper.LoadFromXml<T>(await accessProvider.ReadAllTextAsync(filePath));
+                T config = SerializationHelper.DeserializeFromXml<T>(await accessProvider.ReadAllTextAsync(filePath));
                 config.FolderPath = folderPath;
                 config.AccessProvider = accessProvider;
                 return config;

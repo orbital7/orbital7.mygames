@@ -70,7 +70,7 @@ namespace Orbital7.MyGames
             // Load.
             string filePath = GetFilePath(folderPath);
             if (File.Exists(filePath))
-                gameList = SerializationHelper.LoadFromXml<GameList>(File.ReadAllText(filePath).Replace(
+                gameList = SerializationHelper.DeserializeFromXml<GameList>(File.ReadAllText(filePath).Replace(
                     "<game ", "<Game ").Replace("</game>", "</Game>").Replace("<game>", "<Game>"));   // TODO: Fix.
             else
                 gameList = new GameList();

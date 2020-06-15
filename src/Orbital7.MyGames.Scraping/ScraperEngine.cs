@@ -14,8 +14,9 @@ namespace Orbital7.MyGames.Scraping
         {
             return new List<Scraper>()
             {
-                new Scrapers.TheGamesDBScraper(configFolderPath),
-                new Scrapers.GiantBombScraper(configFolderPath),
+                new Scrapers.IGDBScraper(configFolderPath),
+                //new Scrapers.TheGamesDBScraper(configFolderPath),
+                //new Scrapers.GiantBombScraper(configFolderPath),
             };
         }
 

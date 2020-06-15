@@ -46,8 +46,7 @@ namespace Orbital7.MyGames.Local
                 {
                     var sourceProperties = new FileInfo(sourcePath);
                     var destProperties = new FileInfo(destinationPath);
-                    return sourceProperties.LastWriteTimeUtc != destProperties.LastWriteTimeUtc ||
-                           sourceProperties.Length != destProperties.Length;
+                    return sourceProperties.Length != destProperties.Length;
                 }
                 else if (File.Exists(sourcePath))
                 {

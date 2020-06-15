@@ -73,7 +73,7 @@ namespace DesktopApp
             textPublisher.Text = this.Game.Publisher;
             textDeveloper.Text = this.Game.Developer;
             textRating.Text = this.Game.Rating > 0 ? this.Game.Rating.ToString("0.0") : "n/a";
-            textReleaseDate.Text = this.Game.ReleaseDate.ToShortDateString("n/a");
+            textReleaseDate.Text = this.Game.ReleaseDate.FormatAsShortDate("n/a");
             textPlatform.Text = this.Game.Platform.ToDisplayString();
             textDescription.Text = this.Game.Description;
             image.Load(this.Game, true);
