@@ -43,10 +43,13 @@ namespace Orbital7.MyGames.Scraping.Scrapers
             string apiKeyFilePath = Path.Combine(this.ConfigFolderPath, "IGDBAPIKey.txt");
             if (!File.Exists(apiKeyFilePath))
                 throw new Exception("File containing IGDB API Key not found at: " + apiKeyFilePath);
-            string apiKey = File.ReadAllText(apiKeyFilePath);
+            var apiKeyContents = File.ReadAllText(apiKeyFilePath);
+            var apiKeyLines = apiKeyContents.ParseLines();
 
             // Search.
-            var apiClient = new Orbital7.Apis.IGDB.IGDBApiClient(apiKey);
+            var apiClient = new Orbital7.Apis.IGDB.IGDBApiClient(
+                apiKeyLines[0],
+                apiKeyLines[1]);
             var scrapedGames = await apiClient.QueryGamesAsync(
                 fields: "cover,id,name,summary,total_rating",
                 search: gameName,

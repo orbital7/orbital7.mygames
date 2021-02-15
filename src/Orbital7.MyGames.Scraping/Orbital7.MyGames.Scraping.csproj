@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Orbital7.Apis.IGDB" Version="2.1.1" />
+    <PackageReference Include="Orbital7.Apis.IGDB" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
